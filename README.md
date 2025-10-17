@@ -1,4 +1,4 @@
-# Introduction 
+# 🦫 Introduction 
 
 Firmoto attempt port [Firmata protocol](https://github.com/firmata/protocol/tree/master) in rust that compliance with [embeded-hal](https://github.com/rust-embedded/embedded-hal), so we can easily to use any microcontroller that able to run embeded-hal. 
 
