@@ -54,6 +54,42 @@ inline const char *EnumNameOperationType(OperationType e) {
   return EnumNamesOperationType()[index];
 }
 
+enum SubOperationType : int8_t {
+  SubOperationType_SPI_WRITE_U8 = 0,
+  SubOperationType_SPI_READ_U8 = 1,
+  SubOperationType_SPI_READ_U16 = 2,
+  SubOperationType_SPI_READ_N = 3,
+  SubOperationType_MIN = SubOperationType_SPI_WRITE_U8,
+  SubOperationType_MAX = SubOperationType_SPI_READ_N
+};
+
+inline const SubOperationType (&EnumValuesSubOperationType())[4] {
+  static const SubOperationType values[] = {
+    SubOperationType_SPI_WRITE_U8,
+    SubOperationType_SPI_READ_U8,
+    SubOperationType_SPI_READ_U16,
+    SubOperationType_SPI_READ_N
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesSubOperationType() {
+  static const char * const names[5] = {
+    "SPI_WRITE_U8",
+    "SPI_READ_U8",
+    "SPI_READ_U16",
+    "SPI_READ_N",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameSubOperationType(SubOperationType e) {
+  if (::flatbuffers::IsOutRange(e, SubOperationType_SPI_WRITE_U8, SubOperationType_SPI_READ_N)) return "";
+  const size_t index = static_cast<size_t>(e);
+  return EnumNamesSubOperationType()[index];
+}
+
 enum ValueType : int8_t {
   ValueType_U8 = 0,
   ValueType_U16 = 1,
@@ -118,33 +154,38 @@ struct Operation FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef OperationBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_NAME = 4,
-    VT_OPTYPE = 6,
-    VT_ARGS = 8,
-    VT_REVAL = 10
+    VT_OP_TYPE = 6,
+    VT_SUB_OP_TYPE = 8,
+    VT_ARGS = 10,
+    VT_RETVAL = 12
   };
   const ::flatbuffers::String *name() const {
     return GetPointer<const ::flatbuffers::String *>(VT_NAME);
   }
-  Firmoto::OperationType optype() const {
-    return static_cast<Firmoto::OperationType>(GetField<int8_t>(VT_OPTYPE, 0));
+  Firmoto::OperationType op_type() const {
+    return static_cast<Firmoto::OperationType>(GetField<int8_t>(VT_OP_TYPE, 0));
+  }
+  Firmoto::SubOperationType sub_op_type() const {
+    return static_cast<Firmoto::SubOperationType>(GetField<int8_t>(VT_SUB_OP_TYPE, 0));
   }
   const ::flatbuffers::Vector<::flatbuffers::Offset<Firmoto::Value>> *args() const {
     return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Firmoto::Value>> *>(VT_ARGS);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Firmoto::Value>> *reval() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Firmoto::Value>> *>(VT_REVAL);
+  const ::flatbuffers::Vector<::flatbuffers::Offset<Firmoto::Value>> *retval() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Firmoto::Value>> *>(VT_RETVAL);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_NAME) &&
            verifier.VerifyString(name()) &&
-           VerifyField<int8_t>(verifier, VT_OPTYPE, 1) &&
+           VerifyField<int8_t>(verifier, VT_OP_TYPE, 1) &&
+           VerifyField<int8_t>(verifier, VT_SUB_OP_TYPE, 1) &&
            VerifyOffset(verifier, VT_ARGS) &&
            verifier.VerifyVector(args()) &&
            verifier.VerifyVectorOfTables(args()) &&
-           VerifyOffset(verifier, VT_REVAL) &&
-           verifier.VerifyVector(reval()) &&
-           verifier.VerifyVectorOfTables(reval()) &&
+           VerifyOffset(verifier, VT_RETVAL) &&
+           verifier.VerifyVector(retval()) &&
+           verifier.VerifyVectorOfTables(retval()) &&
            verifier.EndTable();
   }
 };
@@ -156,14 +197,17 @@ struct OperationBuilder {
   void add_name(::flatbuffers::Offset<::flatbuffers::String> name) {
     fbb_.AddOffset(Operation::VT_NAME, name);
   }
-  void add_optype(Firmoto::OperationType optype) {
-    fbb_.AddElement<int8_t>(Operation::VT_OPTYPE, static_cast<int8_t>(optype), 0);
+  void add_op_type(Firmoto::OperationType op_type) {
+    fbb_.AddElement<int8_t>(Operation::VT_OP_TYPE, static_cast<int8_t>(op_type), 0);
+  }
+  void add_sub_op_type(Firmoto::SubOperationType sub_op_type) {
+    fbb_.AddElement<int8_t>(Operation::VT_SUB_OP_TYPE, static_cast<int8_t>(sub_op_type), 0);
   }
   void add_args(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Firmoto::Value>>> args) {
     fbb_.AddOffset(Operation::VT_ARGS, args);
   }
-  void add_reval(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Firmoto::Value>>> reval) {
-    fbb_.AddOffset(Operation::VT_REVAL, reval);
+  void add_retval(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Firmoto::Value>>> retval) {
+    fbb_.AddOffset(Operation::VT_RETVAL, retval);
   }
   explicit OperationBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -179,32 +223,36 @@ struct OperationBuilder {
 inline ::flatbuffers::Offset<Operation> CreateOperation(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     ::flatbuffers::Offset<::flatbuffers::String> name = 0,
-    Firmoto::OperationType optype = Firmoto::OperationType_GPIO,
+    Firmoto::OperationType op_type = Firmoto::OperationType_GPIO,
+    Firmoto::SubOperationType sub_op_type = Firmoto::SubOperationType_SPI_WRITE_U8,
     ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Firmoto::Value>>> args = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Firmoto::Value>>> reval = 0) {
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Firmoto::Value>>> retval = 0) {
   OperationBuilder builder_(_fbb);
-  builder_.add_reval(reval);
+  builder_.add_retval(retval);
   builder_.add_args(args);
   builder_.add_name(name);
-  builder_.add_optype(optype);
+  builder_.add_sub_op_type(sub_op_type);
+  builder_.add_op_type(op_type);
   return builder_.Finish();
 }
 
 inline ::flatbuffers::Offset<Operation> CreateOperationDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     const char *name = nullptr,
-    Firmoto::OperationType optype = Firmoto::OperationType_GPIO,
+    Firmoto::OperationType op_type = Firmoto::OperationType_GPIO,
+    Firmoto::SubOperationType sub_op_type = Firmoto::SubOperationType_SPI_WRITE_U8,
     const std::vector<::flatbuffers::Offset<Firmoto::Value>> *args = nullptr,
-    const std::vector<::flatbuffers::Offset<Firmoto::Value>> *reval = nullptr) {
+    const std::vector<::flatbuffers::Offset<Firmoto::Value>> *retval = nullptr) {
   auto name__ = name ? _fbb.CreateString(name) : 0;
   auto args__ = args ? _fbb.CreateVector<::flatbuffers::Offset<Firmoto::Value>>(*args) : 0;
-  auto reval__ = reval ? _fbb.CreateVector<::flatbuffers::Offset<Firmoto::Value>>(*reval) : 0;
+  auto retval__ = retval ? _fbb.CreateVector<::flatbuffers::Offset<Firmoto::Value>>(*retval) : 0;
   return Firmoto::CreateOperation(
       _fbb,
       name__,
-      optype,
+      op_type,
+      sub_op_type,
       args__,
-      reval__);
+      retval__);
 }
 
 struct Value FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {

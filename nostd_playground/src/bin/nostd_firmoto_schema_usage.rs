@@ -10,7 +10,7 @@ use flatbuffers::FlatBufferBuilder;
 use nostd_playground::{
     self as _,
     firmoto_schema_generated::firmoto::{
-        Operation, OperationArgs, OperationType, Value, ValueArgs, ValueType,
+        Operation, OperationArgs, OperationType, SubOperationType, Value, ValueArgs, ValueType,
     },
 };
 
@@ -66,9 +66,10 @@ fn main() -> ! {
         &mut builder,
         &OperationArgs {
             name: Some(op_name),
-            optype: OperationType::SPI,
+            op_type: OperationType::SPI,
+            sub_op_type: SubOperationType::SPI_READ_U8,
             args: Some(init_spi_args),
-            reval: None,
+            retval: None,
         },
     );
 

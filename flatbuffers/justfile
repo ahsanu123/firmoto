@@ -14,6 +14,8 @@ all-language:
   just reset kotlin && flatc --kotlin -o kotlin {{fbs-file}}
   just reset typescript && flatc --ts -o typescript {{fbs-file}}
   just reset java && flatc --java -o java {{fbs-file}}
+  cp ./rust/firmoto_schema_generated.rs ../playground/src/firmoto_schema_generated.rs
+  cp ./rust/firmoto_schema_generated.rs ../nostd_playground/src/firmoto_schema_generated.rs
 
 reset folder: 
   rm -rf {{folder}}

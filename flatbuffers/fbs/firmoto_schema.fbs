@@ -1,13 +1,20 @@
 namespace Firmoto;
 
 enum OperationType: byte {
-  GPIO = 0, 
+  GPIO,
   I2C, 
   SPI
 }
 
+enum SubOperationType: byte {
+  SPI_WRITE_U8, 
+  SPI_READ_U8, 
+  SPI_READ_U16, 
+  SPI_READ_N
+}
+
 enum ValueType : byte{
-  U8 = 0, 
+  U8,
   U16,
   U32,
   U64,
@@ -26,9 +33,10 @@ enum ValueType : byte{
 
 table Operation {
   name: string; 
-  optype: OperationType;
+  op_type: OperationType;
+  sub_op_type: SubOperationType;
   args: [Value];
-  reval: [Value];
+  retval: [Value];
 }
 
 table Value {

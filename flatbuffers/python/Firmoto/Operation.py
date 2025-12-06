@@ -32,15 +32,22 @@ class Operation(object):
         return None
 
     # Operation
-    def Optype(self):
+    def OpType(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
         if o != 0:
             return self._tab.Get(flatbuffers.number_types.Int8Flags, o + self._tab.Pos)
         return 0
 
     # Operation
-    def Args(self, j):
+    def SubOpType(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Int8Flags, o + self._tab.Pos)
+        return 0
+
+    # Operation
+    def Args(self, j):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
         if o != 0:
             x = self._tab.Vector(o)
             x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 4
@@ -53,19 +60,19 @@ class Operation(object):
 
     # Operation
     def ArgsLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
         if o != 0:
             return self._tab.VectorLen(o)
         return 0
 
     # Operation
     def ArgsIsNone(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
         return o == 0
 
     # Operation
-    def Reval(self, j):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
+    def Retval(self, j):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
         if o != 0:
             x = self._tab.Vector(o)
             x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 4
@@ -77,19 +84,19 @@ class Operation(object):
         return None
 
     # Operation
-    def RevalLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
+    def RetvalLength(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
         if o != 0:
             return self._tab.VectorLen(o)
         return 0
 
     # Operation
-    def RevalIsNone(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
+    def RetvalIsNone(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
         return o == 0
 
 def OperationStart(builder):
-    builder.StartObject(4)
+    builder.StartObject(5)
 
 def Start(builder):
     OperationStart(builder)
@@ -100,14 +107,20 @@ def OperationAddName(builder, name):
 def AddName(builder, name):
     OperationAddName(builder, name)
 
-def OperationAddOptype(builder, optype):
-    builder.PrependInt8Slot(1, optype, 0)
+def OperationAddOpType(builder, opType):
+    builder.PrependInt8Slot(1, opType, 0)
 
-def AddOptype(builder, optype):
-    OperationAddOptype(builder, optype)
+def AddOpType(builder, opType):
+    OperationAddOpType(builder, opType)
+
+def OperationAddSubOpType(builder, subOpType):
+    builder.PrependInt8Slot(2, subOpType, 0)
+
+def AddSubOpType(builder, subOpType):
+    OperationAddSubOpType(builder, subOpType)
 
 def OperationAddArgs(builder, args):
-    builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(args), 0)
+    builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(args), 0)
 
 def AddArgs(builder, args):
     OperationAddArgs(builder, args)
@@ -118,17 +131,17 @@ def OperationStartArgsVector(builder, numElems):
 def StartArgsVector(builder, numElems):
     return OperationStartArgsVector(builder, numElems)
 
-def OperationAddReval(builder, reval):
-    builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(reval), 0)
+def OperationAddRetval(builder, retval):
+    builder.PrependUOffsetTRelativeSlot(4, flatbuffers.number_types.UOffsetTFlags.py_type(retval), 0)
 
-def AddReval(builder, reval):
-    OperationAddReval(builder, reval)
+def AddRetval(builder, retval):
+    OperationAddRetval(builder, retval)
 
-def OperationStartRevalVector(builder, numElems):
+def OperationStartRetvalVector(builder, numElems):
     return builder.StartVector(4, numElems, 4)
 
-def StartRevalVector(builder, numElems):
-    return OperationStartRevalVector(builder, numElems)
+def StartRetvalVector(builder, numElems):
+    return OperationStartRetvalVector(builder, numElems)
 
 def OperationEnd(builder):
     return builder.EndObject()

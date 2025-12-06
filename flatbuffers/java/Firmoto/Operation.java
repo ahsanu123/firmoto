@@ -30,40 +30,44 @@ public final class Operation extends Table {
   public String name() { int o = __offset(4); return o != 0 ? __string(o + bb_pos) : null; }
   public ByteBuffer nameAsByteBuffer() { return __vector_as_bytebuffer(4, 1); }
   public ByteBuffer nameInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 4, 1); }
-  public byte optype() { int o = __offset(6); return o != 0 ? bb.get(o + bb_pos) : 0; }
+  public byte opType() { int o = __offset(6); return o != 0 ? bb.get(o + bb_pos) : 0; }
+  public byte subOpType() { int o = __offset(8); return o != 0 ? bb.get(o + bb_pos) : 0; }
   public Firmoto.Value args(int j) { return args(new Firmoto.Value(), j); }
-  public Firmoto.Value args(Firmoto.Value obj, int j) { int o = __offset(8); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
-  public int argsLength() { int o = __offset(8); return o != 0 ? __vector_len(o) : 0; }
+  public Firmoto.Value args(Firmoto.Value obj, int j) { int o = __offset(10); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
+  public int argsLength() { int o = __offset(10); return o != 0 ? __vector_len(o) : 0; }
   public Firmoto.Value.Vector argsVector() { return argsVector(new Firmoto.Value.Vector()); }
-  public Firmoto.Value.Vector argsVector(Firmoto.Value.Vector obj) { int o = __offset(8); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
-  public Firmoto.Value reval(int j) { return reval(new Firmoto.Value(), j); }
-  public Firmoto.Value reval(Firmoto.Value obj, int j) { int o = __offset(10); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
-  public int revalLength() { int o = __offset(10); return o != 0 ? __vector_len(o) : 0; }
-  public Firmoto.Value.Vector revalVector() { return revalVector(new Firmoto.Value.Vector()); }
-  public Firmoto.Value.Vector revalVector(Firmoto.Value.Vector obj) { int o = __offset(10); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
+  public Firmoto.Value.Vector argsVector(Firmoto.Value.Vector obj) { int o = __offset(10); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
+  public Firmoto.Value retval(int j) { return retval(new Firmoto.Value(), j); }
+  public Firmoto.Value retval(Firmoto.Value obj, int j) { int o = __offset(12); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
+  public int retvalLength() { int o = __offset(12); return o != 0 ? __vector_len(o) : 0; }
+  public Firmoto.Value.Vector retvalVector() { return retvalVector(new Firmoto.Value.Vector()); }
+  public Firmoto.Value.Vector retvalVector(Firmoto.Value.Vector obj) { int o = __offset(12); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
 
   public static int createOperation(FlatBufferBuilder builder,
       int nameOffset,
-      byte optype,
+      byte opType,
+      byte subOpType,
       int argsOffset,
-      int revalOffset) {
-    builder.startTable(4);
-    Operation.addReval(builder, revalOffset);
+      int retvalOffset) {
+    builder.startTable(5);
+    Operation.addRetval(builder, retvalOffset);
     Operation.addArgs(builder, argsOffset);
     Operation.addName(builder, nameOffset);
-    Operation.addOptype(builder, optype);
+    Operation.addSubOpType(builder, subOpType);
+    Operation.addOpType(builder, opType);
     return Operation.endOperation(builder);
   }
 
-  public static void startOperation(FlatBufferBuilder builder) { builder.startTable(4); }
+  public static void startOperation(FlatBufferBuilder builder) { builder.startTable(5); }
   public static void addName(FlatBufferBuilder builder, int nameOffset) { builder.addOffset(0, nameOffset, 0); }
-  public static void addOptype(FlatBufferBuilder builder, byte optype) { builder.addByte(1, optype, 0); }
-  public static void addArgs(FlatBufferBuilder builder, int argsOffset) { builder.addOffset(2, argsOffset, 0); }
+  public static void addOpType(FlatBufferBuilder builder, byte opType) { builder.addByte(1, opType, 0); }
+  public static void addSubOpType(FlatBufferBuilder builder, byte subOpType) { builder.addByte(2, subOpType, 0); }
+  public static void addArgs(FlatBufferBuilder builder, int argsOffset) { builder.addOffset(3, argsOffset, 0); }
   public static int createArgsVector(FlatBufferBuilder builder, int[] data) { builder.startVector(4, data.length, 4); for (int i = data.length - 1; i >= 0; i--) builder.addOffset(data[i]); return builder.endVector(); }
   public static void startArgsVector(FlatBufferBuilder builder, int numElems) { builder.startVector(4, numElems, 4); }
-  public static void addReval(FlatBufferBuilder builder, int revalOffset) { builder.addOffset(3, revalOffset, 0); }
-  public static int createRevalVector(FlatBufferBuilder builder, int[] data) { builder.startVector(4, data.length, 4); for (int i = data.length - 1; i >= 0; i--) builder.addOffset(data[i]); return builder.endVector(); }
-  public static void startRevalVector(FlatBufferBuilder builder, int numElems) { builder.startVector(4, numElems, 4); }
+  public static void addRetval(FlatBufferBuilder builder, int retvalOffset) { builder.addOffset(4, retvalOffset, 0); }
+  public static int createRetvalVector(FlatBufferBuilder builder, int[] data) { builder.startVector(4, data.length, 4); for (int i = data.length - 1; i >= 0; i--) builder.addOffset(data[i]); return builder.endVector(); }
+  public static void startRetvalVector(FlatBufferBuilder builder, int numElems) { builder.startVector(4, numElems, 4); }
   public static int endOperation(FlatBufferBuilder builder) {
     int o = builder.endTable();
     return o;

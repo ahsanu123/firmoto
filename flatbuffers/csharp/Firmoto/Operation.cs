@@ -27,40 +27,44 @@ public struct Operation : IFlatbufferObject
   public ArraySegment<byte>? GetNameBytes() { return __p.__vector_as_arraysegment(4); }
 #endif
   public byte[] GetNameArray() { return __p.__vector_as_array<byte>(4); }
-  public Firmoto.OperationType Optype { get { int o = __p.__offset(6); return o != 0 ? (Firmoto.OperationType)__p.bb.GetSbyte(o + __p.bb_pos) : Firmoto.OperationType.GPIO; } }
-  public Firmoto.Value? Args(int j) { int o = __p.__offset(8); return o != 0 ? (Firmoto.Value?)(new Firmoto.Value()).__assign(__p.__indirect(__p.__vector(o) + j * 4), __p.bb) : null; }
-  public int ArgsLength { get { int o = __p.__offset(8); return o != 0 ? __p.__vector_len(o) : 0; } }
-  public Firmoto.Value? Reval(int j) { int o = __p.__offset(10); return o != 0 ? (Firmoto.Value?)(new Firmoto.Value()).__assign(__p.__indirect(__p.__vector(o) + j * 4), __p.bb) : null; }
-  public int RevalLength { get { int o = __p.__offset(10); return o != 0 ? __p.__vector_len(o) : 0; } }
+  public Firmoto.OperationType OpType { get { int o = __p.__offset(6); return o != 0 ? (Firmoto.OperationType)__p.bb.GetSbyte(o + __p.bb_pos) : Firmoto.OperationType.GPIO; } }
+  public Firmoto.SubOperationType SubOpType { get { int o = __p.__offset(8); return o != 0 ? (Firmoto.SubOperationType)__p.bb.GetSbyte(o + __p.bb_pos) : Firmoto.SubOperationType.SPI_WRITE_U8; } }
+  public Firmoto.Value? Args(int j) { int o = __p.__offset(10); return o != 0 ? (Firmoto.Value?)(new Firmoto.Value()).__assign(__p.__indirect(__p.__vector(o) + j * 4), __p.bb) : null; }
+  public int ArgsLength { get { int o = __p.__offset(10); return o != 0 ? __p.__vector_len(o) : 0; } }
+  public Firmoto.Value? Retval(int j) { int o = __p.__offset(12); return o != 0 ? (Firmoto.Value?)(new Firmoto.Value()).__assign(__p.__indirect(__p.__vector(o) + j * 4), __p.bb) : null; }
+  public int RetvalLength { get { int o = __p.__offset(12); return o != 0 ? __p.__vector_len(o) : 0; } }
 
   public static Offset<Firmoto.Operation> CreateOperation(FlatBufferBuilder builder,
       StringOffset nameOffset = default(StringOffset),
-      Firmoto.OperationType optype = Firmoto.OperationType.GPIO,
+      Firmoto.OperationType op_type = Firmoto.OperationType.GPIO,
+      Firmoto.SubOperationType sub_op_type = Firmoto.SubOperationType.SPI_WRITE_U8,
       VectorOffset argsOffset = default(VectorOffset),
-      VectorOffset revalOffset = default(VectorOffset)) {
-    builder.StartTable(4);
-    Operation.AddReval(builder, revalOffset);
+      VectorOffset retvalOffset = default(VectorOffset)) {
+    builder.StartTable(5);
+    Operation.AddRetval(builder, retvalOffset);
     Operation.AddArgs(builder, argsOffset);
     Operation.AddName(builder, nameOffset);
-    Operation.AddOptype(builder, optype);
+    Operation.AddSubOpType(builder, sub_op_type);
+    Operation.AddOpType(builder, op_type);
     return Operation.EndOperation(builder);
   }
 
-  public static void StartOperation(FlatBufferBuilder builder) { builder.StartTable(4); }
+  public static void StartOperation(FlatBufferBuilder builder) { builder.StartTable(5); }
   public static void AddName(FlatBufferBuilder builder, StringOffset nameOffset) { builder.AddOffset(0, nameOffset.Value, 0); }
-  public static void AddOptype(FlatBufferBuilder builder, Firmoto.OperationType optype) { builder.AddSbyte(1, (sbyte)optype, 0); }
-  public static void AddArgs(FlatBufferBuilder builder, VectorOffset argsOffset) { builder.AddOffset(2, argsOffset.Value, 0); }
+  public static void AddOpType(FlatBufferBuilder builder, Firmoto.OperationType opType) { builder.AddSbyte(1, (sbyte)opType, 0); }
+  public static void AddSubOpType(FlatBufferBuilder builder, Firmoto.SubOperationType subOpType) { builder.AddSbyte(2, (sbyte)subOpType, 0); }
+  public static void AddArgs(FlatBufferBuilder builder, VectorOffset argsOffset) { builder.AddOffset(3, argsOffset.Value, 0); }
   public static VectorOffset CreateArgsVector(FlatBufferBuilder builder, Offset<Firmoto.Value>[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
   public static VectorOffset CreateArgsVectorBlock(FlatBufferBuilder builder, Offset<Firmoto.Value>[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
   public static VectorOffset CreateArgsVectorBlock(FlatBufferBuilder builder, ArraySegment<Offset<Firmoto.Value>> data) { builder.StartVector(4, data.Count, 4); builder.Add(data); return builder.EndVector(); }
   public static VectorOffset CreateArgsVectorBlock(FlatBufferBuilder builder, IntPtr dataPtr, int sizeInBytes) { builder.StartVector(1, sizeInBytes, 1); builder.Add<Offset<Firmoto.Value>>(dataPtr, sizeInBytes); return builder.EndVector(); }
   public static void StartArgsVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
-  public static void AddReval(FlatBufferBuilder builder, VectorOffset revalOffset) { builder.AddOffset(3, revalOffset.Value, 0); }
-  public static VectorOffset CreateRevalVector(FlatBufferBuilder builder, Offset<Firmoto.Value>[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
-  public static VectorOffset CreateRevalVectorBlock(FlatBufferBuilder builder, Offset<Firmoto.Value>[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
-  public static VectorOffset CreateRevalVectorBlock(FlatBufferBuilder builder, ArraySegment<Offset<Firmoto.Value>> data) { builder.StartVector(4, data.Count, 4); builder.Add(data); return builder.EndVector(); }
-  public static VectorOffset CreateRevalVectorBlock(FlatBufferBuilder builder, IntPtr dataPtr, int sizeInBytes) { builder.StartVector(1, sizeInBytes, 1); builder.Add<Offset<Firmoto.Value>>(dataPtr, sizeInBytes); return builder.EndVector(); }
-  public static void StartRevalVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
+  public static void AddRetval(FlatBufferBuilder builder, VectorOffset retvalOffset) { builder.AddOffset(4, retvalOffset.Value, 0); }
+  public static VectorOffset CreateRetvalVector(FlatBufferBuilder builder, Offset<Firmoto.Value>[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
+  public static VectorOffset CreateRetvalVectorBlock(FlatBufferBuilder builder, Offset<Firmoto.Value>[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
+  public static VectorOffset CreateRetvalVectorBlock(FlatBufferBuilder builder, ArraySegment<Offset<Firmoto.Value>> data) { builder.StartVector(4, data.Count, 4); builder.Add(data); return builder.EndVector(); }
+  public static VectorOffset CreateRetvalVectorBlock(FlatBufferBuilder builder, IntPtr dataPtr, int sizeInBytes) { builder.StartVector(1, sizeInBytes, 1); builder.Add<Offset<Firmoto.Value>>(dataPtr, sizeInBytes); return builder.EndVector(); }
+  public static void StartRetvalVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
   public static Offset<Firmoto.Operation> EndOperation(FlatBufferBuilder builder) {
     int o = builder.EndTable();
     return new Offset<Firmoto.Operation>(o);
@@ -76,9 +80,10 @@ static public class OperationVerify
   {
     return verifier.VerifyTableStart(tablePos)
       && verifier.VerifyString(tablePos, 4 /*Name*/, false)
-      && verifier.VerifyField(tablePos, 6 /*Optype*/, 1 /*Firmoto.OperationType*/, 1, false)
-      && verifier.VerifyVectorOfTables(tablePos, 8 /*Args*/, Firmoto.ValueVerify.Verify, false)
-      && verifier.VerifyVectorOfTables(tablePos, 10 /*Reval*/, Firmoto.ValueVerify.Verify, false)
+      && verifier.VerifyField(tablePos, 6 /*OpType*/, 1 /*Firmoto.OperationType*/, 1, false)
+      && verifier.VerifyField(tablePos, 8 /*SubOpType*/, 1 /*Firmoto.SubOperationType*/, 1, false)
+      && verifier.VerifyVectorOfTables(tablePos, 10 /*Args*/, Firmoto.ValueVerify.Verify, false)
+      && verifier.VerifyVectorOfTables(tablePos, 12 /*Retval*/, Firmoto.ValueVerify.Verify, false)
       && verifier.VerifyTableEnd(tablePos);
   }
 }

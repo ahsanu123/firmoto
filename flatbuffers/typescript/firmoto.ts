@@ -4,5 +4,6 @@
 
 export { Operation } from './firmoto/operation.js';
 export { OperationType } from './firmoto/operation-type.js';
+export { SubOperationType } from './firmoto/sub-operation-type.js';
 export { Value } from './firmoto/value.js';
 export { ValueType } from './firmoto/value-type.js';

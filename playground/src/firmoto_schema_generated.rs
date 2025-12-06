@@ -108,6 +108,99 @@ impl<'a> flatbuffers::Verifiable for OperationType {
 
 impl flatbuffers::SimpleToVerifyInSlice for OperationType {}
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
+pub const ENUM_MIN_SUB_OPERATION_TYPE: i8 = 0;
+#[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
+pub const ENUM_MAX_SUB_OPERATION_TYPE: i8 = 3;
+#[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
+#[allow(non_camel_case_types)]
+pub const ENUM_VALUES_SUB_OPERATION_TYPE: [SubOperationType; 4] = [
+  SubOperationType::SPI_WRITE_U8,
+  SubOperationType::SPI_READ_U8,
+  SubOperationType::SPI_READ_U16,
+  SubOperationType::SPI_READ_N,
+];
+
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+#[repr(transparent)]
+pub struct SubOperationType(pub i8);
+#[allow(non_upper_case_globals)]
+impl SubOperationType {
+  pub const SPI_WRITE_U8: Self = Self(0);
+  pub const SPI_READ_U8: Self = Self(1);
+  pub const SPI_READ_U16: Self = Self(2);
+  pub const SPI_READ_N: Self = Self(3);
+
+  pub const ENUM_MIN: i8 = 0;
+  pub const ENUM_MAX: i8 = 3;
+  pub const ENUM_VALUES: &'static [Self] = &[
+    Self::SPI_WRITE_U8,
+    Self::SPI_READ_U8,
+    Self::SPI_READ_U16,
+    Self::SPI_READ_N,
+  ];
+  /// Returns the variant's name or "" if unknown.
+  pub fn variant_name(self) -> Option<&'static str> {
+    match self {
+      Self::SPI_WRITE_U8 => Some("SPI_WRITE_U8"),
+      Self::SPI_READ_U8 => Some("SPI_READ_U8"),
+      Self::SPI_READ_U16 => Some("SPI_READ_U16"),
+      Self::SPI_READ_N => Some("SPI_READ_N"),
+      _ => None,
+    }
+  }
+}
+impl core::fmt::Debug for SubOperationType {
+  fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+    if let Some(name) = self.variant_name() {
+      f.write_str(name)
+    } else {
+      f.write_fmt(format_args!("<UNKNOWN {:?}>", self.0))
+    }
+  }
+}
+impl<'a> flatbuffers::Follow<'a> for SubOperationType {
+  type Inner = Self;
+  #[inline]
+  unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+    let b = unsafe { flatbuffers::read_scalar_at::<i8>(buf, loc) };
+    Self(b)
+  }
+}
+
+impl flatbuffers::Push for SubOperationType {
+    type Output = SubOperationType;
+    #[inline]
+    unsafe fn push(&self, dst: &mut [u8], _written_len: usize) {
+        unsafe { flatbuffers::emplace_scalar::<i8>(dst, self.0); }
+    }
+}
+
+impl flatbuffers::EndianScalar for SubOperationType {
+  type Scalar = i8;
+  #[inline]
+  fn to_little_endian(self) -> i8 {
+    self.0.to_le()
+  }
+  #[inline]
+  #[allow(clippy::wrong_self_convention)]
+  fn from_little_endian(v: i8) -> Self {
+    let b = i8::from_le(v);
+    Self(b)
+  }
+}
+
+impl<'a> flatbuffers::Verifiable for SubOperationType {
+  #[inline]
+  fn run_verifier(
+    v: &mut flatbuffers::Verifier, pos: usize
+  ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
+    use self::flatbuffers::Verifiable;
+    i8::run_verifier(v, pos)
+  }
+}
+
+impl flatbuffers::SimpleToVerifyInSlice for SubOperationType {}
+#[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
 pub const ENUM_MIN_VALUE_TYPE: i8 = 0;
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
 pub const ENUM_MAX_VALUE_TYPE: i8 = 11;
@@ -249,9 +342,10 @@ impl<'a> flatbuffers::Follow<'a> for Operation<'a> {
 
 impl<'a> Operation<'a> {
   pub const VT_NAME: flatbuffers::VOffsetT = 4;
-  pub const VT_OPTYPE: flatbuffers::VOffsetT = 6;
-  pub const VT_ARGS: flatbuffers::VOffsetT = 8;
-  pub const VT_REVAL: flatbuffers::VOffsetT = 10;
+  pub const VT_OP_TYPE: flatbuffers::VOffsetT = 6;
+  pub const VT_SUB_OP_TYPE: flatbuffers::VOffsetT = 8;
+  pub const VT_ARGS: flatbuffers::VOffsetT = 10;
+  pub const VT_RETVAL: flatbuffers::VOffsetT = 12;
 
   #[inline]
   pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
@@ -263,10 +357,11 @@ impl<'a> Operation<'a> {
     args: &'args OperationArgs<'args>
   ) -> flatbuffers::WIPOffset<Operation<'bldr>> {
     let mut builder = OperationBuilder::new(_fbb);
-    if let Some(x) = args.reval { builder.add_reval(x); }
+    if let Some(x) = args.retval { builder.add_retval(x); }
     if let Some(x) = args.args { builder.add_args(x); }
     if let Some(x) = args.name { builder.add_name(x); }
-    builder.add_optype(args.optype);
+    builder.add_sub_op_type(args.sub_op_type);
+    builder.add_op_type(args.op_type);
     builder.finish()
   }
 
@@ -279,11 +374,18 @@ impl<'a> Operation<'a> {
     unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<&str>>(Operation::VT_NAME, None)}
   }
   #[inline]
-  pub fn optype(&self) -> OperationType {
+  pub fn op_type(&self) -> OperationType {
     // Safety:
     // Created from valid Table for this object
     // which contains a valid value in this slot
-    unsafe { self._tab.get::<OperationType>(Operation::VT_OPTYPE, Some(OperationType::GPIO)).unwrap()}
+    unsafe { self._tab.get::<OperationType>(Operation::VT_OP_TYPE, Some(OperationType::GPIO)).unwrap()}
+  }
+  #[inline]
+  pub fn sub_op_type(&self) -> SubOperationType {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<SubOperationType>(Operation::VT_SUB_OP_TYPE, Some(SubOperationType::SPI_WRITE_U8)).unwrap()}
   }
   #[inline]
   pub fn args(&self) -> Option<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<Value<'a>>>> {
@@ -293,11 +395,11 @@ impl<'a> Operation<'a> {
     unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<Value>>>>(Operation::VT_ARGS, None)}
   }
   #[inline]
-  pub fn reval(&self) -> Option<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<Value<'a>>>> {
+  pub fn retval(&self) -> Option<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<Value<'a>>>> {
     // Safety:
     // Created from valid Table for this object
     // which contains a valid value in this slot
-    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<Value>>>>(Operation::VT_REVAL, None)}
+    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<Value>>>>(Operation::VT_RETVAL, None)}
   }
 }
 
@@ -309,27 +411,30 @@ impl flatbuffers::Verifiable for Operation<'_> {
     use self::flatbuffers::Verifiable;
     v.visit_table(pos)?
      .visit_field::<flatbuffers::ForwardsUOffset<&str>>("name", Self::VT_NAME, false)?
-     .visit_field::<OperationType>("optype", Self::VT_OPTYPE, false)?
+     .visit_field::<OperationType>("op_type", Self::VT_OP_TYPE, false)?
+     .visit_field::<SubOperationType>("sub_op_type", Self::VT_SUB_OP_TYPE, false)?
      .visit_field::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'_, flatbuffers::ForwardsUOffset<Value>>>>("args", Self::VT_ARGS, false)?
-     .visit_field::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'_, flatbuffers::ForwardsUOffset<Value>>>>("reval", Self::VT_REVAL, false)?
+     .visit_field::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'_, flatbuffers::ForwardsUOffset<Value>>>>("retval", Self::VT_RETVAL, false)?
      .finish();
     Ok(())
   }
 }
 pub struct OperationArgs<'a> {
     pub name: Option<flatbuffers::WIPOffset<&'a str>>,
-    pub optype: OperationType,
+    pub op_type: OperationType,
+    pub sub_op_type: SubOperationType,
     pub args: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<Value<'a>>>>>,
-    pub reval: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<Value<'a>>>>>,
+    pub retval: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<Value<'a>>>>>,
 }
 impl<'a> Default for OperationArgs<'a> {
   #[inline]
   fn default() -> Self {
     OperationArgs {
       name: None,
-      optype: OperationType::GPIO,
+      op_type: OperationType::GPIO,
+      sub_op_type: SubOperationType::SPI_WRITE_U8,
       args: None,
-      reval: None,
+      retval: None,
     }
   }
 }
@@ -344,16 +449,20 @@ impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> OperationBuilder<'a, 'b, A> {
     self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(Operation::VT_NAME, name);
   }
   #[inline]
-  pub fn add_optype(&mut self, optype: OperationType) {
-    self.fbb_.push_slot::<OperationType>(Operation::VT_OPTYPE, optype, OperationType::GPIO);
+  pub fn add_op_type(&mut self, op_type: OperationType) {
+    self.fbb_.push_slot::<OperationType>(Operation::VT_OP_TYPE, op_type, OperationType::GPIO);
+  }
+  #[inline]
+  pub fn add_sub_op_type(&mut self, sub_op_type: SubOperationType) {
+    self.fbb_.push_slot::<SubOperationType>(Operation::VT_SUB_OP_TYPE, sub_op_type, SubOperationType::SPI_WRITE_U8);
   }
   #[inline]
   pub fn add_args(&mut self, args: flatbuffers::WIPOffset<flatbuffers::Vector<'b , flatbuffers::ForwardsUOffset<Value<'b >>>>) {
     self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(Operation::VT_ARGS, args);
   }
   #[inline]
-  pub fn add_reval(&mut self, reval: flatbuffers::WIPOffset<flatbuffers::Vector<'b , flatbuffers::ForwardsUOffset<Value<'b >>>>) {
-    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(Operation::VT_REVAL, reval);
+  pub fn add_retval(&mut self, retval: flatbuffers::WIPOffset<flatbuffers::Vector<'b , flatbuffers::ForwardsUOffset<Value<'b >>>>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(Operation::VT_RETVAL, retval);
   }
   #[inline]
   pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> OperationBuilder<'a, 'b, A> {
@@ -374,9 +483,10 @@ impl core::fmt::Debug for Operation<'_> {
   fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
     let mut ds = f.debug_struct("Operation");
       ds.field("name", &self.name());
-      ds.field("optype", &self.optype());
+      ds.field("op_type", &self.op_type());
+      ds.field("sub_op_type", &self.sub_op_type());
       ds.field("args", &self.args());
-      ds.field("reval", &self.reval());
+      ds.field("retval", &self.retval());
       ds.finish()
   }
 }

@@ -49,7 +49,7 @@ func (rcv *Operation) Name() []byte {
 	return nil
 }
 
-func (rcv *Operation) Optype() OperationType {
+func (rcv *Operation) OpType() OperationType {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
 	if o != 0 {
 		return OperationType(rcv._tab.GetInt8(o + rcv._tab.Pos))
@@ -57,12 +57,24 @@ func (rcv *Operation) Optype() OperationType {
 	return 0
 }
 
-func (rcv *Operation) MutateOptype(n OperationType) bool {
+func (rcv *Operation) MutateOpType(n OperationType) bool {
 	return rcv._tab.MutateInt8Slot(6, int8(n))
 }
 
-func (rcv *Operation) Args(obj *Value, j int) bool {
+func (rcv *Operation) SubOpType() SubOperationType {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
+	if o != 0 {
+		return SubOperationType(rcv._tab.GetInt8(o + rcv._tab.Pos))
+	}
+	return 0
+}
+
+func (rcv *Operation) MutateSubOpType(n SubOperationType) bool {
+	return rcv._tab.MutateInt8Slot(8, int8(n))
+}
+
+func (rcv *Operation) Args(obj *Value, j int) bool {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
 	if o != 0 {
 		x := rcv._tab.Vector(o)
 		x += flatbuffers.UOffsetT(j) * 4
@@ -74,15 +86,15 @@ func (rcv *Operation) Args(obj *Value, j int) bool {
 }
 
 func (rcv *Operation) ArgsLength() int {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
 	if o != 0 {
 		return rcv._tab.VectorLen(o)
 	}
 	return 0
 }
 
-func (rcv *Operation) Reval(obj *Value, j int) bool {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
+func (rcv *Operation) Retval(obj *Value, j int) bool {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(12))
 	if o != 0 {
 		x := rcv._tab.Vector(o)
 		x += flatbuffers.UOffsetT(j) * 4
@@ -93,8 +105,8 @@ func (rcv *Operation) Reval(obj *Value, j int) bool {
 	return false
 }
 
-func (rcv *Operation) RevalLength() int {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
+func (rcv *Operation) RetvalLength() int {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(12))
 	if o != 0 {
 		return rcv._tab.VectorLen(o)
 	}
@@ -102,24 +114,27 @@ func (rcv *Operation) RevalLength() int {
 }
 
 func OperationStart(builder *flatbuffers.Builder) {
-	builder.StartObject(4)
+	builder.StartObject(5)
 }
 func OperationAddName(builder *flatbuffers.Builder, name flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(0, flatbuffers.UOffsetT(name), 0)
 }
-func OperationAddOptype(builder *flatbuffers.Builder, optype OperationType) {
-	builder.PrependInt8Slot(1, int8(optype), 0)
+func OperationAddOpType(builder *flatbuffers.Builder, opType OperationType) {
+	builder.PrependInt8Slot(1, int8(opType), 0)
+}
+func OperationAddSubOpType(builder *flatbuffers.Builder, subOpType SubOperationType) {
+	builder.PrependInt8Slot(2, int8(subOpType), 0)
 }
 func OperationAddArgs(builder *flatbuffers.Builder, args flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(2, flatbuffers.UOffsetT(args), 0)
+	builder.PrependUOffsetTSlot(3, flatbuffers.UOffsetT(args), 0)
 }
 func OperationStartArgsVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
 	return builder.StartVector(4, numElems, 4)
 }
-func OperationAddReval(builder *flatbuffers.Builder, reval flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(3, flatbuffers.UOffsetT(reval), 0)
+func OperationAddRetval(builder *flatbuffers.Builder, retval flatbuffers.UOffsetT) {
+	builder.PrependUOffsetTSlot(4, flatbuffers.UOffsetT(retval), 0)
 }
-func OperationStartRevalVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
+func OperationStartRetvalVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
 	return builder.StartVector(4, numElems, 4)
 }
 func OperationEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {

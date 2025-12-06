@@ -1,5 +1,5 @@
 use firmoto_playground::firmoto_schema_generated::firmoto::{
-    Operation, OperationArgs, OperationType, Value, ValueArgs, ValueType,
+    Operation, OperationArgs, OperationType, SubOperationType, Value, ValueArgs, ValueType,
 };
 use flatbuffers::FlatBufferBuilder;
 use std::fs::{self, File};
@@ -58,9 +58,10 @@ fn main() {
         &mut builder,
         &OperationArgs {
             name: Some(op_name),
-            optype: OperationType::SPI,
+            op_type: OperationType::SPI,
+            sub_op_type: SubOperationType::SPI_READ_U8,
             args: Some(init_spi_args),
-            reval: None,
+            retval: None,
         },
     );
 

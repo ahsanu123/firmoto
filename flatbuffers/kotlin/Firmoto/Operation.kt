@@ -39,14 +39,19 @@ class Operation : Table() {
         }
     val nameAsByteBuffer : ByteBuffer get() = __vector_as_bytebuffer(4, 1)
     fun nameInByteBuffer(_bb: ByteBuffer) : ByteBuffer = __vector_in_bytebuffer(_bb, 4, 1)
-    val optype : Byte
+    val opType : Byte
         get() {
             val o = __offset(6)
             return if(o != 0) bb.get(o + bb_pos) else 0
         }
+    val subOpType : Byte
+        get() {
+            val o = __offset(8)
+            return if(o != 0) bb.get(o + bb_pos) else 0
+        }
     fun args(j: Int) : Firmoto.Value? = args(Firmoto.Value(), j)
     fun args(obj: Firmoto.Value, j: Int) : Firmoto.Value? {
-        val o = __offset(8)
+        val o = __offset(10)
         return if (o != 0) {
             obj.__assign(__indirect(__vector(o) + j * 4), bb)
         } else {
@@ -55,20 +60,20 @@ class Operation : Table() {
     }
     val argsLength : Int
         get() {
-            val o = __offset(8); return if (o != 0) __vector_len(o) else 0
+            val o = __offset(10); return if (o != 0) __vector_len(o) else 0
         }
-    fun reval(j: Int) : Firmoto.Value? = reval(Firmoto.Value(), j)
-    fun reval(obj: Firmoto.Value, j: Int) : Firmoto.Value? {
-        val o = __offset(10)
+    fun retval(j: Int) : Firmoto.Value? = retval(Firmoto.Value(), j)
+    fun retval(obj: Firmoto.Value, j: Int) : Firmoto.Value? {
+        val o = __offset(12)
         return if (o != 0) {
             obj.__assign(__indirect(__vector(o) + j * 4), bb)
         } else {
             null
         }
     }
-    val revalLength : Int
+    val retvalLength : Int
         get() {
-            val o = __offset(10); return if (o != 0) __vector_len(o) else 0
+            val o = __offset(12); return if (o != 0) __vector_len(o) else 0
         }
     companion object {
         fun validateVersion() = Constants.FLATBUFFERS_25_9_23()
@@ -77,18 +82,20 @@ class Operation : Table() {
             _bb.order(ByteOrder.LITTLE_ENDIAN)
             return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb))
         }
-        fun createOperation(builder: FlatBufferBuilder, nameOffset: Int, optype: Byte, argsOffset: Int, revalOffset: Int) : Int {
-            builder.startTable(4)
-            addReval(builder, revalOffset)
+        fun createOperation(builder: FlatBufferBuilder, nameOffset: Int, opType: Byte, subOpType: Byte, argsOffset: Int, retvalOffset: Int) : Int {
+            builder.startTable(5)
+            addRetval(builder, retvalOffset)
             addArgs(builder, argsOffset)
             addName(builder, nameOffset)
-            addOptype(builder, optype)
+            addSubOpType(builder, subOpType)
+            addOpType(builder, opType)
             return endOperation(builder)
         }
-        fun startOperation(builder: FlatBufferBuilder) = builder.startTable(4)
+        fun startOperation(builder: FlatBufferBuilder) = builder.startTable(5)
         fun addName(builder: FlatBufferBuilder, name: Int) = builder.addOffset(0, name, 0)
-        fun addOptype(builder: FlatBufferBuilder, optype: Byte) = builder.addByte(1, optype, 0)
-        fun addArgs(builder: FlatBufferBuilder, args: Int) = builder.addOffset(2, args, 0)
+        fun addOpType(builder: FlatBufferBuilder, opType: Byte) = builder.addByte(1, opType, 0)
+        fun addSubOpType(builder: FlatBufferBuilder, subOpType: Byte) = builder.addByte(2, subOpType, 0)
+        fun addArgs(builder: FlatBufferBuilder, args: Int) = builder.addOffset(3, args, 0)
         fun createArgsVector(builder: FlatBufferBuilder, data: IntArray) : Int {
             builder.startVector(4, data.size, 4)
             for (i in data.size - 1 downTo 0) {
@@ -97,15 +104,15 @@ class Operation : Table() {
             return builder.endVector()
         }
         fun startArgsVector(builder: FlatBufferBuilder, numElems: Int) = builder.startVector(4, numElems, 4)
-        fun addReval(builder: FlatBufferBuilder, reval: Int) = builder.addOffset(3, reval, 0)
-        fun createRevalVector(builder: FlatBufferBuilder, data: IntArray) : Int {
+        fun addRetval(builder: FlatBufferBuilder, retval: Int) = builder.addOffset(4, retval, 0)
+        fun createRetvalVector(builder: FlatBufferBuilder, data: IntArray) : Int {
             builder.startVector(4, data.size, 4)
             for (i in data.size - 1 downTo 0) {
                 builder.addOffset(data[i])
             }
             return builder.endVector()
         }
-        fun startRevalVector(builder: FlatBufferBuilder, numElems: Int) = builder.startVector(4, numElems, 4)
+        fun startRetvalVector(builder: FlatBufferBuilder, numElems: Int) = builder.startVector(4, numElems, 4)
         fun endOperation(builder: FlatBufferBuilder) : Int {
             val o = builder.endTable()
             return o

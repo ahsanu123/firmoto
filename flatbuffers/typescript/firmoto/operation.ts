@@ -5,6 +5,7 @@
 import * as flatbuffers from 'flatbuffers';
 
 import { OperationType } from '../firmoto/operation-type.js';
+import { SubOperationType } from '../firmoto/sub-operation-type.js';
 import { Value } from '../firmoto/value.js';
 
 
@@ -33,45 +34,54 @@ name(optionalEncoding?:any):string|Uint8Array|null {
   return offset ? this.bb!.__string(this.bb_pos + offset, optionalEncoding) : null;
 }
 
-optype():OperationType {
+opType():OperationType {
   const offset = this.bb!.__offset(this.bb_pos, 6);
   return offset ? this.bb!.readInt8(this.bb_pos + offset) : OperationType.GPIO;
 }
 
-args(index: number, obj?:Value):Value|null {
+subOpType():SubOperationType {
   const offset = this.bb!.__offset(this.bb_pos, 8);
+  return offset ? this.bb!.readInt8(this.bb_pos + offset) : SubOperationType.SPI_WRITE_U8;
+}
+
+args(index: number, obj?:Value):Value|null {
+  const offset = this.bb!.__offset(this.bb_pos, 10);
   return offset ? (obj || new Value()).__init(this.bb!.__indirect(this.bb!.__vector(this.bb_pos + offset) + index * 4), this.bb!) : null;
 }
 
 argsLength():number {
-  const offset = this.bb!.__offset(this.bb_pos, 8);
+  const offset = this.bb!.__offset(this.bb_pos, 10);
   return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
 }
 
-reval(index: number, obj?:Value):Value|null {
-  const offset = this.bb!.__offset(this.bb_pos, 10);
+retval(index: number, obj?:Value):Value|null {
+  const offset = this.bb!.__offset(this.bb_pos, 12);
   return offset ? (obj || new Value()).__init(this.bb!.__indirect(this.bb!.__vector(this.bb_pos + offset) + index * 4), this.bb!) : null;
 }
 
-revalLength():number {
-  const offset = this.bb!.__offset(this.bb_pos, 10);
+retvalLength():number {
+  const offset = this.bb!.__offset(this.bb_pos, 12);
   return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
 }
 
 static startOperation(builder:flatbuffers.Builder) {
-  builder.startObject(4);
+  builder.startObject(5);
 }
 
 static addName(builder:flatbuffers.Builder, nameOffset:flatbuffers.Offset) {
   builder.addFieldOffset(0, nameOffset, 0);
 }
 
-static addOptype(builder:flatbuffers.Builder, optype:OperationType) {
-  builder.addFieldInt8(1, optype, OperationType.GPIO);
+static addOpType(builder:flatbuffers.Builder, opType:OperationType) {
+  builder.addFieldInt8(1, opType, OperationType.GPIO);
+}
+
+static addSubOpType(builder:flatbuffers.Builder, subOpType:SubOperationType) {
+  builder.addFieldInt8(2, subOpType, SubOperationType.SPI_WRITE_U8);
 }
 
 static addArgs(builder:flatbuffers.Builder, argsOffset:flatbuffers.Offset) {
-  builder.addFieldOffset(2, argsOffset, 0);
+  builder.addFieldOffset(3, argsOffset, 0);
 }
 
 static createArgsVector(builder:flatbuffers.Builder, data:flatbuffers.Offset[]):flatbuffers.Offset {
@@ -86,11 +96,11 @@ static startArgsVector(builder:flatbuffers.Builder, numElems:number) {
   builder.startVector(4, numElems, 4);
 }
 
-static addReval(builder:flatbuffers.Builder, revalOffset:flatbuffers.Offset) {
-  builder.addFieldOffset(3, revalOffset, 0);
+static addRetval(builder:flatbuffers.Builder, retvalOffset:flatbuffers.Offset) {
+  builder.addFieldOffset(4, retvalOffset, 0);
 }
 
-static createRevalVector(builder:flatbuffers.Builder, data:flatbuffers.Offset[]):flatbuffers.Offset {
+static createRetvalVector(builder:flatbuffers.Builder, data:flatbuffers.Offset[]):flatbuffers.Offset {
   builder.startVector(4, data.length, 4);
   for (let i = data.length - 1; i >= 0; i--) {
     builder.addOffset(data[i]!);
@@ -98,7 +108,7 @@ static createRevalVector(builder:flatbuffers.Builder, data:flatbuffers.Offset[])
   return builder.endVector();
 }
 
-static startRevalVector(builder:flatbuffers.Builder, numElems:number) {
+static startRetvalVector(builder:flatbuffers.Builder, numElems:number) {
   builder.startVector(4, numElems, 4);
 }
 
@@ -115,12 +125,13 @@ static finishSizePrefixedOperationBuffer(builder:flatbuffers.Builder, offset:fla
   builder.finish(offset, undefined, true);
 }
 
-static createOperation(builder:flatbuffers.Builder, nameOffset:flatbuffers.Offset, optype:OperationType, argsOffset:flatbuffers.Offset, revalOffset:flatbuffers.Offset):flatbuffers.Offset {
+static createOperation(builder:flatbuffers.Builder, nameOffset:flatbuffers.Offset, opType:OperationType, subOpType:SubOperationType, argsOffset:flatbuffers.Offset, retvalOffset:flatbuffers.Offset):flatbuffers.Offset {
   Operation.startOperation(builder);
   Operation.addName(builder, nameOffset);
-  Operation.addOptype(builder, optype);
+  Operation.addOpType(builder, opType);
+  Operation.addSubOpType(builder, subOpType);
   Operation.addArgs(builder, argsOffset);
-  Operation.addReval(builder, revalOffset);
+  Operation.addRetval(builder, retvalOffset);
   return Operation.endOperation(builder);
 }
 }
