@@ -29,7 +29,15 @@ Copy Firmoto Client To Real MCU
 
 ```
 
+
+## Important Note 
+
+- `probe-rs chip list`
+- `qemu-system-arm --machine help | rg -i m4`
+
 ## Reference 
 
 - protocol bpio2, https://docs.buspirate.com/docs/binmode-reference/protocol-bpio2 
 - esp32 buspirate, https://github.com/geo-tp/ESP32-Bus-Pirate/blob/main/src/Controllers/SpiController.cpp
+- running cortex-arm in qemu, https://docs.rust-embedded.org/book/start/qemu.html 
+- knurling-rs app template, https://github.com/knurling-rs/app-template

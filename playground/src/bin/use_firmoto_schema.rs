@@ -2,6 +2,19 @@ use firmoto_playground::firmoto_schema_generated::firmoto::{
     Operation, OperationArgs, OperationType, Value, ValueArgs, ValueType,
 };
 use flatbuffers::FlatBufferBuilder;
+use std::fs::{self, File};
+use std::io::Write;
+
+fn save_binary(buf: &[u8], path: &str) -> std::io::Result<()> {
+    let mut file = File::create(path)?;
+    file.write_all(buf)?;
+    Ok(())
+}
+
+fn read_binary(path: &str) -> std::io::Result<Vec<u8>> {
+    let data = fs::read(path)?;
+    Ok(data)
+}
 
 fn main() {
     let mut builder = FlatBufferBuilder::with_capacity(2048);
@@ -53,9 +66,19 @@ fn main() {
 
     builder.finish(init_spi, None);
 
+    // ========================================================
+    // Parser Side
+    // ========================================================
     let buf = builder.finished_data();
+    let _ = save_binary(buf, "./init_spi.bin");
 
-    let parsed_init_spi = flatbuffers::root::<Operation>(buf).unwrap();
+    let binary = read_binary("./init_spi.bin").unwrap();
+
+    // from buf directly
+    // let parsed_init_spi = flatbuffers::root::<Operation>(buf).unwrap();
+
+    // from binary data
+    let parsed_init_spi = flatbuffers::root::<Operation>(&binary).unwrap();
 
     assert!(parsed_init_spi.name().is_some());
     let parsed_cmd_name = parsed_init_spi.name().unwrap();

@@ -1,0 +1,11 @@
+
+# reference: https://docs.rust-embedded.org/book/start/qemu.html
+run: 
+  cargo build
+  qemu-system-arm \
+    -cpu cortex-m4 \
+    -machine olimex-stm32-h405 \
+    -nographic \
+    -semihosting-config enable=on,target=native \
+    -kernel ./target/thumbv7em-none-eabi/debug/hello
+
