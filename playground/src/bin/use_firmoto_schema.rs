@@ -61,4 +61,17 @@ fn main() {
     let parsed_cmd_name = parsed_init_spi.name().unwrap();
 
     println!("command name: {parsed_cmd_name}");
+
+    assert!(parsed_init_spi.args().is_some());
+    let parsed_args = parsed_init_spi.args().unwrap();
+
+    parsed_args.iter().for_each(|item| {
+        let args_name = item.name().unwrap();
+        let args_type = item.valtype().0;
+        let args_value = item.value().unwrap();
+
+        println!("\t - args name:{args_name} ");
+        println!("\t \t * type: {args_type:?}");
+        println!("\t \t * type: {args_value}");
+    });
 }
