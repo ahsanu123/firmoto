@@ -1,0 +1,40 @@
+namespace Firmoto;
+
+enum OperationType: byte {
+  GPIO = 0, 
+  I2C, 
+  SPI
+}
+
+enum ValueType : byte{
+  U8 = 0, 
+  U16,
+  U32,
+  U64,
+
+  I8,
+  I16,
+  I32,
+  I64,
+
+  F32,
+  F64,
+
+  String,
+  Boolean,
+}
+
+table Operation {
+  name: string; 
+  optype: OperationType;
+  args: [Value];
+  reval: [Value];
+}
+
+table Value {
+  name: string;
+  valtype: ValueType;
+  value: string;
+}
+
+root_type Operation;

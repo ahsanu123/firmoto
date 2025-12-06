@@ -1,10 +1,21 @@
 default: all-language
 
-all-language: 
-  just compile-for rust
-  just compile-for csharp
-  just compile-for cpp
+# fbs-file := "./fbs/bpio.fbs"
+fbs-file := "./fbs/firmoto_schema.fbs"
+# fbs-file := "./fbs/monster.fbs"
 
-compile-for lang: 
-  mkdir {{lang}}
-  flatc --{{lang}} -o {{lang}} monster.fbs
+all-language: 
+  just reset rust && flatc --rust -o rust {{fbs-file}}
+  just reset csharp && flatc --csharp -o csharp {{fbs-file}}
+  just reset cpp && flatc --cpp -o cpp {{fbs-file}}
+  just reset python && flatc --python -o python {{fbs-file}}
+  just reset go && flatc --go -o go {{fbs-file}}
+  just reset c && flatc -c -o c {{fbs-file}}
+  just reset kotlin && flatc --kotlin -o kotlin {{fbs-file}}
+  just reset typescript && flatc --ts -o typescript {{fbs-file}}
+  just reset java && flatc --java -o java {{fbs-file}}
+
+reset folder: 
+  rm -rf {{folder}}
+  mkdir {{folder}}
+

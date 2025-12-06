@@ -29,3 +29,7 @@ Copy Firmoto Client To Real MCU
 
 ```
 
+## Reference 
+
+- protocol bpio2, https://docs.buspirate.com/docs/binmode-reference/protocol-bpio2 
+- esp32 buspirate, https://github.com/geo-tp/ESP32-Bus-Pirate/blob/main/src/Controllers/SpiController.cpp
