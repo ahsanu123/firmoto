@@ -1,0 +1,10 @@
+default: all-language
+
+all-language: 
+  just compile-for rust
+  just compile-for csharp
+  just compile-for cpp
+
+compile-for lang: 
+  mkdir {{lang}}
+  flatc --{{lang}} -o {{lang}} monster.fbs
