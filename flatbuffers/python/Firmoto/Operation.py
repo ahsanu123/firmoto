@@ -148,3 +148,99 @@ def OperationEnd(builder):
 
 def End(builder):
     return OperationEnd(builder)
+
+import Firmoto.Value
+try:
+    from typing import List
+except:
+    pass
+
+class OperationT(object):
+
+    # OperationT
+    def __init__(
+        self,
+        name = None,
+        opType = 0,
+        subOpType = 0,
+        args = None,
+        retval = None,
+    ):
+        self.name = name  # type: Optional[str]
+        self.opType = opType  # type: int
+        self.subOpType = subOpType  # type: int
+        self.args = args  # type: Optional[List[Firmoto.Value.ValueT]]
+        self.retval = retval  # type: Optional[List[Firmoto.Value.ValueT]]
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        operation = Operation()
+        operation.Init(buf, pos)
+        return cls.InitFromObj(operation)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, operation):
+        x = OperationT()
+        x._UnPack(operation)
+        return x
+
+    # OperationT
+    def _UnPack(self, operation):
+        if operation is None:
+            return
+        self.name = operation.Name()
+        self.opType = operation.OpType()
+        self.subOpType = operation.SubOpType()
+        if not operation.ArgsIsNone():
+            self.args = []
+            for i in range(operation.ArgsLength()):
+                if operation.Args(i) is None:
+                    self.args.append(None)
+                else:
+                    value_ = Firmoto.Value.ValueT.InitFromObj(operation.Args(i))
+                    self.args.append(value_)
+        if not operation.RetvalIsNone():
+            self.retval = []
+            for i in range(operation.RetvalLength()):
+                if operation.Retval(i) is None:
+                    self.retval.append(None)
+                else:
+                    value_ = Firmoto.Value.ValueT.InitFromObj(operation.Retval(i))
+                    self.retval.append(value_)
+
+    # OperationT
+    def Pack(self, builder):
+        if self.name is not None:
+            name = builder.CreateString(self.name)
+        if self.args is not None:
+            argslist = []
+            for i in range(len(self.args)):
+                argslist.append(self.args[i].Pack(builder))
+            OperationStartArgsVector(builder, len(self.args))
+            for i in reversed(range(len(self.args))):
+                builder.PrependUOffsetTRelative(argslist[i])
+            args = builder.EndVector()
+        if self.retval is not None:
+            retvallist = []
+            for i in range(len(self.retval)):
+                retvallist.append(self.retval[i].Pack(builder))
+            OperationStartRetvalVector(builder, len(self.retval))
+            for i in reversed(range(len(self.retval))):
+                builder.PrependUOffsetTRelative(retvallist[i])
+            retval = builder.EndVector()
+        OperationStart(builder)
+        if self.name is not None:
+            OperationAddName(builder, name)
+        OperationAddOpType(builder, self.opType)
+        OperationAddSubOpType(builder, self.subOpType)
+        if self.args is not None:
+            OperationAddArgs(builder, args)
+        if self.retval is not None:
+            OperationAddRetval(builder, retval)
+        operation = OperationEnd(builder)
+        return operation

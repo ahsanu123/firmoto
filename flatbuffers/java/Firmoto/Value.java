@@ -61,5 +61,28 @@ public final class Value extends Table {
     public Value get(int j) { return get(new Value(), j); }
     public Value get(Value obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
+  public ValueT unpack() {
+    ValueT _o = new ValueT();
+    unpackTo(_o);
+    return _o;
+  }
+  public void unpackTo(ValueT _o) {
+    String _oName = name();
+    _o.setName(_oName);
+    byte _oValtype = valtype();
+    _o.setValtype(_oValtype);
+    String _oValue = value();
+    _o.setValue(_oValue);
+  }
+  public static int pack(FlatBufferBuilder builder, ValueT _o) {
+    if (_o == null) return 0;
+    int _name = _o.getName() == null ? 0 : builder.createString(_o.getName());
+    int _value = _o.getValue() == null ? 0 : builder.createString(_o.getValue());
+    return createValue(
+      builder,
+      _name,
+      _o.getValtype(),
+      _value);
+  }
 }
 

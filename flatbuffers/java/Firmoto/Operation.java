@@ -81,5 +81,49 @@ public final class Operation extends Table {
     public Operation get(int j) { return get(new Operation(), j); }
     public Operation get(Operation obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
+  public OperationT unpack() {
+    OperationT _o = new OperationT();
+    unpackTo(_o);
+    return _o;
+  }
+  public void unpackTo(OperationT _o) {
+    String _oName = name();
+    _o.setName(_oName);
+    byte _oOpType = opType();
+    _o.setOpType(_oOpType);
+    byte _oSubOpType = subOpType();
+    _o.setSubOpType(_oSubOpType);
+    Firmoto.ValueT[] _oArgs = new Firmoto.ValueT[argsLength()];
+    for (int _j = 0; _j < argsLength(); ++_j) {_oArgs[_j] = (args(_j) != null ? args(_j).unpack() : null);}
+    _o.setArgs(_oArgs);
+    Firmoto.ValueT[] _oRetval = new Firmoto.ValueT[retvalLength()];
+    for (int _j = 0; _j < retvalLength(); ++_j) {_oRetval[_j] = (retval(_j) != null ? retval(_j).unpack() : null);}
+    _o.setRetval(_oRetval);
+  }
+  public static int pack(FlatBufferBuilder builder, OperationT _o) {
+    if (_o == null) return 0;
+    int _name = _o.getName() == null ? 0 : builder.createString(_o.getName());
+    int _args = 0;
+    if (_o.getArgs() != null) {
+      int[] __args = new int[_o.getArgs().length];
+      int _j = 0;
+      for (Firmoto.ValueT _e : _o.getArgs()) { __args[_j] = Firmoto.Value.pack(builder, _e); _j++;}
+      _args = createArgsVector(builder, __args);
+    }
+    int _retval = 0;
+    if (_o.getRetval() != null) {
+      int[] __retval = new int[_o.getRetval().length];
+      int _j = 0;
+      for (Firmoto.ValueT _e : _o.getRetval()) { __retval[_j] = Firmoto.Value.pack(builder, _e); _j++;}
+      _retval = createRetvalVector(builder, __retval);
+    }
+    return createOperation(
+      builder,
+      _name,
+      _o.getOpType(),
+      _o.getSubOpType(),
+      _args,
+      _retval);
+  }
 }
 

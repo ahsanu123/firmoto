@@ -365,6 +365,26 @@ impl<'a> Operation<'a> {
     builder.finish()
   }
 
+  pub fn unpack(&self) -> OperationT {
+    let name = self.name().map(|x| {
+      x.to_string()
+    });
+    let op_type = self.op_type();
+    let sub_op_type = self.sub_op_type();
+    let args = self.args().map(|x| {
+      x.iter().map(|t| t.unpack()).collect()
+    });
+    let retval = self.retval().map(|x| {
+      x.iter().map(|t| t.unpack()).collect()
+    });
+    OperationT {
+      name,
+      op_type,
+      sub_op_type,
+      args,
+      retval,
+    }
+  }
 
   #[inline]
   pub fn name(&self) -> Option<&'a str> {
@@ -490,6 +510,51 @@ impl core::fmt::Debug for Operation<'_> {
       ds.finish()
   }
 }
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
+pub struct OperationT {
+  pub name: Option<String>,
+  pub op_type: OperationType,
+  pub sub_op_type: SubOperationType,
+  pub args: Option<Vec<ValueT>>,
+  pub retval: Option<Vec<ValueT>>,
+}
+impl Default for OperationT {
+  fn default() -> Self {
+    Self {
+      name: None,
+      op_type: OperationType::GPIO,
+      sub_op_type: SubOperationType::SPI_WRITE_U8,
+      args: None,
+      retval: None,
+    }
+  }
+}
+impl OperationT {
+  pub fn pack<'b, A: flatbuffers::Allocator + 'b>(
+    &self,
+    _fbb: &mut flatbuffers::FlatBufferBuilder<'b, A>
+  ) -> flatbuffers::WIPOffset<Operation<'b>> {
+    let name = self.name.as_ref().map(|x|{
+      _fbb.create_string(x)
+    });
+    let op_type = self.op_type;
+    let sub_op_type = self.sub_op_type;
+    let args = self.args.as_ref().map(|x|{
+      let w: Vec<_> = x.iter().map(|t| t.pack(_fbb)).collect();_fbb.create_vector(&w)
+    });
+    let retval = self.retval.as_ref().map(|x|{
+      let w: Vec<_> = x.iter().map(|t| t.pack(_fbb)).collect();_fbb.create_vector(&w)
+    });
+    Operation::create(_fbb, &OperationArgs{
+      name,
+      op_type,
+      sub_op_type,
+      args,
+      retval,
+    })
+  }
+}
 pub enum ValueOffset {}
 #[derive(Copy, Clone, PartialEq)]
 
@@ -526,6 +591,20 @@ impl<'a> Value<'a> {
     builder.finish()
   }
 
+  pub fn unpack(&self) -> ValueT {
+    let name = self.name().map(|x| {
+      x.to_string()
+    });
+    let valtype = self.valtype();
+    let value = self.value().map(|x| {
+      x.to_string()
+    });
+    ValueT {
+      name,
+      valtype,
+      value,
+    }
+  }
 
   #[inline]
   pub fn name(&self) -> Option<&'a str> {
@@ -619,6 +698,41 @@ impl core::fmt::Debug for Value<'_> {
       ds.field("valtype", &self.valtype());
       ds.field("value", &self.value());
       ds.finish()
+  }
+}
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
+pub struct ValueT {
+  pub name: Option<String>,
+  pub valtype: ValueType,
+  pub value: Option<String>,
+}
+impl Default for ValueT {
+  fn default() -> Self {
+    Self {
+      name: None,
+      valtype: ValueType::U8,
+      value: None,
+    }
+  }
+}
+impl ValueT {
+  pub fn pack<'b, A: flatbuffers::Allocator + 'b>(
+    &self,
+    _fbb: &mut flatbuffers::FlatBufferBuilder<'b, A>
+  ) -> flatbuffers::WIPOffset<Value<'b>> {
+    let name = self.name.as_ref().map(|x|{
+      _fbb.create_string(x)
+    });
+    let valtype = self.valtype;
+    let value = self.value.as_ref().map(|x|{
+      _fbb.create_string(x)
+    });
+    Value::create(_fbb, &ValueArgs{
+      name,
+      valtype,
+      value,
+    })
   }
 }
 #[inline]

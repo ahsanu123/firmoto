@@ -6,6 +6,86 @@ import (
 	flatbuffers "github.com/google/flatbuffers/go"
 )
 
+type OperationT struct {
+	Name string `json:"name"`
+	OpType OperationType `json:"op_type"`
+	SubOpType SubOperationType `json:"sub_op_type"`
+	Args []*ValueT `json:"args"`
+	Retval []*ValueT `json:"retval"`
+}
+
+func (t *OperationT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
+	if t == nil {
+		return 0
+	}
+	nameOffset := flatbuffers.UOffsetT(0)
+	if t.Name != "" {
+		nameOffset = builder.CreateString(t.Name)
+	}
+	argsOffset := flatbuffers.UOffsetT(0)
+	if t.Args != nil {
+		argsLength := len(t.Args)
+		argsOffsets := make([]flatbuffers.UOffsetT, argsLength)
+		for j := 0; j < argsLength; j++ {
+			argsOffsets[j] = t.Args[j].Pack(builder)
+		}
+		OperationStartArgsVector(builder, argsLength)
+		for j := argsLength - 1; j >= 0; j-- {
+			builder.PrependUOffsetT(argsOffsets[j])
+		}
+		argsOffset = builder.EndVector(argsLength)
+	}
+	retvalOffset := flatbuffers.UOffsetT(0)
+	if t.Retval != nil {
+		retvalLength := len(t.Retval)
+		retvalOffsets := make([]flatbuffers.UOffsetT, retvalLength)
+		for j := 0; j < retvalLength; j++ {
+			retvalOffsets[j] = t.Retval[j].Pack(builder)
+		}
+		OperationStartRetvalVector(builder, retvalLength)
+		for j := retvalLength - 1; j >= 0; j-- {
+			builder.PrependUOffsetT(retvalOffsets[j])
+		}
+		retvalOffset = builder.EndVector(retvalLength)
+	}
+	OperationStart(builder)
+	OperationAddName(builder, nameOffset)
+	OperationAddOpType(builder, t.OpType)
+	OperationAddSubOpType(builder, t.SubOpType)
+	OperationAddArgs(builder, argsOffset)
+	OperationAddRetval(builder, retvalOffset)
+	return OperationEnd(builder)
+}
+
+func (rcv *Operation) UnPackTo(t *OperationT) {
+	t.Name = string(rcv.Name())
+	t.OpType = rcv.OpType()
+	t.SubOpType = rcv.SubOpType()
+	argsLength := rcv.ArgsLength()
+	t.Args = make([]*ValueT, argsLength)
+	for j := 0; j < argsLength; j++ {
+		x := Value{}
+		rcv.Args(&x, j)
+		t.Args[j] = x.UnPack()
+	}
+	retvalLength := rcv.RetvalLength()
+	t.Retval = make([]*ValueT, retvalLength)
+	for j := 0; j < retvalLength; j++ {
+		x := Value{}
+		rcv.Retval(&x, j)
+		t.Retval[j] = x.UnPack()
+	}
+}
+
+func (rcv *Operation) UnPack() *OperationT {
+	if rcv == nil {
+		return nil
+	}
+	t := &OperationT{}
+	rcv.UnPackTo(t)
+	return t
+}
+
 type Operation struct {
 	_tab flatbuffers.Table
 }

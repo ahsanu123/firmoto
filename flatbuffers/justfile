@@ -5,15 +5,15 @@ fbs-file := "./fbs/firmoto_schema.fbs"
 # fbs-file := "./fbs/monster.fbs"
 
 all-language: 
-  just reset rust && flatc --rust -o rust {{fbs-file}}
-  just reset csharp && flatc --csharp -o csharp {{fbs-file}}
-  just reset cpp && flatc --cpp -o cpp {{fbs-file}}
-  just reset python && flatc --python -o python {{fbs-file}}
-  just reset go && flatc --go -o go {{fbs-file}}
-  just reset c && flatc -c -o c {{fbs-file}}
-  just reset kotlin && flatc --kotlin -o kotlin {{fbs-file}}
-  just reset typescript && flatc --ts -o typescript {{fbs-file}}
-  just reset java && flatc --java -o java {{fbs-file}}
+  just reset rust && flatc --rust --gen-object-api -o rust {{fbs-file}}
+  just reset csharp && flatc --csharp --gen-object-api -o csharp {{fbs-file}}
+  just reset cpp && flatc --cpp --gen-object-api -o cpp {{fbs-file}}
+  just reset python && flatc --python --gen-object-api -o python {{fbs-file}}
+  just reset go && flatc --go --gen-object-api -o go {{fbs-file}}
+  just reset c && flatc -c --gen-object-api -o c {{fbs-file}}
+  just reset kotlin && flatc --kotlin --gen-object-api -o kotlin {{fbs-file}}
+  just reset typescript && flatc --ts --gen-object-api -o typescript {{fbs-file}}
+  just reset java && flatc --java --gen-object-api -o java {{fbs-file}}
   cp ./rust/firmoto_schema_generated.rs ../playground/src/firmoto_schema_generated.rs
   cp ./rust/firmoto_schema_generated.rs ../nostd_playground/src/firmoto_schema_generated.rs
 

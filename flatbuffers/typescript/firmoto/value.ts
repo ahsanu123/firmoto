@@ -7,7 +7,7 @@ import * as flatbuffers from 'flatbuffers';
 import { ValueType } from '../firmoto/value-type.js';
 
 
-export class Value {
+export class Value implements flatbuffers.IUnpackableObject<ValueT> {
   bb: flatbuffers.ByteBuffer|null = null;
   bb_pos = 0;
   __init(i:number, bb:flatbuffers.ByteBuffer):Value {
@@ -71,5 +71,40 @@ static createValue(builder:flatbuffers.Builder, nameOffset:flatbuffers.Offset, v
   Value.addValtype(builder, valtype);
   Value.addValue(builder, valueOffset);
   return Value.endValue(builder);
+}
+
+unpack(): ValueT {
+  return new ValueT(
+    this.name(),
+    this.valtype(),
+    this.value()
+  );
+}
+
+
+unpackTo(_o: ValueT): void {
+  _o.name = this.name();
+  _o.valtype = this.valtype();
+  _o.value = this.value();
+}
+}
+
+export class ValueT implements flatbuffers.IGeneratedObject {
+constructor(
+  public name: string|Uint8Array|null = null,
+  public valtype: ValueType = ValueType.U8,
+  public value: string|Uint8Array|null = null
+){}
+
+
+pack(builder:flatbuffers.Builder): flatbuffers.Offset {
+  const name = (this.name !== null ? builder.createString(this.name!) : 0);
+  const value = (this.value !== null ? builder.createString(this.value!) : 0);
+
+  return Value.createValue(builder,
+    name,
+    this.valtype,
+    value
+  );
 }
 }

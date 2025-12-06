@@ -71,6 +71,68 @@ public struct Operation : IFlatbufferObject
   }
   public static void FinishOperationBuffer(FlatBufferBuilder builder, Offset<Firmoto.Operation> offset) { builder.Finish(offset.Value); }
   public static void FinishSizePrefixedOperationBuffer(FlatBufferBuilder builder, Offset<Firmoto.Operation> offset) { builder.FinishSizePrefixed(offset.Value); }
+  public OperationT UnPack() {
+    var _o = new OperationT();
+    this.UnPackTo(_o);
+    return _o;
+  }
+  public void UnPackTo(OperationT _o) {
+    _o.Name = this.Name;
+    _o.OpType = this.OpType;
+    _o.SubOpType = this.SubOpType;
+    _o.Args = new List<Firmoto.ValueT>();
+    for (var _j = 0; _j < this.ArgsLength; ++_j) {_o.Args.Add(this.Args(_j).HasValue ? this.Args(_j).Value.UnPack() : null);}
+    _o.Retval = new List<Firmoto.ValueT>();
+    for (var _j = 0; _j < this.RetvalLength; ++_j) {_o.Retval.Add(this.Retval(_j).HasValue ? this.Retval(_j).Value.UnPack() : null);}
+  }
+  public static Offset<Firmoto.Operation> Pack(FlatBufferBuilder builder, OperationT _o) {
+    if (_o == null) return default(Offset<Firmoto.Operation>);
+    var _name = _o.Name == null ? default(StringOffset) : builder.CreateString(_o.Name);
+    var _args = default(VectorOffset);
+    if (_o.Args != null) {
+      var __args = new Offset<Firmoto.Value>[_o.Args.Count];
+      for (var _j = 0; _j < __args.Length; ++_j) { __args[_j] = Firmoto.Value.Pack(builder, _o.Args[_j]); }
+      _args = CreateArgsVector(builder, __args);
+    }
+    var _retval = default(VectorOffset);
+    if (_o.Retval != null) {
+      var __retval = new Offset<Firmoto.Value>[_o.Retval.Count];
+      for (var _j = 0; _j < __retval.Length; ++_j) { __retval[_j] = Firmoto.Value.Pack(builder, _o.Retval[_j]); }
+      _retval = CreateRetvalVector(builder, __retval);
+    }
+    return CreateOperation(
+      builder,
+      _name,
+      _o.OpType,
+      _o.SubOpType,
+      _args,
+      _retval);
+  }
+}
+
+public class OperationT
+{
+  public string Name { get; set; }
+  public Firmoto.OperationType OpType { get; set; }
+  public Firmoto.SubOperationType SubOpType { get; set; }
+  public List<Firmoto.ValueT> Args { get; set; }
+  public List<Firmoto.ValueT> Retval { get; set; }
+
+  public OperationT() {
+    this.Name = null;
+    this.OpType = Firmoto.OperationType.GPIO;
+    this.SubOpType = Firmoto.SubOperationType.SPI_WRITE_U8;
+    this.Args = null;
+    this.Retval = null;
+  }
+  public static OperationT DeserializeFromBinary(byte[] fbBuffer) {
+    return Operation.GetRootAsOperation(new ByteBuffer(fbBuffer)).UnPack();
+  }
+  public byte[] SerializeToBinary() {
+    var fbb = new FlatBufferBuilder(0x10000);
+    Operation.FinishOperationBuffer(fbb, Operation.Pack(fbb, this));
+    return fbb.DataBuffer.ToSizedArray();
+  }
 }
 
 

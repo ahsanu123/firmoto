@@ -6,10 +6,10 @@ import * as flatbuffers from 'flatbuffers';
 
 import { OperationType } from '../firmoto/operation-type.js';
 import { SubOperationType } from '../firmoto/sub-operation-type.js';
-import { Value } from '../firmoto/value.js';
+import { Value, ValueT } from '../firmoto/value.js';
 
 
-export class Operation {
+export class Operation implements flatbuffers.IUnpackableObject<OperationT> {
   bb: flatbuffers.ByteBuffer|null = null;
   bb_pos = 0;
   __init(i:number, bb:flatbuffers.ByteBuffer):Operation {
@@ -133,5 +133,49 @@ static createOperation(builder:flatbuffers.Builder, nameOffset:flatbuffers.Offse
   Operation.addArgs(builder, argsOffset);
   Operation.addRetval(builder, retvalOffset);
   return Operation.endOperation(builder);
+}
+
+unpack(): OperationT {
+  return new OperationT(
+    this.name(),
+    this.opType(),
+    this.subOpType(),
+    this.bb!.createObjList<Value, ValueT>(this.args.bind(this), this.argsLength()),
+    this.bb!.createObjList<Value, ValueT>(this.retval.bind(this), this.retvalLength())
+  );
+}
+
+
+unpackTo(_o: OperationT): void {
+  _o.name = this.name();
+  _o.opType = this.opType();
+  _o.subOpType = this.subOpType();
+  _o.args = this.bb!.createObjList<Value, ValueT>(this.args.bind(this), this.argsLength());
+  _o.retval = this.bb!.createObjList<Value, ValueT>(this.retval.bind(this), this.retvalLength());
+}
+}
+
+export class OperationT implements flatbuffers.IGeneratedObject {
+constructor(
+  public name: string|Uint8Array|null = null,
+  public opType: OperationType = OperationType.GPIO,
+  public subOpType: SubOperationType = SubOperationType.SPI_WRITE_U8,
+  public args: (ValueT)[] = [],
+  public retval: (ValueT)[] = []
+){}
+
+
+pack(builder:flatbuffers.Builder): flatbuffers.Offset {
+  const name = (this.name !== null ? builder.createString(this.name!) : 0);
+  const args = Operation.createArgsVector(builder, builder.createObjectOffsetList(this.args));
+  const retval = Operation.createRetvalVector(builder, builder.createObjectOffsetList(this.retval));
+
+  return Operation.createOperation(builder,
+    name,
+    this.opType,
+    this.subOpType,
+    args,
+    retval
+  );
 }
 }

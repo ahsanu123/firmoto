@@ -6,6 +6,46 @@ import (
 	flatbuffers "github.com/google/flatbuffers/go"
 )
 
+type ValueT struct {
+	Name string `json:"name"`
+	Valtype ValueType `json:"valtype"`
+	Value string `json:"value"`
+}
+
+func (t *ValueT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
+	if t == nil {
+		return 0
+	}
+	nameOffset := flatbuffers.UOffsetT(0)
+	if t.Name != "" {
+		nameOffset = builder.CreateString(t.Name)
+	}
+	valueOffset := flatbuffers.UOffsetT(0)
+	if t.Value != "" {
+		valueOffset = builder.CreateString(t.Value)
+	}
+	ValueStart(builder)
+	ValueAddName(builder, nameOffset)
+	ValueAddValtype(builder, t.Valtype)
+	ValueAddValue(builder, valueOffset)
+	return ValueEnd(builder)
+}
+
+func (rcv *Value) UnPackTo(t *ValueT) {
+	t.Name = string(rcv.Name())
+	t.Valtype = rcv.Valtype()
+	t.Value = string(rcv.Value())
+}
+
+func (rcv *Value) UnPack() *ValueT {
+	if rcv == nil {
+		return nil
+	}
+	t := &ValueT{}
+	rcv.UnPackTo(t)
+	return t
+}
+
 type Value struct {
 	_tab flatbuffers.Table
 }

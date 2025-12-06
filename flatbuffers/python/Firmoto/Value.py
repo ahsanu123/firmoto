@@ -74,3 +74,57 @@ def ValueEnd(builder):
 
 def End(builder):
     return ValueEnd(builder)
+
+
+class ValueT(object):
+
+    # ValueT
+    def __init__(
+        self,
+        name = None,
+        valtype = 0,
+        value = None,
+    ):
+        self.name = name  # type: Optional[str]
+        self.valtype = valtype  # type: int
+        self.value = value  # type: Optional[str]
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        value = Value()
+        value.Init(buf, pos)
+        return cls.InitFromObj(value)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, value):
+        x = ValueT()
+        x._UnPack(value)
+        return x
+
+    # ValueT
+    def _UnPack(self, value):
+        if value is None:
+            return
+        self.name = value.Name()
+        self.valtype = value.Valtype()
+        self.value = value.Value()
+
+    # ValueT
+    def Pack(self, builder):
+        if self.name is not None:
+            name = builder.CreateString(self.name)
+        if self.value is not None:
+            value = builder.CreateString(self.value)
+        ValueStart(builder)
+        if self.name is not None:
+            ValueAddName(builder, name)
+        ValueAddValtype(builder, self.valtype)
+        if self.value is not None:
+            ValueAddValue(builder, value)
+        value = ValueEnd(builder)
+        return value

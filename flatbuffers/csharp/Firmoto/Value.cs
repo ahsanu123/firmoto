@@ -54,6 +54,39 @@ public struct Value : IFlatbufferObject
     int o = builder.EndTable();
     return new Offset<Firmoto.Value>(o);
   }
+  public ValueT UnPack() {
+    var _o = new ValueT();
+    this.UnPackTo(_o);
+    return _o;
+  }
+  public void UnPackTo(ValueT _o) {
+    _o.Name = this.Name;
+    _o.Valtype = this.Valtype;
+    _o.Value_ = this.Value_;
+  }
+  public static Offset<Firmoto.Value> Pack(FlatBufferBuilder builder, ValueT _o) {
+    if (_o == null) return default(Offset<Firmoto.Value>);
+    var _name = _o.Name == null ? default(StringOffset) : builder.CreateString(_o.Name);
+    var _value = _o.Value_ == null ? default(StringOffset) : builder.CreateString(_o.Value_);
+    return CreateValue(
+      builder,
+      _name,
+      _o.Valtype,
+      _value);
+  }
+}
+
+public class ValueT
+{
+  public string Name { get; set; }
+  public Firmoto.ValueType Valtype { get; set; }
+  public string Value_ { get; set; }
+
+  public ValueT() {
+    this.Name = null;
+    this.Valtype = Firmoto.ValueType.U8;
+    this.Value_ = null;
+  }
 }
 
 

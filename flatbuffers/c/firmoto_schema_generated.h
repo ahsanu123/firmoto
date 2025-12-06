@@ -17,9 +17,11 @@ namespace Firmoto {
 
 struct Operation;
 struct OperationBuilder;
+struct OperationT;
 
 struct Value;
 struct ValueBuilder;
+struct ValueT;
 
 enum OperationType : int8_t {
   OperationType_GPIO = 0,
@@ -150,7 +152,21 @@ inline const char *EnumNameValueType(ValueType e) {
   return EnumNamesValueType()[index];
 }
 
+struct OperationT : public ::flatbuffers::NativeTable {
+  typedef Operation TableType;
+  std::string name{};
+  Firmoto::OperationType op_type = Firmoto::OperationType_GPIO;
+  Firmoto::SubOperationType sub_op_type = Firmoto::SubOperationType_SPI_WRITE_U8;
+  std::vector<std::unique_ptr<Firmoto::ValueT>> args{};
+  std::vector<std::unique_ptr<Firmoto::ValueT>> retval{};
+  OperationT() = default;
+  OperationT(const OperationT &o);
+  OperationT(OperationT&&) FLATBUFFERS_NOEXCEPT = default;
+  OperationT &operator=(OperationT o) FLATBUFFERS_NOEXCEPT;
+};
+
 struct Operation FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef OperationT NativeTableType;
   typedef OperationBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_NAME = 4,
@@ -188,6 +204,9 @@ struct Operation FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
            verifier.VerifyVectorOfTables(retval()) &&
            verifier.EndTable();
   }
+  OperationT *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(OperationT *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<Operation> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const OperationT* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
 };
 
 struct OperationBuilder {
@@ -255,7 +274,17 @@ inline ::flatbuffers::Offset<Operation> CreateOperationDirect(
       retval__);
 }
 
+::flatbuffers::Offset<Operation> CreateOperation(::flatbuffers::FlatBufferBuilder &_fbb, const OperationT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct ValueT : public ::flatbuffers::NativeTable {
+  typedef Value TableType;
+  std::string name{};
+  Firmoto::ValueType valtype = Firmoto::ValueType_U8;
+  std::string value{};
+};
+
 struct Value FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ValueT NativeTableType;
   typedef ValueBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_NAME = 4,
@@ -280,6 +309,9 @@ struct Value FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
            verifier.VerifyString(value()) &&
            verifier.EndTable();
   }
+  ValueT *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(ValueT *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<Value> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const ValueT* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
 };
 
 struct ValueBuilder {
@@ -332,6 +364,97 @@ inline ::flatbuffers::Offset<Value> CreateValueDirect(
       value__);
 }
 
+::flatbuffers::Offset<Value> CreateValue(::flatbuffers::FlatBufferBuilder &_fbb, const ValueT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+inline OperationT::OperationT(const OperationT &o)
+      : name(o.name),
+        op_type(o.op_type),
+        sub_op_type(o.sub_op_type) {
+  args.reserve(o.args.size());
+  for (const auto &args_ : o.args) { args.emplace_back((args_) ? new Firmoto::ValueT(*args_) : nullptr); }
+  retval.reserve(o.retval.size());
+  for (const auto &retval_ : o.retval) { retval.emplace_back((retval_) ? new Firmoto::ValueT(*retval_) : nullptr); }
+}
+
+inline OperationT &OperationT::operator=(OperationT o) FLATBUFFERS_NOEXCEPT {
+  std::swap(name, o.name);
+  std::swap(op_type, o.op_type);
+  std::swap(sub_op_type, o.sub_op_type);
+  std::swap(args, o.args);
+  std::swap(retval, o.retval);
+  return *this;
+}
+
+inline OperationT *Operation::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<OperationT>(new OperationT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void Operation::UnPackTo(OperationT *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = name(); if (_e) _o->name = _e->str(); }
+  { auto _e = op_type(); _o->op_type = _e; }
+  { auto _e = sub_op_type(); _o->sub_op_type = _e; }
+  { auto _e = args(); if (_e) { _o->args.resize(_e->size()); for (::flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { if(_o->args[_i]) { _e->Get(_i)->UnPackTo(_o->args[_i].get(), _resolver); } else { _o->args[_i] = std::unique_ptr<Firmoto::ValueT>(_e->Get(_i)->UnPack(_resolver)); } } } else { _o->args.resize(0); } }
+  { auto _e = retval(); if (_e) { _o->retval.resize(_e->size()); for (::flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { if(_o->retval[_i]) { _e->Get(_i)->UnPackTo(_o->retval[_i].get(), _resolver); } else { _o->retval[_i] = std::unique_ptr<Firmoto::ValueT>(_e->Get(_i)->UnPack(_resolver)); } } } else { _o->retval.resize(0); } }
+}
+
+inline ::flatbuffers::Offset<Operation> Operation::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const OperationT* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateOperation(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<Operation> CreateOperation(::flatbuffers::FlatBufferBuilder &_fbb, const OperationT *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const OperationT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _name = _o->name.empty() ? 0 : _fbb.CreateString(_o->name);
+  auto _op_type = _o->op_type;
+  auto _sub_op_type = _o->sub_op_type;
+  auto _args = _o->args.size() ? _fbb.CreateVector<::flatbuffers::Offset<Firmoto::Value>> (_o->args.size(), [](size_t i, _VectorArgs *__va) { return CreateValue(*__va->__fbb, __va->__o->args[i].get(), __va->__rehasher); }, &_va ) : 0;
+  auto _retval = _o->retval.size() ? _fbb.CreateVector<::flatbuffers::Offset<Firmoto::Value>> (_o->retval.size(), [](size_t i, _VectorArgs *__va) { return CreateValue(*__va->__fbb, __va->__o->retval[i].get(), __va->__rehasher); }, &_va ) : 0;
+  return Firmoto::CreateOperation(
+      _fbb,
+      _name,
+      _op_type,
+      _sub_op_type,
+      _args,
+      _retval);
+}
+
+inline ValueT *Value::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<ValueT>(new ValueT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void Value::UnPackTo(ValueT *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = name(); if (_e) _o->name = _e->str(); }
+  { auto _e = valtype(); _o->valtype = _e; }
+  { auto _e = value(); if (_e) _o->value = _e->str(); }
+}
+
+inline ::flatbuffers::Offset<Value> Value::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const ValueT* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateValue(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<Value> CreateValue(::flatbuffers::FlatBufferBuilder &_fbb, const ValueT *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const ValueT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _name = _o->name.empty() ? 0 : _fbb.CreateString(_o->name);
+  auto _valtype = _o->valtype;
+  auto _value = _o->value.empty() ? 0 : _fbb.CreateString(_o->value);
+  return Firmoto::CreateValue(
+      _fbb,
+      _name,
+      _valtype,
+      _value);
+}
+
 inline const Firmoto::Operation *GetOperation(const void *buf) {
   return ::flatbuffers::GetRoot<Firmoto::Operation>(buf);
 }
@@ -360,6 +483,18 @@ inline void FinishSizePrefixedOperationBuffer(
     ::flatbuffers::FlatBufferBuilder &fbb,
     ::flatbuffers::Offset<Firmoto::Operation> root) {
   fbb.FinishSizePrefixed(root);
+}
+
+inline std::unique_ptr<Firmoto::OperationT> UnPackOperation(
+    const void *buf,
+    const ::flatbuffers::resolver_function_t *res = nullptr) {
+  return std::unique_ptr<Firmoto::OperationT>(GetOperation(buf)->UnPack(res));
+}
+
+inline std::unique_ptr<Firmoto::OperationT> UnPackSizePrefixedOperation(
+    const void *buf,
+    const ::flatbuffers::resolver_function_t *res = nullptr) {
+  return std::unique_ptr<Firmoto::OperationT>(GetSizePrefixedOperation(buf)->UnPack(res));
 }
 
 }  // namespace Firmoto
