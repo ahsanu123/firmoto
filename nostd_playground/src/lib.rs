@@ -1,14 +1,25 @@
 #![no_main]
 #![no_std]
 
-pub mod firmoto_schema_generated;
-use defmt_semihosting as _;
-use stm32f4xx_hal as _; // global logger
+extern crate alloc;
 
-// TODO(5) adjust HAL import
-// use some_hal as _; // memory layout
+pub mod allocator;
+pub mod controllers;
+pub mod dispatcher;
+pub mod firmoto_schema_generated;
+pub mod services;
+
+use defmt_semihosting as _;
+use embassy_stm32 as _;
+
+// use stm32f4xx_hal as _; // global logger
 
 use panic_probe as _;
+
+//
+// =============================================================
+// from template
+// =============================================================
 
 // same panicking *behavior* as `panic-probe` but doesn't print a panic message
 // this prevents the panic message being printed *twice* when `defmt::panic` is invoked

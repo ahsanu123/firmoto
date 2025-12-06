@@ -1,13 +1,15 @@
 use crate::services::{ConfigureableServiceTrait, ServiceTrait};
-use anyhow::{Ok, Result};
 use embassy_embedded_hal::{GetConfig, SetConfig};
 use embedded_hal::{
     delay::DelayNs,
     spi::{Operation, SpiDevice},
 };
 
+// TODO:
+enum SpiServiceError {}
+
 pub trait SpiServiceTrait: ServiceTrait {
-    fn write_u8(&mut self, address: u8, data: u8) -> Result<()>;
+    fn write_u8(&mut self, address: u8, data: u8) -> Result<(), SpiServiceError>;
 
     fn read_u16(&mut self, address: u8) -> u16;
     fn read_u8(&mut self, address: u8) -> u8;
@@ -73,7 +75,7 @@ where
     SPI: SpiDevice + SetConfig + GetConfig,
     Delay: DelayNs,
 {
-    fn write_u8(&mut self, address: u8, data: u8) -> Result<()> {
+    fn write_u8(&mut self, address: u8, data: u8) -> Result<(), SpiServiceError> {
         let data = data | 0x80;
         let _ = self.spi.write(&[address, data]);
         Ok(())

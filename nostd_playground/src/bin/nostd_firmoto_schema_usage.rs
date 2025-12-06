@@ -3,10 +3,9 @@
 
 extern crate alloc;
 
-use core::mem::MaybeUninit;
 use cortex_m_semihosting::hprintln;
-use embedded_alloc::LlffHeap as Heap;
 use flatbuffers::FlatBufferBuilder;
+use nostd_playground::allocator::init_allocator;
 use nostd_playground::{
     self as _,
     firmoto_schema_generated::firmoto::{
@@ -14,17 +13,9 @@ use nostd_playground::{
     },
 };
 
-#[global_allocator]
-static HEAP: Heap = Heap::empty();
-
 #[cortex_m_rt::entry]
 fn main() -> ! {
-    const HEAP_SIZE: usize = 4096;
-    static mut HEAP_MEM: [MaybeUninit<u8>; HEAP_SIZE] = [MaybeUninit::uninit(); HEAP_SIZE];
-    unsafe {
-        HEAP.init(&raw mut HEAP_MEM as usize, HEAP_SIZE);
-    }
-
+    init_allocator();
     let mut builder = FlatBufferBuilder::with_capacity(2048);
 
     let op_name = builder.create_string("init_spi");

@@ -1,7 +1,8 @@
 
 # reference: https://docs.rust-embedded.org/book/start/qemu.html
-run: 
+b: 
   cargo build
+r: 
   qemu-system-arm \
     -cpu cortex-m4 \
     -machine olimex-stm32-h405 \

@@ -1,5 +1,4 @@
 [package]
-# TODO(1) fix `authors` and `name` if you didn't use `cargo-generate`
 authors = ["Ahsanu Amala <caasperahsanuamala5@gmail.com>"]
 name = "nostd_playground"
 edition = "2024"
@@ -31,10 +30,13 @@ cortex-m-rt = "0.7"
 cortex-m-semihosting = "0.5.0"
 defmt = {version = "1.0", features=["alloc"]}
 defmt-semihosting = {version = "0.3.0", features = ["critical-section-single-core"]}
+embassy-embedded-hal = "0.5.0"
+embassy-stm32 = {version = "0.4.0", features=["stm32f405rg", "memory-x"]}
 embedded-alloc = {version = "0.6.0", features=["llff"]}
+embedded-hal = "1.0.0"
 panic-probe = { version = "1.0", features = ["print-defmt"] }
 semihosting = "0.1.20"
-stm32f4xx-hal = {version = "0.23.0", features = ["stm32f405"]}
+# stm32f4xx-hal = {version = "0.23.0", features = ["stm32f405"]}
 
 [dependencies.flatbuffers]
 version = "25.9.23"
