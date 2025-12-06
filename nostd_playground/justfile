@@ -7,5 +7,5 @@ run:
     -machine olimex-stm32-h405 \
     -nographic \
     -semihosting-config enable=on,target=native \
-    -kernel ./target/thumbv7em-none-eabi/debug/hello
+    -kernel ./target/thumbv7em-none-eabi/debug/nostd_firmoto_schema_usage
 

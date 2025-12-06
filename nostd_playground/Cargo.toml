@@ -12,35 +12,10 @@ version = "0.1.0"
 # name = "nostd_playground"
 # test = false
 
-[[bin]]
-name = "bitfield"
-path = "src/bin/bitfield.rs"
-test = false
-
-[[bin]]
-name = "format"
-path = "src/bin/format.rs"
-test = false
-
-[[bin]]
-name = "hello"
-path = "src/bin/hello.rs"
-test = false
-
-[[bin]]
-name = "levels"
-path = "src/bin/levels.rs"
-test = false
-
-[[bin]]
-name = "overflow"
-path = "src/bin/overflow.rs"
-test = false
-
-[[bin]]
-name = "panic"
-path = "src/bin/panic.rs"
-test = false
+# [[bin]]
+# name = "hello"
+# path = "src/bin/hello.rs"
+# test = false
 
 [lib]
 harness = false
@@ -54,8 +29,9 @@ harness = false
 cortex-m = { version = "0.7", features = ["critical-section-single-core"] }
 cortex-m-rt = "0.7"
 cortex-m-semihosting = "0.5.0"
-defmt = "1.0"
-defmt-rtt = "1.0"
+defmt = {version = "1.0", features=["alloc"]}
+defmt-semihosting = {version = "0.3.0", features = ["critical-section-single-core"]}
+embedded-alloc = {version = "0.6.0", features=["llff"]}
 panic-probe = { version = "1.0", features = ["print-defmt"] }
 semihosting = "0.1.20"
 stm32f4xx-hal = {version = "0.23.0", features = ["stm32f405"]}

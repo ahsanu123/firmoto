@@ -1,7 +1,8 @@
 #![no_main]
 #![no_std]
 
-use defmt_rtt as _;
+pub mod firmoto_schema_generated;
+use defmt_semihosting as _;
 use stm32f4xx_hal as _; // global logger
 
 // TODO(5) adjust HAL import
