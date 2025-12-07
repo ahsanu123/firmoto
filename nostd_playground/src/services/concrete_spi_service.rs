@@ -1,4 +1,7 @@
-use crate::services::ServiceTrait;
+use crate::services::{
+    ServiceTrait,
+    spi_service_traits::{SpiServiceError, SpiServiceTrait},
+};
 use embassy_embedded_hal::{SetConfig, shared_bus::blocking::spi::SpiDeviceWithConfig};
 use embassy_sync::blocking_mutex::raw::RawMutex;
 use embedded_hal::{
@@ -7,18 +10,7 @@ use embedded_hal::{
     spi::{Operation, SpiBus, SpiDevice},
 };
 
-// TODO:
-pub enum SpiServiceError {}
-
-pub trait SpiServiceTrait: ServiceTrait {
-    fn write_u8(&mut self, address: u8, data: u8) -> Result<(), SpiServiceError>;
-
-    fn read_u16(&mut self, address: u8) -> u16;
-    fn read_u8(&mut self, address: u8) -> u8;
-    fn read_n<const N: usize>(&mut self, address: u8, buffer: &mut [u8; N]);
-}
-
-pub struct SpiService<'a, M, BUS, CS, Delay>
+pub struct ConcreteSpiService<'a, M, BUS, CS, Delay>
 where
     M: RawMutex,
     BUS: SpiBus + SetConfig,
@@ -30,7 +22,7 @@ where
     pub config: <BUS as SetConfig>::Config,
 }
 
-impl<'a, M, BUS, CS, Delay> SpiService<'a, M, BUS, CS, Delay>
+impl<'a, M, BUS, CS, Delay> ConcreteSpiService<'a, M, BUS, CS, Delay>
 where
     M: RawMutex,
     BUS: SpiBus + SetConfig,
@@ -53,7 +45,7 @@ where
     }
 }
 
-impl<'a, M, BUS, CS, Delay> ServiceTrait for SpiService<'a, M, BUS, CS, Delay>
+impl<'a, M, BUS, CS, Delay> ServiceTrait for ConcreteSpiService<'a, M, BUS, CS, Delay>
 where
     M: RawMutex,
     BUS: SpiBus + SetConfig,
@@ -69,7 +61,7 @@ where
     }
 }
 
-impl<'a, M, BUS, CS, Delay> SpiServiceTrait for SpiService<'a, M, BUS, CS, Delay>
+impl<'a, M, BUS, CS, Delay> SpiServiceTrait for ConcreteSpiService<'a, M, BUS, CS, Delay>
 where
     M: RawMutex,
     BUS: SpiBus + SetConfig,

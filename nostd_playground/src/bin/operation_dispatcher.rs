@@ -16,7 +16,7 @@ use embassy_stm32::{
 };
 use embassy_sync::blocking_mutex::{NoopMutex, raw::NoopRawMutex};
 use embassy_time::{Delay, Timer};
-use nostd_playground::services::spi_service::SpiService;
+use nostd_playground::services::concrete_spi_service::ConcreteSpiService;
 use nostd_playground::{allocator::init_allocator, service_provider::get_singleton};
 use static_cell::StaticCell;
 
