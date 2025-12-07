@@ -31,7 +31,8 @@ cortex-m-semihosting = "0.5.0"
 defmt = {version = "1.0", features=["alloc"]}
 defmt-semihosting = {version = "0.3.0", features = ["critical-section-single-core"]}
 embassy-embedded-hal = "0.5.0"
-embassy-stm32 = {version = "0.4.0", features=["stm32f405rg", "memory-x"]}
+embassy-executor = {version = "0.9.1", features= ["arch-cortex-m", "executor-thread", "executor-interrupt", "defmt"] }
+embassy-stm32 = {version = "0.4.0", features=["stm32f405rg", "memory-x", "time-driver-tim4"]}
 embassy-sync = "0.7.2"
 embassy-time = "0.5.0"
 embedded-alloc = {version = "0.6.0", features=["llff"]}

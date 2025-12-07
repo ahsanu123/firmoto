@@ -4,9 +4,11 @@
 extern crate alloc;
 
 pub mod allocator;
+pub mod builders;
 pub mod controllers;
 pub mod dispatcher;
 pub mod firmoto_schema_generated;
+pub mod service_provider;
 pub mod services;
 
 use defmt_semihosting as _;

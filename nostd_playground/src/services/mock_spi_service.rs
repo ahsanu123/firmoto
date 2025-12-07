@@ -1,4 +1,5 @@
 use crate::services::ServiceTrait;
+use cortex_m_semihosting::hprintln;
 use embassy_embedded_hal::{SetConfig, shared_bus::blocking::spi::SpiDeviceWithConfig};
 use embassy_sync::blocking_mutex::raw::RawMutex;
 use embedded_hal::{
@@ -61,11 +62,11 @@ where
     Delay: DelayNs,
 {
     fn init(&mut self) {
-        todo!()
+        hprintln!("init");
     }
 
     fn deinit(&mut self) {
-        todo!()
+        hprintln!("deinit");
     }
 }
 
