@@ -1,4 +1,4 @@
-mod spi_service;
+pub mod spi_service;
 
 // TODO: use better implementation for deinit like Drop trait
 pub trait ServiceTrait {

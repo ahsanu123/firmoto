@@ -1,12 +1,14 @@
-use crate::services::{ConfigureableServiceTrait, ServiceTrait};
-use embassy_embedded_hal::{GetConfig, SetConfig};
+use crate::services::ServiceTrait;
+use embassy_embedded_hal::{SetConfig, shared_bus::blocking::spi::SpiDeviceWithConfig};
+use embassy_sync::blocking_mutex::raw::RawMutex;
 use embedded_hal::{
     delay::DelayNs,
-    spi::{Operation, SpiDevice},
+    digital::OutputPin,
+    spi::{Operation, SpiBus, SpiDevice},
 };
 
 // TODO:
-enum SpiServiceError {}
+pub enum SpiServiceError {}
 
 pub trait SpiServiceTrait: ServiceTrait {
     fn write_u8(&mut self, address: u8, data: u8) -> Result<(), SpiServiceError>;
@@ -16,49 +18,46 @@ pub trait SpiServiceTrait: ServiceTrait {
     fn read_n<const N: usize>(&mut self, address: u8, buffer: &mut [u8; N]);
 }
 
-pub struct SpiService<SPI, Delay>
+pub struct SpiService<'a, M, BUS, CS, Delay>
 where
-    SPI: SpiDevice + SetConfig + GetConfig,
+    M: RawMutex,
+    BUS: SpiBus + SetConfig,
+    CS: OutputPin,
     Delay: DelayNs,
 {
-    pub spi: SPI,
+    pub spi: SpiDeviceWithConfig<'a, M, BUS, CS>,
     pub delay: Delay,
+    pub config: <BUS as SetConfig>::Config,
 }
 
-impl<SPI, Delay> SpiService<SPI, Delay>
+impl<'a, M, BUS, CS, Delay> SpiService<'a, M, BUS, CS, Delay>
 where
-    SPI: SpiDevice + SetConfig + GetConfig,
+    M: RawMutex,
+    BUS: SpiBus + SetConfig,
+    CS: OutputPin,
     Delay: DelayNs,
 {
-    pub fn new(spi: SPI, delay: Delay) -> Self {
-        let mut instance = Self { spi, delay };
+    pub fn new(
+        spi: SpiDeviceWithConfig<'a, M, BUS, CS>,
+        delay: Delay,
+        config: <BUS as SetConfig>::Config,
+    ) -> Self {
+        let mut instance = Self { spi, delay, config };
         instance.init();
 
         instance
     }
-}
 
-impl<SPI, Delay> ConfigureableServiceTrait for SpiService<SPI, Delay>
-where
-    SPI: SpiDevice + SetConfig + GetConfig,
-    Delay: DelayNs,
-{
-    type ConfigSetType = <SPI as SetConfig>::Config;
-    type ConfigGetType = <SPI as GetConfig>::Config;
-
-    fn set_config(&mut self, config: &Self::ConfigSetType) {
-        // TODO: think to handle result here
-        let _ = self.spi.set_config(config);
-    }
-
-    fn get_config(&mut self) -> Self::ConfigGetType {
-        self.spi.get_config()
+    pub fn set_config(&mut self, config: <BUS as SetConfig>::Config) {
+        self.spi.set_config(config);
     }
 }
 
-impl<SPI, Delay> ServiceTrait for SpiService<SPI, Delay>
+impl<'a, M, BUS, CS, Delay> SpiService<'a, M, BUS, CS, Delay>
 where
-    SPI: SpiDevice + SetConfig + GetConfig,
+    M: RawMutex,
+    BUS: SpiBus + SetConfig,
+    CS: OutputPin,
     Delay: DelayNs,
 {
     fn init(&mut self) {
@@ -70,32 +69,34 @@ where
     }
 }
 
-impl<SPI, Delay> SpiServiceTrait for SpiService<SPI, Delay>
+impl<'a, M, BUS, CS, Delay> SpiService<'a, M, BUS, CS, Delay>
 where
-    SPI: SpiDevice + SetConfig + GetConfig,
+    M: RawMutex,
+    BUS: SpiBus + SetConfig,
+    CS: OutputPin,
     Delay: DelayNs,
 {
-    fn write_u8(&mut self, address: u8, data: u8) -> Result<(), SpiServiceError> {
+    pub fn write_u8(&mut self, address: u8, data: u8) -> Result<(), SpiServiceError> {
         let data = data | 0x80;
         let _ = self.spi.write(&[address, data]);
         Ok(())
     }
 
-    fn read_u8(&mut self, address: u8) -> u8 {
+    pub fn read_u8(&mut self, address: u8) -> u8 {
         let mut buffer: [u8; 1] = [0; 1];
         self.read_n::<1>(address, &mut buffer);
 
         buffer[0]
     }
 
-    fn read_u16(&mut self, address: u8) -> u16 {
+    pub fn read_u16(&mut self, address: u8) -> u16 {
         let mut buffer: [u8; 2] = [0; 2];
         self.read_n::<2>(address, &mut buffer);
 
         u16::from_be_bytes(buffer)
     }
 
-    fn read_n<const N: usize>(&mut self, address: u8, buffer: &mut [u8; N]) {
+    pub fn read_n<const N: usize>(&mut self, address: u8, buffer: &mut [u8; N]) {
         let address = address & 0x7F;
 
         let _ = self
