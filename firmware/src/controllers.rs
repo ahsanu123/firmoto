@@ -1,4 +1,5 @@
 pub mod can_controller;
+pub mod controller_result;
 pub mod gpio_controller;
 pub mod i2c_controller;
 pub mod i2s_controller;

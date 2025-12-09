@@ -60,11 +60,8 @@ where
 
     fn handle_spi_op(&mut self, sub_op_ty: SubOperationType, args: Vec<ValueT>) -> Vec<u8> {
         let retval: Vec<u8> = match sub_op_ty {
-            SubOperationType::SPI_WRITE_U8 => {
-                self.spi_controller.write_u8(args);
-                [0u8].to_vec()
-            }
-            SubOperationType::SPI_READ_U8 => todo!(),
+            SubOperationType::SPI_WRITE_U8 => self.spi_controller.write_u8(args.into()).into(),
+            SubOperationType::SPI_READ_U8 => self.spi_controller.read_u8(args.into()).into(),
             SubOperationType::SPI_READ_U16 => todo!(),
             SubOperationType::SPI_READ_N => todo!(),
             _ => todo!(),

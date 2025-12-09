@@ -1,4 +1,12 @@
 use crate::{
+    controllers::controller_result::CR,
+    errors::spi_controller_err::SpiControllerErr,
+    request_mappers::spi_controller_request::{
+        SpiReadU8Req, SpiReadU16Req, SpiWriteThenReadReq, SpiWriteU8Req,
+    },
+    response_mappers::spi_controller_response::{
+        SpiReadU8Res, SpiReadU16Res, SpiWriteThenReadRes, SpiWriteU8Res,
+    },
     schema_generated::firmoto::{
         ReturnValue, ReturnValueArgs, Value, ValueArgs, ValueT, ValueType,
     },
@@ -7,14 +15,13 @@ use crate::{
 use alloc::vec::Vec;
 use flatbuffers::FlatBufferBuilder;
 
+type CRes<T> = CR<T, SpiControllerErr>;
+
 pub trait SpiControllerTrait {
-    // TODO:
-    // change all Vec of ValueT to
-    // concrete argument type for every "endpoint"
-    fn write_u8(&mut self, args: Vec<ValueT>) -> Vec<u8>;
-    fn read_u16(&mut self, args: Vec<ValueT>) -> Vec<u8>;
-    fn read_u8(&mut self, args: Vec<ValueT>) -> Vec<u8>;
-    fn write_then_read(&mut self, args: Vec<ValueT>) -> Vec<u8>;
+    fn write_u8(&mut self, req: SpiWriteU8Req) -> CRes<SpiWriteU8Res>;
+    fn read_u16(&mut self, req: SpiReadU16Req) -> CRes<SpiReadU16Res>;
+    fn read_u8(&mut self, req: SpiReadU8Req) -> CRes<SpiReadU8Res>;
+    fn write_then_read(&mut self, req: SpiWriteThenReadReq) -> CRes<SpiWriteThenReadRes>;
 }
 
 pub struct SpiController<T>
@@ -39,90 +46,25 @@ impl<T> SpiControllerTrait for SpiController<T>
 where
     T: SpiServiceWrapperTrait,
 {
-    fn write_u8(&mut self, _args: Vec<ValueT>) -> Vec<u8> {
-        let mut builder = FlatBufferBuilder::with_capacity(2048);
+    fn write_u8(&mut self, req: SpiWriteU8Req) -> CRes<SpiWriteU8Res> {
+        let mut _builder = FlatBufferBuilder::with_capacity(2048);
 
-        let result = self.wrapper.write_u8(8u8, 8u8);
+        let _result = self.wrapper.write_u8(8u8, 8u8);
 
-        match result {
-            Ok(_) => {
-                let success_msg = builder.create_string("success");
-                let succes = Value::create(
-                    &mut builder,
-                    &ValueArgs {
-                        name: Some(success_msg),
-                        valtype: ValueType::U16,
-                        value: Some(success_msg),
-                    },
-                );
-
-                let success2 = Value::create(
-                    &mut builder,
-                    &ValueArgs {
-                        name: Some(success_msg),
-                        valtype: ValueType::U16,
-                        value: Some(success_msg),
-                    },
-                );
-
-                let success_arr = builder.create_vector(&[succes, success2]);
-                let succes_retval = ReturnValue::create(
-                    &mut builder,
-                    &ReturnValueArgs {
-                        data: Some(success_arr),
-                    },
-                );
-
-                builder.finish(succes_retval, None);
-                let buf = builder.finished_data();
-
-                buf.to_vec()
-            }
-            Err(_) => {
-                let error_msg = builder.create_string("error_message");
-                let error = Value::create(
-                    &mut builder,
-                    &ValueArgs {
-                        name: Some(error_msg),
-                        valtype: ValueType::U16,
-                        value: Some(error_msg),
-                    },
-                );
-
-                let error1 = Value::create(
-                    &mut builder,
-                    &ValueArgs {
-                        name: Some(error_msg),
-                        valtype: ValueType::U16,
-                        value: Some(error_msg),
-                    },
-                );
-
-                let error_arr = builder.create_vector(&[error, error1]);
-                let error_retval = ReturnValue::create(
-                    &mut builder,
-                    &ReturnValueArgs {
-                        data: Some(error_arr),
-                    },
-                );
-
-                builder.finish(error_retval, None);
-                let buf = builder.finished_data();
-
-                buf.to_vec()
-            }
-        }
+        // NOTE: think simpler and better way
+        // to do this
+        CR(Ok(SpiWriteU8Res))
     }
 
-    fn read_u16(&mut self, args: Vec<ValueT>) -> Vec<u8> {
+    fn read_u16(&mut self, req: SpiReadU16Req) -> CRes<SpiReadU16Res> {
         todo!()
     }
 
-    fn read_u8(&mut self, args: Vec<ValueT>) -> Vec<u8> {
+    fn read_u8(&mut self, req: SpiReadU8Req) -> CRes<SpiReadU8Res> {
         todo!()
     }
 
-    fn write_then_read(&mut self, args: Vec<ValueT>) -> Vec<u8> {
+    fn write_then_read(&mut self, req: SpiWriteThenReadReq) -> CRes<SpiWriteThenReadRes> {
         todo!()
     }
 }
