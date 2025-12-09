@@ -1,3 +1,9 @@
+pub mod gpio_service;
+pub mod gpio_service_trait;
+pub mod i2c_service;
+pub mod i2c_service_trait;
 pub mod service_traits;
 pub mod spi_service;
 pub mod spi_service_traits;
+pub mod uart_service;
+pub mod uart_service_trait;

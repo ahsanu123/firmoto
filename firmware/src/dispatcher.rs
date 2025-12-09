@@ -1,6 +1,6 @@
 use crate::controllers::spi_controller::SpiControllerTrait;
 use crate::schema_generated::firmoto::{Operation, OperationType, SubOperationType, ValueT};
-use crate::writer::SerialTransportTrait;
+use crate::transport::SerialTransportTrait;
 use alloc::vec::Vec;
 
 pub struct Dispatcher<TSpi, TSerialTransport>

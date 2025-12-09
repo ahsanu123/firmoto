@@ -8,7 +8,13 @@ use alloc::vec::Vec;
 use flatbuffers::FlatBufferBuilder;
 
 pub trait SpiControllerTrait {
+    // TODO:
+    // change all Vec of ValueT to
+    // concrete argument type for every "endpoint"
     fn write_u8(&mut self, args: Vec<ValueT>) -> Vec<u8>;
+    fn read_u16(&mut self, args: Vec<ValueT>) -> Vec<u8>;
+    fn read_u8(&mut self, args: Vec<ValueT>) -> Vec<u8>;
+    fn write_then_read(&mut self, args: Vec<ValueT>) -> Vec<u8>;
 }
 
 pub struct SpiController<T>
@@ -106,5 +112,17 @@ where
                 buf.to_vec()
             }
         }
+    }
+
+    fn read_u16(&mut self, args: Vec<ValueT>) -> Vec<u8> {
+        todo!()
+    }
+
+    fn read_u8(&mut self, args: Vec<ValueT>) -> Vec<u8> {
+        todo!()
+    }
+
+    fn write_then_read(&mut self, args: Vec<ValueT>) -> Vec<u8> {
+        todo!()
     }
 }
