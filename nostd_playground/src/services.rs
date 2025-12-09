@@ -1,5 +1,5 @@
-pub mod concrete_spi_service;
-pub mod mock_spi_service;
+pub mod singleton_spi_service;
+pub mod spi_service;
 pub mod spi_service_traits;
 
 // TODO: use better implementation for deinit like Drop trait

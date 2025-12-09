@@ -1,5 +1,5 @@
 use crate::services::ServiceTrait;
-use crate::services::concrete_spi_service::ConcreteSpiService;
+use crate::services::spi_service::ConcreteSpiService;
 use crate::services::spi_service_traits::SpiServiceTrait;
 use alloc::boxed::Box;
 use core::cell::RefCell;
