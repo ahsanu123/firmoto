@@ -1,8 +1,0 @@
-[package]
-name = "firmoto-generic"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-embedded-hal = "1.0.0"
-flatbuffers = "25.9.23"
