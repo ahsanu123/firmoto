@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-use nostd_playground as _; // memory layout + panic handler
+use firmoto as _; // memory layout + panic handler
 
 // See https://crates.io/crates/defmt-test/0.3.0 for more documentation (e.g. about the 'state'
 // feature)

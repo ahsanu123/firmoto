@@ -5,8 +5,8 @@ extern crate alloc;
 
 use cortex_m_semihosting::hprintln;
 use flatbuffers::FlatBufferBuilder;
-use nostd_playground::allocator::init_allocator;
-use nostd_playground::{
+use firmoto::allocator::init_allocator;
+use firmoto::{
     self as _,
     firmoto_schema_generated::firmoto::{
         Operation, OperationArgs, OperationType, SubOperationType, Value, ValueArgs, ValueType,
@@ -87,5 +87,5 @@ fn main() -> ! {
         hprintln!("\t \t * type: {}", args_value);
     });
 
-    nostd_playground::exit()
+    firmoto::exit()
 }

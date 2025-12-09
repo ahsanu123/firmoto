@@ -19,8 +19,8 @@ use embassy_sync::blocking_mutex::{
     raw::{NoopRawMutex, ThreadModeRawMutex},
 };
 use embassy_time::{Delay, Timer};
-use nostd_playground::allocator::init_allocator;
-use nostd_playground::services::spi_service::ConcreteSpiService;
+use firmoto::allocator::init_allocator;
+use firmoto::services::spi_service::ConcreteSpiService;
 use static_cell::StaticCell;
 
 type Sdwc =
@@ -56,7 +56,7 @@ static SPI_BUS: StaticCell<NoopSpiBusTy<'_>> = StaticCell::new();
 //         *spi_dev_with_config.borrow_mut() =
 //             Some(SpiDeviceWithConfig::new(static_bus, cs, spi_config));
 //     });
-//     nostd_playground::exit()
+//     firmoto::exit()
 // }
 
 #[cortex_m_rt::entry]
@@ -79,5 +79,5 @@ fn main() -> ! {
 
     hprintln!("success to create spi_service!!!");
 
-    nostd_playground::exit()
+    firmoto::exit()
 }

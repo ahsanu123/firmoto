@@ -1,6 +1,6 @@
 [package]
 authors = ["Ahsanu Amala <caasperahsanuamala5@gmail.com>"]
-name = "nostd_playground"
+name = "firmoto"
 edition = "2024"
 version = "0.1.0"
 
@@ -9,11 +9,6 @@ version = "0.1.0"
 # If you use a standard main.rs file the following is sufficient:
 # [[bin]]
 # name = "nostd_playground"
-# test = false
-
-# [[bin]]
-# name = "hello"
-# path = "src/bin/hello.rs"
 # test = false
 
 [lib]

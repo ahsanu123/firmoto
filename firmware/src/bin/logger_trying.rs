@@ -2,7 +2,7 @@
 #![no_main]
 
 use embassy_executor::Spawner;
-use nostd_playground::{
+use firmoto::{
     allocator::init_allocator,
     utils::logger::{Log, log},
 };
@@ -15,5 +15,5 @@ async fn main(_spawner: Spawner) {
     log(Log::Warning, "test warning");
     log(Log::Error, "test error");
 
-    nostd_playground::exit()
+    firmoto::exit()
 }
