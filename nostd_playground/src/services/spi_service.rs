@@ -7,7 +7,7 @@ use embassy_sync::blocking_mutex::raw::RawMutex;
 use embedded_hal::{
     delay::DelayNs,
     digital::OutputPin,
-    spi::{ErrorType, Operation, SpiBus, SpiDevice},
+    spi::{Operation, SpiBus, SpiDevice},
 };
 
 pub struct ConcreteSpiService<'a, M, BUS, CS, Delay>
@@ -20,7 +20,6 @@ where
     pub spi: SpiDeviceWithConfig<'a, M, BUS, CS>,
     pub delay: Delay,
     pub config: <BUS as SetConfig>::Config,
-    // pub error_ty: <BUS as ErrorType>::Error,
 }
 
 impl<'a, M, BUS, CS, Delay> ConcreteSpiService<'a, M, BUS, CS, Delay>

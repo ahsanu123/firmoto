@@ -1,5 +1,5 @@
 // ideas on how to create multiple platform
-// SPI_SERVICE is same type
+// SPI_SERVICE is same type (implementing same trait)
 // so library see samethink
 
 #[cfg(esp32)]

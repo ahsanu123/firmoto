@@ -31,6 +31,12 @@ enum ValueType : byte{
   Boolean,
 }
 
+table Value {
+  name: string;
+  valtype: ValueType;
+  value: string;
+}
+
 table Operation {
   name: string; 
   op_type: OperationType;
@@ -39,10 +45,8 @@ table Operation {
   retval: [Value];
 }
 
-table Value {
-  name: string;
-  valtype: ValueType;
-  value: string;
+table ReturnValue{
+  data: [Value];
 }
 
 root_type Operation;

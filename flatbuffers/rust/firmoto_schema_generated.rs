@@ -325,6 +325,186 @@ impl<'a> flatbuffers::Verifiable for ValueType {
 }
 
 impl flatbuffers::SimpleToVerifyInSlice for ValueType {}
+pub enum ValueOffset {}
+#[derive(Copy, Clone, PartialEq)]
+
+pub struct Value<'a> {
+  pub _tab: flatbuffers::Table<'a>,
+}
+
+impl<'a> flatbuffers::Follow<'a> for Value<'a> {
+  type Inner = Value<'a>;
+  #[inline]
+  unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+    Self { _tab: unsafe { flatbuffers::Table::new(buf, loc) } }
+  }
+}
+
+impl<'a> Value<'a> {
+  pub const VT_NAME: flatbuffers::VOffsetT = 4;
+  pub const VT_VALTYPE: flatbuffers::VOffsetT = 6;
+  pub const VT_VALUE: flatbuffers::VOffsetT = 8;
+
+  #[inline]
+  pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
+    Value { _tab: table }
+  }
+  #[allow(unused_mut)]
+  pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
+    _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
+    args: &'args ValueArgs<'args>
+  ) -> flatbuffers::WIPOffset<Value<'bldr>> {
+    let mut builder = ValueBuilder::new(_fbb);
+    if let Some(x) = args.value { builder.add_value(x); }
+    if let Some(x) = args.name { builder.add_name(x); }
+    builder.add_valtype(args.valtype);
+    builder.finish()
+  }
+
+  pub fn unpack(&self) -> ValueT {
+    let name = self.name().map(|x| {
+      x.to_string()
+    });
+    let valtype = self.valtype();
+    let value = self.value().map(|x| {
+      x.to_string()
+    });
+    ValueT {
+      name,
+      valtype,
+      value,
+    }
+  }
+
+  #[inline]
+  pub fn name(&self) -> Option<&'a str> {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<&str>>(Value::VT_NAME, None)}
+  }
+  #[inline]
+  pub fn valtype(&self) -> ValueType {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<ValueType>(Value::VT_VALTYPE, Some(ValueType::U8)).unwrap()}
+  }
+  #[inline]
+  pub fn value(&self) -> Option<&'a str> {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<&str>>(Value::VT_VALUE, None)}
+  }
+}
+
+impl flatbuffers::Verifiable for Value<'_> {
+  #[inline]
+  fn run_verifier(
+    v: &mut flatbuffers::Verifier, pos: usize
+  ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
+    use self::flatbuffers::Verifiable;
+    v.visit_table(pos)?
+     .visit_field::<flatbuffers::ForwardsUOffset<&str>>("name", Self::VT_NAME, false)?
+     .visit_field::<ValueType>("valtype", Self::VT_VALTYPE, false)?
+     .visit_field::<flatbuffers::ForwardsUOffset<&str>>("value", Self::VT_VALUE, false)?
+     .finish();
+    Ok(())
+  }
+}
+pub struct ValueArgs<'a> {
+    pub name: Option<flatbuffers::WIPOffset<&'a str>>,
+    pub valtype: ValueType,
+    pub value: Option<flatbuffers::WIPOffset<&'a str>>,
+}
+impl<'a> Default for ValueArgs<'a> {
+  #[inline]
+  fn default() -> Self {
+    ValueArgs {
+      name: None,
+      valtype: ValueType::U8,
+      value: None,
+    }
+  }
+}
+
+pub struct ValueBuilder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
+  fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a, A>,
+  start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
+}
+impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> ValueBuilder<'a, 'b, A> {
+  #[inline]
+  pub fn add_name(&mut self, name: flatbuffers::WIPOffset<&'b  str>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(Value::VT_NAME, name);
+  }
+  #[inline]
+  pub fn add_valtype(&mut self, valtype: ValueType) {
+    self.fbb_.push_slot::<ValueType>(Value::VT_VALTYPE, valtype, ValueType::U8);
+  }
+  #[inline]
+  pub fn add_value(&mut self, value: flatbuffers::WIPOffset<&'b  str>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(Value::VT_VALUE, value);
+  }
+  #[inline]
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> ValueBuilder<'a, 'b, A> {
+    let start = _fbb.start_table();
+    ValueBuilder {
+      fbb_: _fbb,
+      start_: start,
+    }
+  }
+  #[inline]
+  pub fn finish(self) -> flatbuffers::WIPOffset<Value<'a>> {
+    let o = self.fbb_.end_table(self.start_);
+    flatbuffers::WIPOffset::new(o.value())
+  }
+}
+
+impl core::fmt::Debug for Value<'_> {
+  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    let mut ds = f.debug_struct("Value");
+      ds.field("name", &self.name());
+      ds.field("valtype", &self.valtype());
+      ds.field("value", &self.value());
+      ds.finish()
+  }
+}
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
+pub struct ValueT {
+  pub name: Option<String>,
+  pub valtype: ValueType,
+  pub value: Option<String>,
+}
+impl Default for ValueT {
+  fn default() -> Self {
+    Self {
+      name: None,
+      valtype: ValueType::U8,
+      value: None,
+    }
+  }
+}
+impl ValueT {
+  pub fn pack<'b, A: flatbuffers::Allocator + 'b>(
+    &self,
+    _fbb: &mut flatbuffers::FlatBufferBuilder<'b, A>
+  ) -> flatbuffers::WIPOffset<Value<'b>> {
+    let name = self.name.as_ref().map(|x|{
+      _fbb.create_string(x)
+    });
+    let valtype = self.valtype;
+    let value = self.value.as_ref().map(|x|{
+      _fbb.create_string(x)
+    });
+    Value::create(_fbb, &ValueArgs{
+      name,
+      valtype,
+      value,
+    })
+  }
+}
 pub enum OperationOffset {}
 #[derive(Copy, Clone, PartialEq)]
 
@@ -555,183 +735,133 @@ impl OperationT {
     })
   }
 }
-pub enum ValueOffset {}
+pub enum ReturnValueOffset {}
 #[derive(Copy, Clone, PartialEq)]
 
-pub struct Value<'a> {
+pub struct ReturnValue<'a> {
   pub _tab: flatbuffers::Table<'a>,
 }
 
-impl<'a> flatbuffers::Follow<'a> for Value<'a> {
-  type Inner = Value<'a>;
+impl<'a> flatbuffers::Follow<'a> for ReturnValue<'a> {
+  type Inner = ReturnValue<'a>;
   #[inline]
   unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
     Self { _tab: unsafe { flatbuffers::Table::new(buf, loc) } }
   }
 }
 
-impl<'a> Value<'a> {
-  pub const VT_NAME: flatbuffers::VOffsetT = 4;
-  pub const VT_VALTYPE: flatbuffers::VOffsetT = 6;
-  pub const VT_VALUE: flatbuffers::VOffsetT = 8;
+impl<'a> ReturnValue<'a> {
+  pub const VT_DATA: flatbuffers::VOffsetT = 4;
 
   #[inline]
   pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
-    Value { _tab: table }
+    ReturnValue { _tab: table }
   }
   #[allow(unused_mut)]
   pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
     _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
-    args: &'args ValueArgs<'args>
-  ) -> flatbuffers::WIPOffset<Value<'bldr>> {
-    let mut builder = ValueBuilder::new(_fbb);
-    if let Some(x) = args.value { builder.add_value(x); }
-    if let Some(x) = args.name { builder.add_name(x); }
-    builder.add_valtype(args.valtype);
+    args: &'args ReturnValueArgs<'args>
+  ) -> flatbuffers::WIPOffset<ReturnValue<'bldr>> {
+    let mut builder = ReturnValueBuilder::new(_fbb);
+    if let Some(x) = args.data { builder.add_data(x); }
     builder.finish()
   }
 
-  pub fn unpack(&self) -> ValueT {
-    let name = self.name().map(|x| {
-      x.to_string()
+  pub fn unpack(&self) -> ReturnValueT {
+    let data = self.data().map(|x| {
+      x.iter().map(|t| t.unpack()).collect()
     });
-    let valtype = self.valtype();
-    let value = self.value().map(|x| {
-      x.to_string()
-    });
-    ValueT {
-      name,
-      valtype,
-      value,
+    ReturnValueT {
+      data,
     }
   }
 
   #[inline]
-  pub fn name(&self) -> Option<&'a str> {
+  pub fn data(&self) -> Option<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<Value<'a>>>> {
     // Safety:
     // Created from valid Table for this object
     // which contains a valid value in this slot
-    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<&str>>(Value::VT_NAME, None)}
-  }
-  #[inline]
-  pub fn valtype(&self) -> ValueType {
-    // Safety:
-    // Created from valid Table for this object
-    // which contains a valid value in this slot
-    unsafe { self._tab.get::<ValueType>(Value::VT_VALTYPE, Some(ValueType::U8)).unwrap()}
-  }
-  #[inline]
-  pub fn value(&self) -> Option<&'a str> {
-    // Safety:
-    // Created from valid Table for this object
-    // which contains a valid value in this slot
-    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<&str>>(Value::VT_VALUE, None)}
+    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<Value>>>>(ReturnValue::VT_DATA, None)}
   }
 }
 
-impl flatbuffers::Verifiable for Value<'_> {
+impl flatbuffers::Verifiable for ReturnValue<'_> {
   #[inline]
   fn run_verifier(
     v: &mut flatbuffers::Verifier, pos: usize
   ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
     use self::flatbuffers::Verifiable;
     v.visit_table(pos)?
-     .visit_field::<flatbuffers::ForwardsUOffset<&str>>("name", Self::VT_NAME, false)?
-     .visit_field::<ValueType>("valtype", Self::VT_VALTYPE, false)?
-     .visit_field::<flatbuffers::ForwardsUOffset<&str>>("value", Self::VT_VALUE, false)?
+     .visit_field::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'_, flatbuffers::ForwardsUOffset<Value>>>>("data", Self::VT_DATA, false)?
      .finish();
     Ok(())
   }
 }
-pub struct ValueArgs<'a> {
-    pub name: Option<flatbuffers::WIPOffset<&'a str>>,
-    pub valtype: ValueType,
-    pub value: Option<flatbuffers::WIPOffset<&'a str>>,
+pub struct ReturnValueArgs<'a> {
+    pub data: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<Value<'a>>>>>,
 }
-impl<'a> Default for ValueArgs<'a> {
+impl<'a> Default for ReturnValueArgs<'a> {
   #[inline]
   fn default() -> Self {
-    ValueArgs {
-      name: None,
-      valtype: ValueType::U8,
-      value: None,
+    ReturnValueArgs {
+      data: None,
     }
   }
 }
 
-pub struct ValueBuilder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
+pub struct ReturnValueBuilder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
   fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a, A>,
   start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
 }
-impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> ValueBuilder<'a, 'b, A> {
+impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> ReturnValueBuilder<'a, 'b, A> {
   #[inline]
-  pub fn add_name(&mut self, name: flatbuffers::WIPOffset<&'b  str>) {
-    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(Value::VT_NAME, name);
+  pub fn add_data(&mut self, data: flatbuffers::WIPOffset<flatbuffers::Vector<'b , flatbuffers::ForwardsUOffset<Value<'b >>>>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(ReturnValue::VT_DATA, data);
   }
   #[inline]
-  pub fn add_valtype(&mut self, valtype: ValueType) {
-    self.fbb_.push_slot::<ValueType>(Value::VT_VALTYPE, valtype, ValueType::U8);
-  }
-  #[inline]
-  pub fn add_value(&mut self, value: flatbuffers::WIPOffset<&'b  str>) {
-    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(Value::VT_VALUE, value);
-  }
-  #[inline]
-  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> ValueBuilder<'a, 'b, A> {
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> ReturnValueBuilder<'a, 'b, A> {
     let start = _fbb.start_table();
-    ValueBuilder {
+    ReturnValueBuilder {
       fbb_: _fbb,
       start_: start,
     }
   }
   #[inline]
-  pub fn finish(self) -> flatbuffers::WIPOffset<Value<'a>> {
+  pub fn finish(self) -> flatbuffers::WIPOffset<ReturnValue<'a>> {
     let o = self.fbb_.end_table(self.start_);
     flatbuffers::WIPOffset::new(o.value())
   }
 }
 
-impl core::fmt::Debug for Value<'_> {
+impl core::fmt::Debug for ReturnValue<'_> {
   fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-    let mut ds = f.debug_struct("Value");
-      ds.field("name", &self.name());
-      ds.field("valtype", &self.valtype());
-      ds.field("value", &self.value());
+    let mut ds = f.debug_struct("ReturnValue");
+      ds.field("data", &self.data());
       ds.finish()
   }
 }
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
-pub struct ValueT {
-  pub name: Option<String>,
-  pub valtype: ValueType,
-  pub value: Option<String>,
+pub struct ReturnValueT {
+  pub data: Option<Vec<ValueT>>,
 }
-impl Default for ValueT {
+impl Default for ReturnValueT {
   fn default() -> Self {
     Self {
-      name: None,
-      valtype: ValueType::U8,
-      value: None,
+      data: None,
     }
   }
 }
-impl ValueT {
+impl ReturnValueT {
   pub fn pack<'b, A: flatbuffers::Allocator + 'b>(
     &self,
     _fbb: &mut flatbuffers::FlatBufferBuilder<'b, A>
-  ) -> flatbuffers::WIPOffset<Value<'b>> {
-    let name = self.name.as_ref().map(|x|{
-      _fbb.create_string(x)
+  ) -> flatbuffers::WIPOffset<ReturnValue<'b>> {
+    let data = self.data.as_ref().map(|x|{
+      let w: Vec<_> = x.iter().map(|t| t.pack(_fbb)).collect();_fbb.create_vector(&w)
     });
-    let valtype = self.valtype;
-    let value = self.value.as_ref().map(|x|{
-      _fbb.create_string(x)
-    });
-    Value::create(_fbb, &ValueArgs{
-      name,
-      valtype,
-      value,
+    ReturnValue::create(_fbb, &ReturnValueArgs{
+      data,
     })
   }
 }

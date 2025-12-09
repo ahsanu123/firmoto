@@ -9,6 +9,7 @@ pub mod controllers;
 pub mod dispatcher;
 pub mod firmoto_schema_generated;
 pub mod service_provider;
+pub mod service_wrappers;
 pub mod services;
 
 use defmt_semihosting as _;

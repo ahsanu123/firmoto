@@ -12,7 +12,10 @@ use embassy_stm32::{
 };
 use embassy_sync::blocking_mutex::{Mutex, raw::ThreadModeRawMutex};
 use embassy_time::Delay;
-use nostd_playground::{allocator::init_allocator, services::spi_service::ConcreteSpiService};
+use nostd_playground::{
+    allocator::init_allocator,
+    services::{spi_service::ConcreteSpiService, spi_service_traits::SpiServiceTrait},
+};
 use static_cell::StaticCell;
 
 type StaticBlockingSpiBusType = Mutex<ThreadModeRawMutex, RefCell<Spi<'static, Blocking>>>;
@@ -45,6 +48,12 @@ async fn main(_spawner: Spawner) {
 
     SPI_SERVICE.lock(|cell| {
         *cell.borrow_mut() = Some(service);
+    });
+
+    SPI_SERVICE.lock(|cell| {
+        if let Some(spi_dev) = cell.borrow_mut().as_mut() {
+            let _ = spi_dev.read_u8(8u8);
+        }
     });
 
     nostd_playground::exit()

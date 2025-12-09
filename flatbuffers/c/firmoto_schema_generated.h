@@ -15,13 +15,17 @@ static_assert(FLATBUFFERS_VERSION_MAJOR == 25 &&
 
 namespace Firmoto {
 
+struct Value;
+struct ValueBuilder;
+struct ValueT;
+
 struct Operation;
 struct OperationBuilder;
 struct OperationT;
 
-struct Value;
-struct ValueBuilder;
-struct ValueT;
+struct ReturnValue;
+struct ReturnValueBuilder;
+struct ReturnValueT;
 
 enum OperationType : int8_t {
   OperationType_GPIO = 0,
@@ -152,6 +156,96 @@ inline const char *EnumNameValueType(ValueType e) {
   return EnumNamesValueType()[index];
 }
 
+struct ValueT : public ::flatbuffers::NativeTable {
+  typedef Value TableType;
+  std::string name{};
+  Firmoto::ValueType valtype = Firmoto::ValueType_U8;
+  std::string value{};
+};
+
+struct Value FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ValueT NativeTableType;
+  typedef ValueBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_NAME = 4,
+    VT_VALTYPE = 6,
+    VT_VALUE = 8
+  };
+  const ::flatbuffers::String *name() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_NAME);
+  }
+  Firmoto::ValueType valtype() const {
+    return static_cast<Firmoto::ValueType>(GetField<int8_t>(VT_VALTYPE, 0));
+  }
+  const ::flatbuffers::String *value() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_VALUE);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_NAME) &&
+           verifier.VerifyString(name()) &&
+           VerifyField<int8_t>(verifier, VT_VALTYPE, 1) &&
+           VerifyOffset(verifier, VT_VALUE) &&
+           verifier.VerifyString(value()) &&
+           verifier.EndTable();
+  }
+  ValueT *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(ValueT *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<Value> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const ValueT* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct ValueBuilder {
+  typedef Value Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_name(::flatbuffers::Offset<::flatbuffers::String> name) {
+    fbb_.AddOffset(Value::VT_NAME, name);
+  }
+  void add_valtype(Firmoto::ValueType valtype) {
+    fbb_.AddElement<int8_t>(Value::VT_VALTYPE, static_cast<int8_t>(valtype), 0);
+  }
+  void add_value(::flatbuffers::Offset<::flatbuffers::String> value) {
+    fbb_.AddOffset(Value::VT_VALUE, value);
+  }
+  explicit ValueBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<Value> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<Value>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<Value> CreateValue(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    ::flatbuffers::Offset<::flatbuffers::String> name = 0,
+    Firmoto::ValueType valtype = Firmoto::ValueType_U8,
+    ::flatbuffers::Offset<::flatbuffers::String> value = 0) {
+  ValueBuilder builder_(_fbb);
+  builder_.add_value(value);
+  builder_.add_name(name);
+  builder_.add_valtype(valtype);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<Value> CreateValueDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    const char *name = nullptr,
+    Firmoto::ValueType valtype = Firmoto::ValueType_U8,
+    const char *value = nullptr) {
+  auto name__ = name ? _fbb.CreateString(name) : 0;
+  auto value__ = value ? _fbb.CreateString(value) : 0;
+  return Firmoto::CreateValue(
+      _fbb,
+      name__,
+      valtype,
+      value__);
+}
+
+::flatbuffers::Offset<Value> CreateValue(::flatbuffers::FlatBufferBuilder &_fbb, const ValueT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
 struct OperationT : public ::flatbuffers::NativeTable {
   typedef Operation TableType;
   std::string name{};
@@ -276,95 +370,104 @@ inline ::flatbuffers::Offset<Operation> CreateOperationDirect(
 
 ::flatbuffers::Offset<Operation> CreateOperation(::flatbuffers::FlatBufferBuilder &_fbb, const OperationT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
 
-struct ValueT : public ::flatbuffers::NativeTable {
-  typedef Value TableType;
-  std::string name{};
-  Firmoto::ValueType valtype = Firmoto::ValueType_U8;
-  std::string value{};
+struct ReturnValueT : public ::flatbuffers::NativeTable {
+  typedef ReturnValue TableType;
+  std::vector<std::unique_ptr<Firmoto::ValueT>> data{};
+  ReturnValueT() = default;
+  ReturnValueT(const ReturnValueT &o);
+  ReturnValueT(ReturnValueT&&) FLATBUFFERS_NOEXCEPT = default;
+  ReturnValueT &operator=(ReturnValueT o) FLATBUFFERS_NOEXCEPT;
 };
 
-struct Value FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef ValueT NativeTableType;
-  typedef ValueBuilder Builder;
+struct ReturnValue FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ReturnValueT NativeTableType;
+  typedef ReturnValueBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_NAME = 4,
-    VT_VALTYPE = 6,
-    VT_VALUE = 8
+    VT_DATA = 4
   };
-  const ::flatbuffers::String *name() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_NAME);
-  }
-  Firmoto::ValueType valtype() const {
-    return static_cast<Firmoto::ValueType>(GetField<int8_t>(VT_VALTYPE, 0));
-  }
-  const ::flatbuffers::String *value() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_VALUE);
+  const ::flatbuffers::Vector<::flatbuffers::Offset<Firmoto::Value>> *data() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Firmoto::Value>> *>(VT_DATA);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyOffset(verifier, VT_NAME) &&
-           verifier.VerifyString(name()) &&
-           VerifyField<int8_t>(verifier, VT_VALTYPE, 1) &&
-           VerifyOffset(verifier, VT_VALUE) &&
-           verifier.VerifyString(value()) &&
+           VerifyOffset(verifier, VT_DATA) &&
+           verifier.VerifyVector(data()) &&
+           verifier.VerifyVectorOfTables(data()) &&
            verifier.EndTable();
   }
-  ValueT *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
-  void UnPackTo(ValueT *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
-  static ::flatbuffers::Offset<Value> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const ValueT* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+  ReturnValueT *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(ReturnValueT *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<ReturnValue> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const ReturnValueT* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
 };
 
-struct ValueBuilder {
-  typedef Value Table;
+struct ReturnValueBuilder {
+  typedef ReturnValue Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_name(::flatbuffers::Offset<::flatbuffers::String> name) {
-    fbb_.AddOffset(Value::VT_NAME, name);
+  void add_data(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Firmoto::Value>>> data) {
+    fbb_.AddOffset(ReturnValue::VT_DATA, data);
   }
-  void add_valtype(Firmoto::ValueType valtype) {
-    fbb_.AddElement<int8_t>(Value::VT_VALTYPE, static_cast<int8_t>(valtype), 0);
-  }
-  void add_value(::flatbuffers::Offset<::flatbuffers::String> value) {
-    fbb_.AddOffset(Value::VT_VALUE, value);
-  }
-  explicit ValueBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit ReturnValueBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<Value> Finish() {
+  ::flatbuffers::Offset<ReturnValue> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<Value>(end);
+    auto o = ::flatbuffers::Offset<ReturnValue>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<Value> CreateValue(
+inline ::flatbuffers::Offset<ReturnValue> CreateReturnValue(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> name = 0,
-    Firmoto::ValueType valtype = Firmoto::ValueType_U8,
-    ::flatbuffers::Offset<::flatbuffers::String> value = 0) {
-  ValueBuilder builder_(_fbb);
-  builder_.add_value(value);
-  builder_.add_name(name);
-  builder_.add_valtype(valtype);
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Firmoto::Value>>> data = 0) {
+  ReturnValueBuilder builder_(_fbb);
+  builder_.add_data(data);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<Value> CreateValueDirect(
+inline ::flatbuffers::Offset<ReturnValue> CreateReturnValueDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    const char *name = nullptr,
-    Firmoto::ValueType valtype = Firmoto::ValueType_U8,
-    const char *value = nullptr) {
-  auto name__ = name ? _fbb.CreateString(name) : 0;
-  auto value__ = value ? _fbb.CreateString(value) : 0;
-  return Firmoto::CreateValue(
+    const std::vector<::flatbuffers::Offset<Firmoto::Value>> *data = nullptr) {
+  auto data__ = data ? _fbb.CreateVector<::flatbuffers::Offset<Firmoto::Value>>(*data) : 0;
+  return Firmoto::CreateReturnValue(
       _fbb,
-      name__,
-      valtype,
-      value__);
+      data__);
 }
 
-::flatbuffers::Offset<Value> CreateValue(::flatbuffers::FlatBufferBuilder &_fbb, const ValueT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+::flatbuffers::Offset<ReturnValue> CreateReturnValue(::flatbuffers::FlatBufferBuilder &_fbb, const ReturnValueT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+inline ValueT *Value::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<ValueT>(new ValueT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void Value::UnPackTo(ValueT *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = name(); if (_e) _o->name = _e->str(); }
+  { auto _e = valtype(); _o->valtype = _e; }
+  { auto _e = value(); if (_e) _o->value = _e->str(); }
+}
+
+inline ::flatbuffers::Offset<Value> Value::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const ValueT* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateValue(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<Value> CreateValue(::flatbuffers::FlatBufferBuilder &_fbb, const ValueT *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const ValueT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _name = _o->name.empty() ? 0 : _fbb.CreateString(_o->name);
+  auto _valtype = _o->valtype;
+  auto _value = _o->value.empty() ? 0 : _fbb.CreateString(_o->value);
+  return Firmoto::CreateValue(
+      _fbb,
+      _name,
+      _valtype,
+      _value);
+}
 
 inline OperationT::OperationT(const OperationT &o)
       : name(o.name),
@@ -423,36 +526,40 @@ inline ::flatbuffers::Offset<Operation> CreateOperation(::flatbuffers::FlatBuffe
       _retval);
 }
 
-inline ValueT *Value::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
-  auto _o = std::unique_ptr<ValueT>(new ValueT());
+inline ReturnValueT::ReturnValueT(const ReturnValueT &o) {
+  data.reserve(o.data.size());
+  for (const auto &data_ : o.data) { data.emplace_back((data_) ? new Firmoto::ValueT(*data_) : nullptr); }
+}
+
+inline ReturnValueT &ReturnValueT::operator=(ReturnValueT o) FLATBUFFERS_NOEXCEPT {
+  std::swap(data, o.data);
+  return *this;
+}
+
+inline ReturnValueT *ReturnValue::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<ReturnValueT>(new ReturnValueT());
   UnPackTo(_o.get(), _resolver);
   return _o.release();
 }
 
-inline void Value::UnPackTo(ValueT *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+inline void ReturnValue::UnPackTo(ReturnValueT *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
   (void)_o;
   (void)_resolver;
-  { auto _e = name(); if (_e) _o->name = _e->str(); }
-  { auto _e = valtype(); _o->valtype = _e; }
-  { auto _e = value(); if (_e) _o->value = _e->str(); }
+  { auto _e = data(); if (_e) { _o->data.resize(_e->size()); for (::flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { if(_o->data[_i]) { _e->Get(_i)->UnPackTo(_o->data[_i].get(), _resolver); } else { _o->data[_i] = std::unique_ptr<Firmoto::ValueT>(_e->Get(_i)->UnPack(_resolver)); } } } else { _o->data.resize(0); } }
 }
 
-inline ::flatbuffers::Offset<Value> Value::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const ValueT* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
-  return CreateValue(_fbb, _o, _rehasher);
+inline ::flatbuffers::Offset<ReturnValue> ReturnValue::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const ReturnValueT* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateReturnValue(_fbb, _o, _rehasher);
 }
 
-inline ::flatbuffers::Offset<Value> CreateValue(::flatbuffers::FlatBufferBuilder &_fbb, const ValueT *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+inline ::flatbuffers::Offset<ReturnValue> CreateReturnValue(::flatbuffers::FlatBufferBuilder &_fbb, const ReturnValueT *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
   (void)_rehasher;
   (void)_o;
-  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const ValueT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
-  auto _name = _o->name.empty() ? 0 : _fbb.CreateString(_o->name);
-  auto _valtype = _o->valtype;
-  auto _value = _o->value.empty() ? 0 : _fbb.CreateString(_o->value);
-  return Firmoto::CreateValue(
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const ReturnValueT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _data = _o->data.size() ? _fbb.CreateVector<::flatbuffers::Offset<Firmoto::Value>> (_o->data.size(), [](size_t i, _VectorArgs *__va) { return CreateValue(*__va->__fbb, __va->__o->data[i].get(), __va->__rehasher); }, &_va ) : 0;
+  return Firmoto::CreateReturnValue(
       _fbb,
-      _name,
-      _valtype,
-      _value);
+      _data);
 }
 
 inline const Firmoto::Operation *GetOperation(const void *buf) {

@@ -19,10 +19,8 @@ use embassy_sync::blocking_mutex::{
     raw::{NoopRawMutex, ThreadModeRawMutex},
 };
 use embassy_time::{Delay, Timer};
-use nostd_playground::{allocator::init_allocator, service_provider::SPI_DEVICE_ONLY};
-use nostd_playground::{
-    service_provider::Stm32SpiService, services::spi_service::ConcreteSpiService,
-};
+use nostd_playground::allocator::init_allocator;
+use nostd_playground::services::spi_service::ConcreteSpiService;
 use static_cell::StaticCell;
 
 type Sdwc =
