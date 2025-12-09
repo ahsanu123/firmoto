@@ -1,5 +1,5 @@
 use crate::{
-    firmoto_schema_generated::firmoto::{
+    schema_generated::firmoto::{
         ReturnValue, ReturnValueArgs, Value, ValueArgs, ValueT, ValueType,
     },
     service_wrappers::SpiServiceWrapperTrait,

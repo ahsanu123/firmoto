@@ -1,7 +1,5 @@
 use crate::controllers::spi_controller::SpiControllerTrait;
-use crate::firmoto_schema_generated::firmoto::{
-    Operation, OperationType, SubOperationType, ValueT,
-};
+use crate::schema_generated::firmoto::{Operation, OperationType, SubOperationType, ValueT};
 use crate::writer::SerialTransportTrait;
 use alloc::vec::Vec;
 

@@ -7,7 +7,7 @@ use cortex_m_semihosting::hprintln;
 use firmoto::allocator::init_allocator;
 use firmoto::{
     self as _,
-    firmoto_schema_generated::firmoto::{
+    schema_generated::firmoto::{
         Operation, OperationArgs, OperationType, SubOperationType, Value, ValueArgs, ValueType,
     },
 };

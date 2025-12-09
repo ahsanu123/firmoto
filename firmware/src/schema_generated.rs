@@ -10,16 +10,15 @@ use self::flatbuffers::{EndianScalar, Follow};
 
 #[allow(unused_imports, dead_code)]
 pub mod firmoto {
-
-    use core::cmp::Ordering;
-    use core::mem;
-
-    extern crate flatbuffers;
     use alloc::{
         string::{String, ToString as _},
         vec::Vec,
     };
 
+    use core::cmp::Ordering;
+    use core::mem;
+
+    extern crate flatbuffers;
     use self::flatbuffers::{EndianScalar, Follow};
 
     #[deprecated(

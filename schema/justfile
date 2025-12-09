@@ -1,8 +1,6 @@
 default: all-language
 
-# fbs-file := "./fbs/bpio.fbs"
-fbs-file := "./fbs/firmoto_schema.fbs"
-# fbs-file := "./fbs/monster.fbs"
+fbs-file := "./fbs/schema.fbs"
 
 all-language: 
   just reset rust && flatc --rust --gen-object-api -o rust {{fbs-file}}
@@ -14,7 +12,7 @@ all-language:
   just reset kotlin && flatc --kotlin --gen-object-api -o kotlin {{fbs-file}}
   just reset typescript && flatc --ts --gen-object-api -o typescript {{fbs-file}}
   just reset java && flatc --java --gen-object-api -o java {{fbs-file}}
-  cp ./rust/firmoto_schema_generated.rs ../nostd_playground/src/firmoto_schema_generated.rs
+  cp ./rust/schema_generated.rs ../firmware/src/schema_generated.rs
 
 reset folder: 
   rm -rf {{folder}}

@@ -4,11 +4,10 @@
 extern crate alloc;
 
 pub mod allocator;
-pub mod builders;
 pub mod controllers;
 pub mod dispatcher;
-pub mod firmoto_schema_generated;
 pub mod platforms;
+pub mod schema_generated;
 pub mod service_provider;
 pub mod service_wrappers;
 pub mod services;
