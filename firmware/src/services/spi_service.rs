@@ -1,5 +1,5 @@
 use crate::services::{
-    ServiceTrait,
+    service_traits::ServiceTrait,
     spi_service_traits::{SpiServiceError, SpiServiceTrait},
 };
 use embassy_embedded_hal::{SetConfig, shared_bus::blocking::spi::SpiDeviceWithConfig};

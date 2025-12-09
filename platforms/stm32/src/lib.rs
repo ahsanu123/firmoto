@@ -2,7 +2,12 @@
 #![no_std]
 
 extern crate alloc;
-pub mod service_providers;
+
+pub mod serial_transport;
+pub mod service_provider;
+pub mod service_wrappers;
+pub mod utils;
+
 use defmt_semihosting as _;
 use embassy_stm32 as _;
 

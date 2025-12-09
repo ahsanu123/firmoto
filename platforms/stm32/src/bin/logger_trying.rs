@@ -2,10 +2,8 @@
 #![no_main]
 
 use embassy_executor::Spawner;
-use firmoto::{
-    allocator::init_allocator,
-    utils::logger::{Log, log},
-};
+use firmoto::allocator::init_allocator;
+use firmoto_stm32::utils::logger::{Log, log};
 
 #[embassy_executor::main]
 async fn main(_spawner: Spawner) {

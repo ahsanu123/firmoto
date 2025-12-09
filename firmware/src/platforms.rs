@@ -2,7 +2,7 @@
 // SPI_SERVICE is same type (implementing same trait)
 // so library see samethink
 
-#[cfg(esp32)]
+#[cfg(feature = "")]
 mod platform {
     pub use crate::platform::esp32::*;
 }
@@ -17,4 +17,4 @@ mod platform {
     pub use crate::platform::nrf52::*;
 }
 
-use platform::{SPI_SERVICE, init_spi};
+// use platform::{SPI_SERVICE, init_spi};

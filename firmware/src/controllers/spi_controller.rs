@@ -2,19 +2,41 @@ use crate::{
     firmoto_schema_generated::firmoto::{
         ReturnValue, ReturnValueArgs, Value, ValueArgs, ValueT, ValueType,
     },
-    service_wrappers::{self, spi_service_wrapper::SpiServiceWrapperTrait},
+    service_wrappers::SpiServiceWrapperTrait,
 };
 use alloc::vec::Vec;
 use flatbuffers::FlatBufferBuilder;
-use service_wrappers::Spi;
 
-pub struct SpiController;
+pub trait SpiControllerTrait {
+    fn write_u8(&mut self, args: Vec<ValueT>) -> Vec<u8>;
+}
 
-impl SpiController {
-    pub fn write_u8(_args: Vec<ValueT>) -> Vec<u8> {
+pub struct SpiController<T>
+where
+    T: SpiServiceWrapperTrait,
+{
+    wrapper: T,
+}
+
+impl<T> SpiController<T>
+where
+    T: SpiServiceWrapperTrait,
+{
+    pub fn new(spi_wrapper: T) -> Self {
+        Self {
+            wrapper: spi_wrapper,
+        }
+    }
+}
+
+impl<T> SpiControllerTrait for SpiController<T>
+where
+    T: SpiServiceWrapperTrait,
+{
+    fn write_u8(&mut self, _args: Vec<ValueT>) -> Vec<u8> {
         let mut builder = FlatBufferBuilder::with_capacity(2048);
 
-        let result = Spi::write_u8(8u8, 8u8);
+        let result = self.wrapper.write_u8(8u8, 8u8);
 
         match result {
             Ok(_) => {
