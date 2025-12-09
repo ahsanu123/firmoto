@@ -16,8 +16,8 @@ use embassy_stm32::{
 };
 use embassy_sync::blocking_mutex::{NoopMutex, raw::NoopRawMutex};
 use embassy_time::{Delay, Timer};
+use nostd_playground::allocator::init_allocator;
 use nostd_playground::services::concrete_spi_service::ConcreteSpiService;
-use nostd_playground::{allocator::init_allocator, service_provider::get_singleton};
 use static_cell::StaticCell;
 
 static SPI_BUS: StaticCell<NoopMutex<RefCell<Spi<'_, Blocking>>>> = StaticCell::new();
@@ -56,10 +56,23 @@ async fn main(_spawner: Spawner) {
     init_allocator();
 
     hprintln!("will sync work?");
+    let p = embassy_stm32::init(Default::default());
 
-    let my_pet = get_singleton();
+    let mut spi_config = Config::default();
+    spi_config.frequency = Hertz(1_000_000);
 
-    hprintln!("my pet is {}", my_pet.name);
+    let cs = Output::new(p.PA2, Level::High, Speed::VeryHigh);
+    let spi = Spi::new_blocking(p.SPI3, p.PC10, p.PC12, p.PC11, spi_config);
+    let current_config = spi.get_current_config();
+    let spi_bus = NoopMutex::new(RefCell::new(spi));
+    let spi_bus = SPI_BUS.init(spi_bus);
+
+    let spi_device_with_config = SpiDeviceWithConfig::new(spi_bus, cs, spi_config);
+    // SpiService::new(spi_device_with_config, Delay, current_config);
+
+    // let my_pet = get_singleton();
+    //
+    // hprintln!("my pet is {}", my_pet.name);
 
     nostd_playground::exit()
 }

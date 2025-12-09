@@ -1,6 +1,5 @@
 use crate::{
     firmoto_schema_generated::firmoto::ValueT,
-    service_provider::get_spi_service,
     services::{ServiceTrait, spi_service_traits::SpiServiceTrait},
 };
 use alloc::vec::Vec;

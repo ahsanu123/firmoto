@@ -1,5 +1,6 @@
 use crate::services::concrete_spi_service::ConcreteSpiService;
 use core::cell::RefCell;
+use embassy_stm32::Peripherals;
 use embassy_stm32::{gpio::Output, mode::Blocking, spi::Spi};
 use embassy_sync::blocking_mutex::raw::ThreadModeRawMutex;
 use embassy_sync::blocking_mutex::{Mutex, raw::NoopRawMutex};
@@ -22,6 +23,9 @@ impl SpiDevice for SpiMo {
         Ok(())
     }
 }
+
+static PERIPHERAL: Mutex<ThreadModeRawMutex, RefCell<Option<Peripherals>>> =
+    Mutex::new(RefCell::new(None));
 
 static SPI: Mutex<ThreadModeRawMutex, RefCell<Option<SpiMo>>> =
     Mutex::new(RefCell::new(Some(SpiMo)));
