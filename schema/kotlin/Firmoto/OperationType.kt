@@ -8,5 +8,6 @@ class OperationType private constructor() {
         const val GPIO: Byte = 0
         const val I2C: Byte = 1
         const val SPI: Byte = 2
+        const val CAN: Byte = 3
     }
 }

@@ -4,7 +4,19 @@
 
 import * as flatbuffers from 'flatbuffers';
 
-import { ValueType } from '../firmoto/value-type.js';
+import { FieldBool, FieldBoolT } from '../firmoto/field-bool.js';
+import { FieldDouble, FieldDoubleT } from '../firmoto/field-double.js';
+import { FieldFloat, FieldFloatT } from '../firmoto/field-float.js';
+import { FieldI16, FieldI16T } from '../firmoto/field-i16.js';
+import { FieldI32, FieldI32T } from '../firmoto/field-i32.js';
+import { FieldI64, FieldI64T } from '../firmoto/field-i64.js';
+import { FieldI8, FieldI8T } from '../firmoto/field-i8.js';
+import { FieldString, FieldStringT } from '../firmoto/field-string.js';
+import { FieldType, unionToFieldType, unionListToFieldType } from '../firmoto/field-type.js';
+import { FieldU16, FieldU16T } from '../firmoto/field-u16.js';
+import { FieldU32, FieldU32T } from '../firmoto/field-u32.js';
+import { FieldU64, FieldU64T } from '../firmoto/field-u64.js';
+import { FieldU8, FieldU8T } from '../firmoto/field-u8.js';
 
 
 export class Value implements flatbuffers.IUnpackableObject<ValueT> {
@@ -32,16 +44,14 @@ name(optionalEncoding?:any):string|Uint8Array|null {
   return offset ? this.bb!.__string(this.bb_pos + offset, optionalEncoding) : null;
 }
 
-valtype():ValueType {
+valueType():FieldType {
   const offset = this.bb!.__offset(this.bb_pos, 6);
-  return offset ? this.bb!.readInt8(this.bb_pos + offset) : ValueType.U8;
+  return offset ? this.bb!.readUint8(this.bb_pos + offset) : FieldType.NONE;
 }
 
-value():string|null
-value(optionalEncoding:flatbuffers.Encoding):string|Uint8Array|null
-value(optionalEncoding?:any):string|Uint8Array|null {
+value<T extends flatbuffers.Table>(obj:any):any|null {
   const offset = this.bb!.__offset(this.bb_pos, 8);
-  return offset ? this.bb!.__string(this.bb_pos + offset, optionalEncoding) : null;
+  return offset ? this.bb!.__union(obj, this.bb_pos + offset) : null;
 }
 
 static startValue(builder:flatbuffers.Builder) {
@@ -52,8 +62,8 @@ static addName(builder:flatbuffers.Builder, nameOffset:flatbuffers.Offset) {
   builder.addFieldOffset(0, nameOffset, 0);
 }
 
-static addValtype(builder:flatbuffers.Builder, valtype:ValueType) {
-  builder.addFieldInt8(1, valtype, ValueType.U8);
+static addValueType(builder:flatbuffers.Builder, valueType:FieldType) {
+  builder.addFieldInt8(1, valueType, FieldType.NONE);
 }
 
 static addValue(builder:flatbuffers.Builder, valueOffset:flatbuffers.Offset) {
@@ -65,10 +75,10 @@ static endValue(builder:flatbuffers.Builder):flatbuffers.Offset {
   return offset;
 }
 
-static createValue(builder:flatbuffers.Builder, nameOffset:flatbuffers.Offset, valtype:ValueType, valueOffset:flatbuffers.Offset):flatbuffers.Offset {
+static createValue(builder:flatbuffers.Builder, nameOffset:flatbuffers.Offset, valueType:FieldType, valueOffset:flatbuffers.Offset):flatbuffers.Offset {
   Value.startValue(builder);
   Value.addName(builder, nameOffset);
-  Value.addValtype(builder, valtype);
+  Value.addValueType(builder, valueType);
   Value.addValue(builder, valueOffset);
   return Value.endValue(builder);
 }
@@ -76,34 +86,42 @@ static createValue(builder:flatbuffers.Builder, nameOffset:flatbuffers.Offset, v
 unpack(): ValueT {
   return new ValueT(
     this.name(),
-    this.valtype(),
-    this.value()
+    this.valueType(),
+    (() => {
+      const temp = unionToFieldType(this.valueType(), this.value.bind(this));
+      if(temp === null) { return null; }
+      return temp.unpack()
+  })()
   );
 }
 
 
 unpackTo(_o: ValueT): void {
   _o.name = this.name();
-  _o.valtype = this.valtype();
-  _o.value = this.value();
+  _o.valueType = this.valueType();
+  _o.value = (() => {
+      const temp = unionToFieldType(this.valueType(), this.value.bind(this));
+      if(temp === null) { return null; }
+      return temp.unpack()
+  })();
 }
 }
 
 export class ValueT implements flatbuffers.IGeneratedObject {
 constructor(
   public name: string|Uint8Array|null = null,
-  public valtype: ValueType = ValueType.U8,
-  public value: string|Uint8Array|null = null
+  public valueType: FieldType = FieldType.NONE,
+  public value: FieldBoolT|FieldDoubleT|FieldFloatT|FieldI16T|FieldI32T|FieldI64T|FieldI8T|FieldStringT|FieldU16T|FieldU32T|FieldU64T|FieldU8T|null = null
 ){}
 
 
 pack(builder:flatbuffers.Builder): flatbuffers.Offset {
   const name = (this.name !== null ? builder.createString(this.name!) : 0);
-  const value = (this.value !== null ? builder.createString(this.value!) : 0);
+  const value = builder.createObjectOffset(this.value);
 
   return Value.createValue(builder,
     name,
-    this.valtype,
+    this.valueType,
     value
   );
 }

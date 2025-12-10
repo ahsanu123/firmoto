@@ -9,5 +9,7 @@ class SubOperationType private constructor() {
         const val SPI_READ_U8: Byte = 1
         const val SPI_READ_U16: Byte = 2
         const val SPI_READ_N: Byte = 3
+        const val I2C_READ_U8: Byte = 4
+        const val I2C_WRITE_U8: Byte = 5
     }
 }

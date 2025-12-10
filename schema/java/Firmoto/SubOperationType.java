@@ -9,8 +9,10 @@ public final class SubOperationType {
   public static final byte SPI_READ_U8 = 1;
   public static final byte SPI_READ_U16 = 2;
   public static final byte SPI_READ_N = 3;
+  public static final byte I2C_READ_U8 = 4;
+  public static final byte I2C_WRITE_U8 = 5;
 
-  public static final String[] names = { "SPI_WRITE_U8", "SPI_READ_U8", "SPI_READ_U16", "SPI_READ_N", };
+  public static final String[] names = { "SPI_WRITE_U8", "SPI_READ_U8", "SPI_READ_U16", "SPI_READ_N", "I2C_READ_U8", "I2C_WRITE_U8", };
 
   public static String name(int e) { return names[e]; }
 }

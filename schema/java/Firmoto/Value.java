@@ -30,25 +30,23 @@ public final class Value extends Table {
   public String name() { int o = __offset(4); return o != 0 ? __string(o + bb_pos) : null; }
   public ByteBuffer nameAsByteBuffer() { return __vector_as_bytebuffer(4, 1); }
   public ByteBuffer nameInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 4, 1); }
-  public byte valtype() { int o = __offset(6); return o != 0 ? bb.get(o + bb_pos) : 0; }
-  public String value() { int o = __offset(8); return o != 0 ? __string(o + bb_pos) : null; }
-  public ByteBuffer valueAsByteBuffer() { return __vector_as_bytebuffer(8, 1); }
-  public ByteBuffer valueInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 8, 1); }
+  public byte valueType() { int o = __offset(6); return o != 0 ? bb.get(o + bb_pos) : 0; }
+  public Table value(Table obj) { int o = __offset(8); return o != 0 ? __union(obj, o + bb_pos) : null; }
 
   public static int createValue(FlatBufferBuilder builder,
       int nameOffset,
-      byte valtype,
+      byte valueType,
       int valueOffset) {
     builder.startTable(3);
     Value.addValue(builder, valueOffset);
     Value.addName(builder, nameOffset);
-    Value.addValtype(builder, valtype);
+    Value.addValueType(builder, valueType);
     return Value.endValue(builder);
   }
 
   public static void startValue(FlatBufferBuilder builder) { builder.startTable(3); }
   public static void addName(FlatBufferBuilder builder, int nameOffset) { builder.addOffset(0, nameOffset, 0); }
-  public static void addValtype(FlatBufferBuilder builder, byte valtype) { builder.addByte(1, valtype, 0); }
+  public static void addValueType(FlatBufferBuilder builder, byte valueType) { builder.addByte(1, valueType, 0); }
   public static void addValue(FlatBufferBuilder builder, int valueOffset) { builder.addOffset(2, valueOffset, 0); }
   public static int endValue(FlatBufferBuilder builder) {
     int o = builder.endTable();
@@ -69,19 +67,72 @@ public final class Value extends Table {
   public void unpackTo(ValueT _o) {
     String _oName = name();
     _o.setName(_oName);
-    byte _oValtype = valtype();
-    _o.setValtype(_oValtype);
-    String _oValue = value();
+    Firmoto.FieldTypeUnion _oValue = new Firmoto.FieldTypeUnion();
+    byte _oValueType = valueType();
+    _oValue.setType(_oValueType);
+    Table _oValueValue;
+    switch (_oValueType) {
+      case Firmoto.FieldType.FieldString:
+        _oValueValue = value(new Firmoto.FieldString());
+        _oValue.setValue(_oValueValue != null ? ((Firmoto.FieldString) _oValueValue).unpack() : null);
+        break;
+      case Firmoto.FieldType.FieldBool:
+        _oValueValue = value(new Firmoto.FieldBool());
+        _oValue.setValue(_oValueValue != null ? ((Firmoto.FieldBool) _oValueValue).unpack() : null);
+        break;
+      case Firmoto.FieldType.FieldI8:
+        _oValueValue = value(new Firmoto.FieldI8());
+        _oValue.setValue(_oValueValue != null ? ((Firmoto.FieldI8) _oValueValue).unpack() : null);
+        break;
+      case Firmoto.FieldType.FieldI16:
+        _oValueValue = value(new Firmoto.FieldI16());
+        _oValue.setValue(_oValueValue != null ? ((Firmoto.FieldI16) _oValueValue).unpack() : null);
+        break;
+      case Firmoto.FieldType.FieldI32:
+        _oValueValue = value(new Firmoto.FieldI32());
+        _oValue.setValue(_oValueValue != null ? ((Firmoto.FieldI32) _oValueValue).unpack() : null);
+        break;
+      case Firmoto.FieldType.FieldI64:
+        _oValueValue = value(new Firmoto.FieldI64());
+        _oValue.setValue(_oValueValue != null ? ((Firmoto.FieldI64) _oValueValue).unpack() : null);
+        break;
+      case Firmoto.FieldType.FieldU8:
+        _oValueValue = value(new Firmoto.FieldU8());
+        _oValue.setValue(_oValueValue != null ? ((Firmoto.FieldU8) _oValueValue).unpack() : null);
+        break;
+      case Firmoto.FieldType.FieldU16:
+        _oValueValue = value(new Firmoto.FieldU16());
+        _oValue.setValue(_oValueValue != null ? ((Firmoto.FieldU16) _oValueValue).unpack() : null);
+        break;
+      case Firmoto.FieldType.FieldU32:
+        _oValueValue = value(new Firmoto.FieldU32());
+        _oValue.setValue(_oValueValue != null ? ((Firmoto.FieldU32) _oValueValue).unpack() : null);
+        break;
+      case Firmoto.FieldType.FieldU64:
+        _oValueValue = value(new Firmoto.FieldU64());
+        _oValue.setValue(_oValueValue != null ? ((Firmoto.FieldU64) _oValueValue).unpack() : null);
+        break;
+      case Firmoto.FieldType.FieldFloat:
+        _oValueValue = value(new Firmoto.FieldFloat());
+        _oValue.setValue(_oValueValue != null ? ((Firmoto.FieldFloat) _oValueValue).unpack() : null);
+        break;
+      case Firmoto.FieldType.FieldDouble:
+        _oValueValue = value(new Firmoto.FieldDouble());
+        _oValue.setValue(_oValueValue != null ? ((Firmoto.FieldDouble) _oValueValue).unpack() : null);
+        break;
+      default: break;
+    }
     _o.setValue(_oValue);
   }
   public static int pack(FlatBufferBuilder builder, ValueT _o) {
     if (_o == null) return 0;
     int _name = _o.getName() == null ? 0 : builder.createString(_o.getName());
-    int _value = _o.getValue() == null ? 0 : builder.createString(_o.getValue());
+    byte _valueType = _o.getValue() == null ? Firmoto.FieldType.NONE : _o.getValue().getType();
+    int _value = _o.getValue() == null ? 0 : Firmoto.FieldTypeUnion.pack(builder, _o.getValue());
     return createValue(
       builder,
       _name,
-      _o.getValtype(),
+      _valueType,
       _value);
   }
 }

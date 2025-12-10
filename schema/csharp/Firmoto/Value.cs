@@ -26,30 +26,36 @@ public struct Value : IFlatbufferObject
   public ArraySegment<byte>? GetNameBytes() { return __p.__vector_as_arraysegment(4); }
 #endif
   public byte[] GetNameArray() { return __p.__vector_as_array<byte>(4); }
-  public Firmoto.ValueType Valtype { get { int o = __p.__offset(6); return o != 0 ? (Firmoto.ValueType)__p.bb.GetSbyte(o + __p.bb_pos) : Firmoto.ValueType.U8; } }
-  public string Value_ { get { int o = __p.__offset(8); return o != 0 ? __p.__string(o + __p.bb_pos) : null; } }
-#if ENABLE_SPAN_T
-  public Span<byte> GetValueBytes() { return __p.__vector_as_span<byte>(8, 1); }
-#else
-  public ArraySegment<byte>? GetValueBytes() { return __p.__vector_as_arraysegment(8); }
-#endif
-  public byte[] GetValueArray() { return __p.__vector_as_array<byte>(8); }
+  public Firmoto.FieldType ValueType { get { int o = __p.__offset(6); return o != 0 ? (Firmoto.FieldType)__p.bb.Get(o + __p.bb_pos) : Firmoto.FieldType.NONE; } }
+  public TTable? Value_<TTable>() where TTable : struct, IFlatbufferObject { int o = __p.__offset(8); return o != 0 ? (TTable?)__p.__union<TTable>(o + __p.bb_pos) : null; }
+  public Firmoto.FieldString Value_AsFieldString() { return Value_<Firmoto.FieldString>().Value; }
+  public Firmoto.FieldBool Value_AsFieldBool() { return Value_<Firmoto.FieldBool>().Value; }
+  public Firmoto.FieldI8 Value_AsFieldI8() { return Value_<Firmoto.FieldI8>().Value; }
+  public Firmoto.FieldI16 Value_AsFieldI16() { return Value_<Firmoto.FieldI16>().Value; }
+  public Firmoto.FieldI32 Value_AsFieldI32() { return Value_<Firmoto.FieldI32>().Value; }
+  public Firmoto.FieldI64 Value_AsFieldI64() { return Value_<Firmoto.FieldI64>().Value; }
+  public Firmoto.FieldU8 Value_AsFieldU8() { return Value_<Firmoto.FieldU8>().Value; }
+  public Firmoto.FieldU16 Value_AsFieldU16() { return Value_<Firmoto.FieldU16>().Value; }
+  public Firmoto.FieldU32 Value_AsFieldU32() { return Value_<Firmoto.FieldU32>().Value; }
+  public Firmoto.FieldU64 Value_AsFieldU64() { return Value_<Firmoto.FieldU64>().Value; }
+  public Firmoto.FieldFloat Value_AsFieldFloat() { return Value_<Firmoto.FieldFloat>().Value; }
+  public Firmoto.FieldDouble Value_AsFieldDouble() { return Value_<Firmoto.FieldDouble>().Value; }
 
   public static Offset<Firmoto.Value> CreateValue(FlatBufferBuilder builder,
       StringOffset nameOffset = default(StringOffset),
-      Firmoto.ValueType valtype = Firmoto.ValueType.U8,
-      StringOffset valueOffset = default(StringOffset)) {
+      Firmoto.FieldType value_type = Firmoto.FieldType.NONE,
+      int valueOffset = 0) {
     builder.StartTable(3);
     Value.AddValue(builder, valueOffset);
     Value.AddName(builder, nameOffset);
-    Value.AddValtype(builder, valtype);
+    Value.AddValueType(builder, value_type);
     return Value.EndValue(builder);
   }
 
   public static void StartValue(FlatBufferBuilder builder) { builder.StartTable(3); }
   public static void AddName(FlatBufferBuilder builder, StringOffset nameOffset) { builder.AddOffset(0, nameOffset.Value, 0); }
-  public static void AddValtype(FlatBufferBuilder builder, Firmoto.ValueType valtype) { builder.AddSbyte(1, (sbyte)valtype, 0); }
-  public static void AddValue(FlatBufferBuilder builder, StringOffset valueOffset) { builder.AddOffset(2, valueOffset.Value, 0); }
+  public static void AddValueType(FlatBufferBuilder builder, Firmoto.FieldType valueType) { builder.AddByte(1, (byte)valueType, 0); }
+  public static void AddValue(FlatBufferBuilder builder, int valueOffset) { builder.AddOffset(2, valueOffset, 0); }
   public static Offset<Firmoto.Value> EndValue(FlatBufferBuilder builder) {
     int o = builder.EndTable();
     return new Offset<Firmoto.Value>(o);
@@ -61,17 +67,57 @@ public struct Value : IFlatbufferObject
   }
   public void UnPackTo(ValueT _o) {
     _o.Name = this.Name;
-    _o.Valtype = this.Valtype;
-    _o.Value_ = this.Value_;
+    _o.Value_ = new Firmoto.FieldTypeUnion();
+    _o.Value_.Type = this.ValueType;
+    switch (this.ValueType) {
+      default: break;
+      case Firmoto.FieldType.FieldString:
+        _o.Value_.Value = this.Value_<Firmoto.FieldString>().HasValue ? this.Value_<Firmoto.FieldString>().Value.UnPack() : null;
+        break;
+      case Firmoto.FieldType.FieldBool:
+        _o.Value_.Value = this.Value_<Firmoto.FieldBool>().HasValue ? this.Value_<Firmoto.FieldBool>().Value.UnPack() : null;
+        break;
+      case Firmoto.FieldType.FieldI8:
+        _o.Value_.Value = this.Value_<Firmoto.FieldI8>().HasValue ? this.Value_<Firmoto.FieldI8>().Value.UnPack() : null;
+        break;
+      case Firmoto.FieldType.FieldI16:
+        _o.Value_.Value = this.Value_<Firmoto.FieldI16>().HasValue ? this.Value_<Firmoto.FieldI16>().Value.UnPack() : null;
+        break;
+      case Firmoto.FieldType.FieldI32:
+        _o.Value_.Value = this.Value_<Firmoto.FieldI32>().HasValue ? this.Value_<Firmoto.FieldI32>().Value.UnPack() : null;
+        break;
+      case Firmoto.FieldType.FieldI64:
+        _o.Value_.Value = this.Value_<Firmoto.FieldI64>().HasValue ? this.Value_<Firmoto.FieldI64>().Value.UnPack() : null;
+        break;
+      case Firmoto.FieldType.FieldU8:
+        _o.Value_.Value = this.Value_<Firmoto.FieldU8>().HasValue ? this.Value_<Firmoto.FieldU8>().Value.UnPack() : null;
+        break;
+      case Firmoto.FieldType.FieldU16:
+        _o.Value_.Value = this.Value_<Firmoto.FieldU16>().HasValue ? this.Value_<Firmoto.FieldU16>().Value.UnPack() : null;
+        break;
+      case Firmoto.FieldType.FieldU32:
+        _o.Value_.Value = this.Value_<Firmoto.FieldU32>().HasValue ? this.Value_<Firmoto.FieldU32>().Value.UnPack() : null;
+        break;
+      case Firmoto.FieldType.FieldU64:
+        _o.Value_.Value = this.Value_<Firmoto.FieldU64>().HasValue ? this.Value_<Firmoto.FieldU64>().Value.UnPack() : null;
+        break;
+      case Firmoto.FieldType.FieldFloat:
+        _o.Value_.Value = this.Value_<Firmoto.FieldFloat>().HasValue ? this.Value_<Firmoto.FieldFloat>().Value.UnPack() : null;
+        break;
+      case Firmoto.FieldType.FieldDouble:
+        _o.Value_.Value = this.Value_<Firmoto.FieldDouble>().HasValue ? this.Value_<Firmoto.FieldDouble>().Value.UnPack() : null;
+        break;
+    }
   }
   public static Offset<Firmoto.Value> Pack(FlatBufferBuilder builder, ValueT _o) {
     if (_o == null) return default(Offset<Firmoto.Value>);
     var _name = _o.Name == null ? default(StringOffset) : builder.CreateString(_o.Name);
-    var _value = _o.Value_ == null ? default(StringOffset) : builder.CreateString(_o.Value_);
+    var _value_type = _o.Value_ == null ? Firmoto.FieldType.NONE : _o.Value_.Type;
+    var _value = _o.Value_ == null ? 0 : Firmoto.FieldTypeUnion.Pack(builder, _o.Value_);
     return CreateValue(
       builder,
       _name,
-      _o.Valtype,
+      _value_type,
       _value);
   }
 }
@@ -79,12 +125,10 @@ public struct Value : IFlatbufferObject
 public class ValueT
 {
   public string Name { get; set; }
-  public Firmoto.ValueType Valtype { get; set; }
-  public string Value_ { get; set; }
+  public Firmoto.FieldTypeUnion Value_ { get; set; }
 
   public ValueT() {
     this.Name = null;
-    this.Valtype = Firmoto.ValueType.U8;
     this.Value_ = null;
   }
 }
@@ -96,8 +140,8 @@ static public class ValueVerify
   {
     return verifier.VerifyTableStart(tablePos)
       && verifier.VerifyString(tablePos, 4 /*Name*/, false)
-      && verifier.VerifyField(tablePos, 6 /*Valtype*/, 1 /*Firmoto.ValueType*/, 1, false)
-      && verifier.VerifyString(tablePos, 8 /*Value*/, false)
+      && verifier.VerifyField(tablePos, 6 /*ValueType*/, 1 /*Firmoto.FieldType*/, 1, false)
+      && verifier.VerifyUnion(tablePos, 6, 8 /*Value*/, Firmoto.FieldTypeVerify.Verify, false)
       && verifier.VerifyTableEnd(tablePos);
   }
 }

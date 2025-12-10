@@ -8,8 +8,9 @@ public final class OperationType {
   public static final byte GPIO = 0;
   public static final byte I2C = 1;
   public static final byte SPI = 2;
+  public static final byte CAN = 3;
 
-  public static final String[] names = { "GPIO", "I2C", "SPI", };
+  public static final String[] names = { "GPIO", "I2C", "SPI", "CAN", };
 
   public static String name(int e) { return names[e]; }
 }

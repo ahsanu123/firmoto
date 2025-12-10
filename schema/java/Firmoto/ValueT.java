@@ -21,25 +21,19 @@ import java.nio.ByteOrder;
 
 public class ValueT {
   private String name;
-  private byte valtype;
-  private String value;
+  private Firmoto.FieldTypeUnion value;
 
   public String getName() { return name; }
 
   public void setName(String name) { this.name = name; }
 
-  public byte getValtype() { return valtype; }
+  public Firmoto.FieldTypeUnion getValue() { return value; }
 
-  public void setValtype(byte valtype) { this.valtype = valtype; }
-
-  public String getValue() { return value; }
-
-  public void setValue(String value) { this.value = value; }
+  public void setValue(Firmoto.FieldTypeUnion value) { this.value = value; }
 
 
   public ValueT() {
     this.name = null;
-    this.valtype = 0;
     this.value = null;
   }
 }

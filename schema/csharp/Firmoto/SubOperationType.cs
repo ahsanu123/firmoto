@@ -11,6 +11,8 @@ public enum SubOperationType : sbyte
   SPI_READ_U8 = 1,
   SPI_READ_U16 = 2,
   SPI_READ_N = 3,
+  I2C_READ_U8 = 4,
+  I2C_WRITE_U8 = 5,
 };
 
 

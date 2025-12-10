@@ -10,6 +10,7 @@ public enum OperationType : sbyte
   GPIO = 0,
   I2C = 1,
   SPI = 2,
+  CAN = 3,
 };
 
 

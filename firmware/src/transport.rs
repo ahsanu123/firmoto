@@ -1,9 +1,6 @@
 use alloc::vec::Vec;
 
-pub enum SerialTransportErr {
-    NotSend,
-    // etc etc
-}
+use crate::errors::transport::SerialTransportErr;
 
 pub trait SerialTransportTrait {
     fn read(&mut self) -> Vec<u8>;

@@ -11,6 +11,8 @@ const (
 	SubOperationTypeSPI_READ_U8  SubOperationType = 1
 	SubOperationTypeSPI_READ_U16 SubOperationType = 2
 	SubOperationTypeSPI_READ_N   SubOperationType = 3
+	SubOperationTypeI2C_READ_U8  SubOperationType = 4
+	SubOperationTypeI2C_WRITE_U8 SubOperationType = 5
 )
 
 var EnumNamesSubOperationType = map[SubOperationType]string{
@@ -18,6 +20,8 @@ var EnumNamesSubOperationType = map[SubOperationType]string{
 	SubOperationTypeSPI_READ_U8:  "SPI_READ_U8",
 	SubOperationTypeSPI_READ_U16: "SPI_READ_U16",
 	SubOperationTypeSPI_READ_N:   "SPI_READ_N",
+	SubOperationTypeI2C_READ_U8:  "I2C_READ_U8",
+	SubOperationTypeI2C_WRITE_U8: "I2C_WRITE_U8",
 }
 
 var EnumValuesSubOperationType = map[string]SubOperationType{
@@ -25,6 +29,8 @@ var EnumValuesSubOperationType = map[string]SubOperationType{
 	"SPI_READ_U8":  SubOperationTypeSPI_READ_U8,
 	"SPI_READ_U16": SubOperationTypeSPI_READ_U16,
 	"SPI_READ_N":   SubOperationTypeSPI_READ_N,
+	"I2C_READ_U8":  SubOperationTypeI2C_READ_U8,
+	"I2C_WRITE_U8": SubOperationTypeI2C_WRITE_U8,
 }
 
 func (v SubOperationType) String() string {

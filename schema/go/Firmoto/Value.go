@@ -8,8 +8,7 @@ import (
 
 type ValueT struct {
 	Name string `json:"name"`
-	Valtype ValueType `json:"valtype"`
-	Value string `json:"value"`
+	Value *FieldTypeT `json:"value"`
 }
 
 func (t *ValueT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
@@ -20,21 +19,23 @@ func (t *ValueT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	if t.Name != "" {
 		nameOffset = builder.CreateString(t.Name)
 	}
-	valueOffset := flatbuffers.UOffsetT(0)
-	if t.Value != "" {
-		valueOffset = builder.CreateString(t.Value)
-	}
+	valueOffset := t.Value.Pack(builder)
+
 	ValueStart(builder)
 	ValueAddName(builder, nameOffset)
-	ValueAddValtype(builder, t.Valtype)
+	if t.Value != nil {
+		ValueAddValueType(builder, t.Value.Type)
+	}
 	ValueAddValue(builder, valueOffset)
 	return ValueEnd(builder)
 }
 
 func (rcv *Value) UnPackTo(t *ValueT) {
 	t.Name = string(rcv.Name())
-	t.Valtype = rcv.Valtype()
-	t.Value = string(rcv.Value())
+	valueTable := flatbuffers.Table{}
+	if rcv.Value(&valueTable) {
+		t.Value = rcv.ValueType().UnPack(valueTable)
+	}
 }
 
 func (rcv *Value) UnPack() *ValueT {
@@ -89,24 +90,25 @@ func (rcv *Value) Name() []byte {
 	return nil
 }
 
-func (rcv *Value) Valtype() ValueType {
+func (rcv *Value) ValueType() FieldType {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
 	if o != 0 {
-		return ValueType(rcv._tab.GetInt8(o + rcv._tab.Pos))
+		return FieldType(rcv._tab.GetByte(o + rcv._tab.Pos))
 	}
 	return 0
 }
 
-func (rcv *Value) MutateValtype(n ValueType) bool {
-	return rcv._tab.MutateInt8Slot(6, int8(n))
+func (rcv *Value) MutateValueType(n FieldType) bool {
+	return rcv._tab.MutateByteSlot(6, byte(n))
 }
 
-func (rcv *Value) Value() []byte {
+func (rcv *Value) Value(obj *flatbuffers.Table) bool {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
 	if o != 0 {
-		return rcv._tab.ByteVector(o + rcv._tab.Pos)
+		rcv._tab.Union(obj, o)
+		return true
 	}
-	return nil
+	return false
 }
 
 func ValueStart(builder *flatbuffers.Builder) {
@@ -115,8 +117,8 @@ func ValueStart(builder *flatbuffers.Builder) {
 func ValueAddName(builder *flatbuffers.Builder, name flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(0, flatbuffers.UOffsetT(name), 0)
 }
-func ValueAddValtype(builder *flatbuffers.Builder, valtype ValueType) {
-	builder.PrependInt8Slot(1, int8(valtype), 0)
+func ValueAddValueType(builder *flatbuffers.Builder, valueType FieldType) {
+	builder.PrependByteSlot(1, byte(valueType), 0)
 }
 func ValueAddValue(builder *flatbuffers.Builder, value flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(2, flatbuffers.UOffsetT(value), 0)

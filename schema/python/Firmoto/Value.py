@@ -32,17 +32,20 @@ class Value(object):
         return None
 
     # Value
-    def Valtype(self):
+    def ValueType(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
         if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Int8Flags, o + self._tab.Pos)
+            return self._tab.Get(flatbuffers.number_types.Uint8Flags, o + self._tab.Pos)
         return 0
 
     # Value
     def Value(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
         if o != 0:
-            return self._tab.String(o + self._tab.Pos)
+            from flatbuffers.table import Table
+            obj = Table(bytearray(), 0)
+            self._tab.Union(obj, o)
+            return obj
         return None
 
 def ValueStart(builder):
@@ -57,11 +60,11 @@ def ValueAddName(builder, name):
 def AddName(builder, name):
     ValueAddName(builder, name)
 
-def ValueAddValtype(builder, valtype):
-    builder.PrependInt8Slot(1, valtype, 0)
+def ValueAddValueType(builder, valueType):
+    builder.PrependUint8Slot(1, valueType, 0)
 
-def AddValtype(builder, valtype):
-    ValueAddValtype(builder, valtype)
+def AddValueType(builder, valueType):
+    ValueAddValueType(builder, valueType)
 
 def ValueAddValue(builder, value):
     builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(value), 0)
@@ -75,6 +78,23 @@ def ValueEnd(builder):
 def End(builder):
     return ValueEnd(builder)
 
+import Firmoto.FieldBool
+import Firmoto.FieldDouble
+import Firmoto.FieldFloat
+import Firmoto.FieldI16
+import Firmoto.FieldI32
+import Firmoto.FieldI64
+import Firmoto.FieldI8
+import Firmoto.FieldString
+import Firmoto.FieldType
+import Firmoto.FieldU16
+import Firmoto.FieldU32
+import Firmoto.FieldU64
+import Firmoto.FieldU8
+try:
+    from typing import Union
+except:
+    pass
 
 class ValueT(object):
 
@@ -82,12 +102,12 @@ class ValueT(object):
     def __init__(
         self,
         name = None,
-        valtype = 0,
+        valueType = 0,
         value = None,
     ):
         self.name = name  # type: Optional[str]
-        self.valtype = valtype  # type: int
-        self.value = value  # type: Optional[str]
+        self.valueType = valueType  # type: int
+        self.value = value  # type: Union[None, 'Firmoto.FieldString.FieldStringT', 'Firmoto.FieldBool.FieldBoolT', 'Firmoto.FieldI8.FieldI8T', 'Firmoto.FieldI16.FieldI16T', 'Firmoto.FieldI32.FieldI32T', 'Firmoto.FieldI64.FieldI64T', 'Firmoto.FieldU8.FieldU8T', 'Firmoto.FieldU16.FieldU16T', 'Firmoto.FieldU32.FieldU32T', 'Firmoto.FieldU64.FieldU64T', 'Firmoto.FieldFloat.FieldFloatT', 'Firmoto.FieldDouble.FieldDoubleT']
 
     @classmethod
     def InitFromBuf(cls, buf, pos):
@@ -111,19 +131,19 @@ class ValueT(object):
         if value is None:
             return
         self.name = value.Name()
-        self.valtype = value.Valtype()
-        self.value = value.Value()
+        self.valueType = value.ValueType()
+        self.value = Firmoto.FieldType.FieldTypeCreator(self.valueType, value.Value())
 
     # ValueT
     def Pack(self, builder):
         if self.name is not None:
             name = builder.CreateString(self.name)
         if self.value is not None:
-            value = builder.CreateString(self.value)
+            value = self.value.Pack(builder)
         ValueStart(builder)
         if self.name is not None:
             ValueAddName(builder, name)
-        ValueAddValtype(builder, self.valtype)
+        ValueAddValueType(builder, self.valueType)
         if self.value is not None:
             ValueAddValue(builder, value)
         value = ValueEnd(builder)

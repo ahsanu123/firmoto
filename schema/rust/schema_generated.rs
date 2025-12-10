@@ -21,13 +21,14 @@ pub mod firmoto {
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
 pub const ENUM_MIN_OPERATION_TYPE: i8 = 0;
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
-pub const ENUM_MAX_OPERATION_TYPE: i8 = 2;
+pub const ENUM_MAX_OPERATION_TYPE: i8 = 3;
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
 #[allow(non_camel_case_types)]
-pub const ENUM_VALUES_OPERATION_TYPE: [OperationType; 3] = [
+pub const ENUM_VALUES_OPERATION_TYPE: [OperationType; 4] = [
   OperationType::GPIO,
   OperationType::I2C,
   OperationType::SPI,
+  OperationType::CAN,
 ];
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
@@ -38,13 +39,15 @@ impl OperationType {
   pub const GPIO: Self = Self(0);
   pub const I2C: Self = Self(1);
   pub const SPI: Self = Self(2);
+  pub const CAN: Self = Self(3);
 
   pub const ENUM_MIN: i8 = 0;
-  pub const ENUM_MAX: i8 = 2;
+  pub const ENUM_MAX: i8 = 3;
   pub const ENUM_VALUES: &'static [Self] = &[
     Self::GPIO,
     Self::I2C,
     Self::SPI,
+    Self::CAN,
   ];
   /// Returns the variant's name or "" if unknown.
   pub fn variant_name(self) -> Option<&'static str> {
@@ -52,6 +55,7 @@ impl OperationType {
       Self::GPIO => Some("GPIO"),
       Self::I2C => Some("I2C"),
       Self::SPI => Some("SPI"),
+      Self::CAN => Some("CAN"),
       _ => None,
     }
   }
@@ -110,14 +114,16 @@ impl flatbuffers::SimpleToVerifyInSlice for OperationType {}
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
 pub const ENUM_MIN_SUB_OPERATION_TYPE: i8 = 0;
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
-pub const ENUM_MAX_SUB_OPERATION_TYPE: i8 = 3;
+pub const ENUM_MAX_SUB_OPERATION_TYPE: i8 = 5;
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
 #[allow(non_camel_case_types)]
-pub const ENUM_VALUES_SUB_OPERATION_TYPE: [SubOperationType; 4] = [
+pub const ENUM_VALUES_SUB_OPERATION_TYPE: [SubOperationType; 6] = [
   SubOperationType::SPI_WRITE_U8,
   SubOperationType::SPI_READ_U8,
   SubOperationType::SPI_READ_U16,
   SubOperationType::SPI_READ_N,
+  SubOperationType::I2C_READ_U8,
+  SubOperationType::I2C_WRITE_U8,
 ];
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
@@ -129,14 +135,18 @@ impl SubOperationType {
   pub const SPI_READ_U8: Self = Self(1);
   pub const SPI_READ_U16: Self = Self(2);
   pub const SPI_READ_N: Self = Self(3);
+  pub const I2C_READ_U8: Self = Self(4);
+  pub const I2C_WRITE_U8: Self = Self(5);
 
   pub const ENUM_MIN: i8 = 0;
-  pub const ENUM_MAX: i8 = 3;
+  pub const ENUM_MAX: i8 = 5;
   pub const ENUM_VALUES: &'static [Self] = &[
     Self::SPI_WRITE_U8,
     Self::SPI_READ_U8,
     Self::SPI_READ_U16,
     Self::SPI_READ_N,
+    Self::I2C_READ_U8,
+    Self::I2C_WRITE_U8,
   ];
   /// Returns the variant's name or "" if unknown.
   pub fn variant_name(self) -> Option<&'static str> {
@@ -145,6 +155,8 @@ impl SubOperationType {
       Self::SPI_READ_U8 => Some("SPI_READ_U8"),
       Self::SPI_READ_U16 => Some("SPI_READ_U16"),
       Self::SPI_READ_N => Some("SPI_READ_N"),
+      Self::I2C_READ_U8 => Some("I2C_READ_U8"),
+      Self::I2C_WRITE_U8 => Some("I2C_WRITE_U8"),
       _ => None,
     }
   }
@@ -201,80 +213,84 @@ impl<'a> flatbuffers::Verifiable for SubOperationType {
 
 impl flatbuffers::SimpleToVerifyInSlice for SubOperationType {}
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
-pub const ENUM_MIN_VALUE_TYPE: i8 = 0;
+pub const ENUM_MIN_FIELD_TYPE: u8 = 0;
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
-pub const ENUM_MAX_VALUE_TYPE: i8 = 11;
+pub const ENUM_MAX_FIELD_TYPE: u8 = 12;
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
 #[allow(non_camel_case_types)]
-pub const ENUM_VALUES_VALUE_TYPE: [ValueType; 12] = [
-  ValueType::U8,
-  ValueType::U16,
-  ValueType::U32,
-  ValueType::U64,
-  ValueType::I8,
-  ValueType::I16,
-  ValueType::I32,
-  ValueType::I64,
-  ValueType::F32,
-  ValueType::F64,
-  ValueType::String,
-  ValueType::Boolean,
+pub const ENUM_VALUES_FIELD_TYPE: [FieldType; 13] = [
+  FieldType::NONE,
+  FieldType::FieldString,
+  FieldType::FieldBool,
+  FieldType::FieldI8,
+  FieldType::FieldI16,
+  FieldType::FieldI32,
+  FieldType::FieldI64,
+  FieldType::FieldU8,
+  FieldType::FieldU16,
+  FieldType::FieldU32,
+  FieldType::FieldU64,
+  FieldType::FieldFloat,
+  FieldType::FieldDouble,
 ];
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
 #[repr(transparent)]
-pub struct ValueType(pub i8);
+pub struct FieldType(pub u8);
 #[allow(non_upper_case_globals)]
-impl ValueType {
-  pub const U8: Self = Self(0);
-  pub const U16: Self = Self(1);
-  pub const U32: Self = Self(2);
-  pub const U64: Self = Self(3);
-  pub const I8: Self = Self(4);
-  pub const I16: Self = Self(5);
-  pub const I32: Self = Self(6);
-  pub const I64: Self = Self(7);
-  pub const F32: Self = Self(8);
-  pub const F64: Self = Self(9);
-  pub const String: Self = Self(10);
-  pub const Boolean: Self = Self(11);
+impl FieldType {
+  pub const NONE: Self = Self(0);
+  pub const FieldString: Self = Self(1);
+  pub const FieldBool: Self = Self(2);
+  pub const FieldI8: Self = Self(3);
+  pub const FieldI16: Self = Self(4);
+  pub const FieldI32: Self = Self(5);
+  pub const FieldI64: Self = Self(6);
+  pub const FieldU8: Self = Self(7);
+  pub const FieldU16: Self = Self(8);
+  pub const FieldU32: Self = Self(9);
+  pub const FieldU64: Self = Self(10);
+  pub const FieldFloat: Self = Self(11);
+  pub const FieldDouble: Self = Self(12);
 
-  pub const ENUM_MIN: i8 = 0;
-  pub const ENUM_MAX: i8 = 11;
+  pub const ENUM_MIN: u8 = 0;
+  pub const ENUM_MAX: u8 = 12;
   pub const ENUM_VALUES: &'static [Self] = &[
-    Self::U8,
-    Self::U16,
-    Self::U32,
-    Self::U64,
-    Self::I8,
-    Self::I16,
-    Self::I32,
-    Self::I64,
-    Self::F32,
-    Self::F64,
-    Self::String,
-    Self::Boolean,
+    Self::NONE,
+    Self::FieldString,
+    Self::FieldBool,
+    Self::FieldI8,
+    Self::FieldI16,
+    Self::FieldI32,
+    Self::FieldI64,
+    Self::FieldU8,
+    Self::FieldU16,
+    Self::FieldU32,
+    Self::FieldU64,
+    Self::FieldFloat,
+    Self::FieldDouble,
   ];
   /// Returns the variant's name or "" if unknown.
   pub fn variant_name(self) -> Option<&'static str> {
     match self {
-      Self::U8 => Some("U8"),
-      Self::U16 => Some("U16"),
-      Self::U32 => Some("U32"),
-      Self::U64 => Some("U64"),
-      Self::I8 => Some("I8"),
-      Self::I16 => Some("I16"),
-      Self::I32 => Some("I32"),
-      Self::I64 => Some("I64"),
-      Self::F32 => Some("F32"),
-      Self::F64 => Some("F64"),
-      Self::String => Some("String"),
-      Self::Boolean => Some("Boolean"),
+      Self::NONE => Some("NONE"),
+      Self::FieldString => Some("FieldString"),
+      Self::FieldBool => Some("FieldBool"),
+      Self::FieldI8 => Some("FieldI8"),
+      Self::FieldI16 => Some("FieldI16"),
+      Self::FieldI32 => Some("FieldI32"),
+      Self::FieldI64 => Some("FieldI64"),
+      Self::FieldU8 => Some("FieldU8"),
+      Self::FieldU16 => Some("FieldU16"),
+      Self::FieldU32 => Some("FieldU32"),
+      Self::FieldU64 => Some("FieldU64"),
+      Self::FieldFloat => Some("FieldFloat"),
+      Self::FieldDouble => Some("FieldDouble"),
       _ => None,
     }
   }
 }
-impl core::fmt::Debug for ValueType {
+impl core::fmt::Debug for FieldType {
   fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
     if let Some(name) = self.variant_name() {
       f.write_str(name)
@@ -283,48 +299,1877 @@ impl core::fmt::Debug for ValueType {
     }
   }
 }
-impl<'a> flatbuffers::Follow<'a> for ValueType {
+impl<'a> flatbuffers::Follow<'a> for FieldType {
   type Inner = Self;
   #[inline]
   unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
-    let b = unsafe { flatbuffers::read_scalar_at::<i8>(buf, loc) };
+    let b = unsafe { flatbuffers::read_scalar_at::<u8>(buf, loc) };
     Self(b)
   }
 }
 
-impl flatbuffers::Push for ValueType {
-    type Output = ValueType;
+impl flatbuffers::Push for FieldType {
+    type Output = FieldType;
     #[inline]
     unsafe fn push(&self, dst: &mut [u8], _written_len: usize) {
-        unsafe { flatbuffers::emplace_scalar::<i8>(dst, self.0); }
+        unsafe { flatbuffers::emplace_scalar::<u8>(dst, self.0); }
     }
 }
 
-impl flatbuffers::EndianScalar for ValueType {
-  type Scalar = i8;
+impl flatbuffers::EndianScalar for FieldType {
+  type Scalar = u8;
   #[inline]
-  fn to_little_endian(self) -> i8 {
+  fn to_little_endian(self) -> u8 {
     self.0.to_le()
   }
   #[inline]
   #[allow(clippy::wrong_self_convention)]
-  fn from_little_endian(v: i8) -> Self {
-    let b = i8::from_le(v);
+  fn from_little_endian(v: u8) -> Self {
+    let b = u8::from_le(v);
     Self(b)
   }
 }
 
-impl<'a> flatbuffers::Verifiable for ValueType {
+impl<'a> flatbuffers::Verifiable for FieldType {
   #[inline]
   fn run_verifier(
     v: &mut flatbuffers::Verifier, pos: usize
   ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
     use self::flatbuffers::Verifiable;
-    i8::run_verifier(v, pos)
+    u8::run_verifier(v, pos)
   }
 }
 
-impl flatbuffers::SimpleToVerifyInSlice for ValueType {}
+impl flatbuffers::SimpleToVerifyInSlice for FieldType {}
+pub struct FieldTypeUnionTableOffset {}
+
+#[allow(clippy::upper_case_acronyms)]
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
+pub enum FieldTypeT {
+  NONE,
+  FieldString(Box<FieldStringT>),
+  FieldBool(Box<FieldBoolT>),
+  FieldI8(Box<FieldI8T>),
+  FieldI16(Box<FieldI16T>),
+  FieldI32(Box<FieldI32T>),
+  FieldI64(Box<FieldI64T>),
+  FieldU8(Box<FieldU8T>),
+  FieldU16(Box<FieldU16T>),
+  FieldU32(Box<FieldU32T>),
+  FieldU64(Box<FieldU64T>),
+  FieldFloat(Box<FieldFloatT>),
+  FieldDouble(Box<FieldDoubleT>),
+}
+impl Default for FieldTypeT {
+  fn default() -> Self {
+    Self::NONE
+  }
+}
+impl FieldTypeT {
+  pub fn field_type_type(&self) -> FieldType {
+    match self {
+      Self::NONE => FieldType::NONE,
+      Self::FieldString(_) => FieldType::FieldString,
+      Self::FieldBool(_) => FieldType::FieldBool,
+      Self::FieldI8(_) => FieldType::FieldI8,
+      Self::FieldI16(_) => FieldType::FieldI16,
+      Self::FieldI32(_) => FieldType::FieldI32,
+      Self::FieldI64(_) => FieldType::FieldI64,
+      Self::FieldU8(_) => FieldType::FieldU8,
+      Self::FieldU16(_) => FieldType::FieldU16,
+      Self::FieldU32(_) => FieldType::FieldU32,
+      Self::FieldU64(_) => FieldType::FieldU64,
+      Self::FieldFloat(_) => FieldType::FieldFloat,
+      Self::FieldDouble(_) => FieldType::FieldDouble,
+    }
+  }
+  pub fn pack<'b, A: flatbuffers::Allocator + 'b>(&self, fbb: &mut flatbuffers::FlatBufferBuilder<'b, A>) -> Option<flatbuffers::WIPOffset<flatbuffers::UnionWIPOffset>> {
+    match self {
+      Self::NONE => None,
+      Self::FieldString(v) => Some(v.pack(fbb).as_union_value()),
+      Self::FieldBool(v) => Some(v.pack(fbb).as_union_value()),
+      Self::FieldI8(v) => Some(v.pack(fbb).as_union_value()),
+      Self::FieldI16(v) => Some(v.pack(fbb).as_union_value()),
+      Self::FieldI32(v) => Some(v.pack(fbb).as_union_value()),
+      Self::FieldI64(v) => Some(v.pack(fbb).as_union_value()),
+      Self::FieldU8(v) => Some(v.pack(fbb).as_union_value()),
+      Self::FieldU16(v) => Some(v.pack(fbb).as_union_value()),
+      Self::FieldU32(v) => Some(v.pack(fbb).as_union_value()),
+      Self::FieldU64(v) => Some(v.pack(fbb).as_union_value()),
+      Self::FieldFloat(v) => Some(v.pack(fbb).as_union_value()),
+      Self::FieldDouble(v) => Some(v.pack(fbb).as_union_value()),
+    }
+  }
+  /// If the union variant matches, return the owned FieldStringT, setting the union to NONE.
+  pub fn take_field_string(&mut self) -> Option<Box<FieldStringT>> {
+    if let Self::FieldString(_) = self {
+      let v = core::mem::replace(self, Self::NONE);
+      if let Self::FieldString(w) = v {
+        Some(w)
+      } else {
+        unreachable!()
+      }
+    } else {
+      None
+    }
+  }
+  /// If the union variant matches, return a reference to the FieldStringT.
+  pub fn as_field_string(&self) -> Option<&FieldStringT> {
+    if let Self::FieldString(v) = self { Some(v.as_ref()) } else { None }
+  }
+  /// If the union variant matches, return a mutable reference to the FieldStringT.
+  pub fn as_field_string_mut(&mut self) -> Option<&mut FieldStringT> {
+    if let Self::FieldString(v) = self { Some(v.as_mut()) } else { None }
+  }
+  /// If the union variant matches, return the owned FieldBoolT, setting the union to NONE.
+  pub fn take_field_bool(&mut self) -> Option<Box<FieldBoolT>> {
+    if let Self::FieldBool(_) = self {
+      let v = core::mem::replace(self, Self::NONE);
+      if let Self::FieldBool(w) = v {
+        Some(w)
+      } else {
+        unreachable!()
+      }
+    } else {
+      None
+    }
+  }
+  /// If the union variant matches, return a reference to the FieldBoolT.
+  pub fn as_field_bool(&self) -> Option<&FieldBoolT> {
+    if let Self::FieldBool(v) = self { Some(v.as_ref()) } else { None }
+  }
+  /// If the union variant matches, return a mutable reference to the FieldBoolT.
+  pub fn as_field_bool_mut(&mut self) -> Option<&mut FieldBoolT> {
+    if let Self::FieldBool(v) = self { Some(v.as_mut()) } else { None }
+  }
+  /// If the union variant matches, return the owned FieldI8T, setting the union to NONE.
+  pub fn take_field_i8(&mut self) -> Option<Box<FieldI8T>> {
+    if let Self::FieldI8(_) = self {
+      let v = core::mem::replace(self, Self::NONE);
+      if let Self::FieldI8(w) = v {
+        Some(w)
+      } else {
+        unreachable!()
+      }
+    } else {
+      None
+    }
+  }
+  /// If the union variant matches, return a reference to the FieldI8T.
+  pub fn as_field_i8(&self) -> Option<&FieldI8T> {
+    if let Self::FieldI8(v) = self { Some(v.as_ref()) } else { None }
+  }
+  /// If the union variant matches, return a mutable reference to the FieldI8T.
+  pub fn as_field_i8_mut(&mut self) -> Option<&mut FieldI8T> {
+    if let Self::FieldI8(v) = self { Some(v.as_mut()) } else { None }
+  }
+  /// If the union variant matches, return the owned FieldI16T, setting the union to NONE.
+  pub fn take_field_i16(&mut self) -> Option<Box<FieldI16T>> {
+    if let Self::FieldI16(_) = self {
+      let v = core::mem::replace(self, Self::NONE);
+      if let Self::FieldI16(w) = v {
+        Some(w)
+      } else {
+        unreachable!()
+      }
+    } else {
+      None
+    }
+  }
+  /// If the union variant matches, return a reference to the FieldI16T.
+  pub fn as_field_i16(&self) -> Option<&FieldI16T> {
+    if let Self::FieldI16(v) = self { Some(v.as_ref()) } else { None }
+  }
+  /// If the union variant matches, return a mutable reference to the FieldI16T.
+  pub fn as_field_i16_mut(&mut self) -> Option<&mut FieldI16T> {
+    if let Self::FieldI16(v) = self { Some(v.as_mut()) } else { None }
+  }
+  /// If the union variant matches, return the owned FieldI32T, setting the union to NONE.
+  pub fn take_field_i32(&mut self) -> Option<Box<FieldI32T>> {
+    if let Self::FieldI32(_) = self {
+      let v = core::mem::replace(self, Self::NONE);
+      if let Self::FieldI32(w) = v {
+        Some(w)
+      } else {
+        unreachable!()
+      }
+    } else {
+      None
+    }
+  }
+  /// If the union variant matches, return a reference to the FieldI32T.
+  pub fn as_field_i32(&self) -> Option<&FieldI32T> {
+    if let Self::FieldI32(v) = self { Some(v.as_ref()) } else { None }
+  }
+  /// If the union variant matches, return a mutable reference to the FieldI32T.
+  pub fn as_field_i32_mut(&mut self) -> Option<&mut FieldI32T> {
+    if let Self::FieldI32(v) = self { Some(v.as_mut()) } else { None }
+  }
+  /// If the union variant matches, return the owned FieldI64T, setting the union to NONE.
+  pub fn take_field_i64(&mut self) -> Option<Box<FieldI64T>> {
+    if let Self::FieldI64(_) = self {
+      let v = core::mem::replace(self, Self::NONE);
+      if let Self::FieldI64(w) = v {
+        Some(w)
+      } else {
+        unreachable!()
+      }
+    } else {
+      None
+    }
+  }
+  /// If the union variant matches, return a reference to the FieldI64T.
+  pub fn as_field_i64(&self) -> Option<&FieldI64T> {
+    if let Self::FieldI64(v) = self { Some(v.as_ref()) } else { None }
+  }
+  /// If the union variant matches, return a mutable reference to the FieldI64T.
+  pub fn as_field_i64_mut(&mut self) -> Option<&mut FieldI64T> {
+    if let Self::FieldI64(v) = self { Some(v.as_mut()) } else { None }
+  }
+  /// If the union variant matches, return the owned FieldU8T, setting the union to NONE.
+  pub fn take_field_u8(&mut self) -> Option<Box<FieldU8T>> {
+    if let Self::FieldU8(_) = self {
+      let v = core::mem::replace(self, Self::NONE);
+      if let Self::FieldU8(w) = v {
+        Some(w)
+      } else {
+        unreachable!()
+      }
+    } else {
+      None
+    }
+  }
+  /// If the union variant matches, return a reference to the FieldU8T.
+  pub fn as_field_u8(&self) -> Option<&FieldU8T> {
+    if let Self::FieldU8(v) = self { Some(v.as_ref()) } else { None }
+  }
+  /// If the union variant matches, return a mutable reference to the FieldU8T.
+  pub fn as_field_u8_mut(&mut self) -> Option<&mut FieldU8T> {
+    if let Self::FieldU8(v) = self { Some(v.as_mut()) } else { None }
+  }
+  /// If the union variant matches, return the owned FieldU16T, setting the union to NONE.
+  pub fn take_field_u16(&mut self) -> Option<Box<FieldU16T>> {
+    if let Self::FieldU16(_) = self {
+      let v = core::mem::replace(self, Self::NONE);
+      if let Self::FieldU16(w) = v {
+        Some(w)
+      } else {
+        unreachable!()
+      }
+    } else {
+      None
+    }
+  }
+  /// If the union variant matches, return a reference to the FieldU16T.
+  pub fn as_field_u16(&self) -> Option<&FieldU16T> {
+    if let Self::FieldU16(v) = self { Some(v.as_ref()) } else { None }
+  }
+  /// If the union variant matches, return a mutable reference to the FieldU16T.
+  pub fn as_field_u16_mut(&mut self) -> Option<&mut FieldU16T> {
+    if let Self::FieldU16(v) = self { Some(v.as_mut()) } else { None }
+  }
+  /// If the union variant matches, return the owned FieldU32T, setting the union to NONE.
+  pub fn take_field_u32(&mut self) -> Option<Box<FieldU32T>> {
+    if let Self::FieldU32(_) = self {
+      let v = core::mem::replace(self, Self::NONE);
+      if let Self::FieldU32(w) = v {
+        Some(w)
+      } else {
+        unreachable!()
+      }
+    } else {
+      None
+    }
+  }
+  /// If the union variant matches, return a reference to the FieldU32T.
+  pub fn as_field_u32(&self) -> Option<&FieldU32T> {
+    if let Self::FieldU32(v) = self { Some(v.as_ref()) } else { None }
+  }
+  /// If the union variant matches, return a mutable reference to the FieldU32T.
+  pub fn as_field_u32_mut(&mut self) -> Option<&mut FieldU32T> {
+    if let Self::FieldU32(v) = self { Some(v.as_mut()) } else { None }
+  }
+  /// If the union variant matches, return the owned FieldU64T, setting the union to NONE.
+  pub fn take_field_u64(&mut self) -> Option<Box<FieldU64T>> {
+    if let Self::FieldU64(_) = self {
+      let v = core::mem::replace(self, Self::NONE);
+      if let Self::FieldU64(w) = v {
+        Some(w)
+      } else {
+        unreachable!()
+      }
+    } else {
+      None
+    }
+  }
+  /// If the union variant matches, return a reference to the FieldU64T.
+  pub fn as_field_u64(&self) -> Option<&FieldU64T> {
+    if let Self::FieldU64(v) = self { Some(v.as_ref()) } else { None }
+  }
+  /// If the union variant matches, return a mutable reference to the FieldU64T.
+  pub fn as_field_u64_mut(&mut self) -> Option<&mut FieldU64T> {
+    if let Self::FieldU64(v) = self { Some(v.as_mut()) } else { None }
+  }
+  /// If the union variant matches, return the owned FieldFloatT, setting the union to NONE.
+  pub fn take_field_float(&mut self) -> Option<Box<FieldFloatT>> {
+    if let Self::FieldFloat(_) = self {
+      let v = core::mem::replace(self, Self::NONE);
+      if let Self::FieldFloat(w) = v {
+        Some(w)
+      } else {
+        unreachable!()
+      }
+    } else {
+      None
+    }
+  }
+  /// If the union variant matches, return a reference to the FieldFloatT.
+  pub fn as_field_float(&self) -> Option<&FieldFloatT> {
+    if let Self::FieldFloat(v) = self { Some(v.as_ref()) } else { None }
+  }
+  /// If the union variant matches, return a mutable reference to the FieldFloatT.
+  pub fn as_field_float_mut(&mut self) -> Option<&mut FieldFloatT> {
+    if let Self::FieldFloat(v) = self { Some(v.as_mut()) } else { None }
+  }
+  /// If the union variant matches, return the owned FieldDoubleT, setting the union to NONE.
+  pub fn take_field_double(&mut self) -> Option<Box<FieldDoubleT>> {
+    if let Self::FieldDouble(_) = self {
+      let v = core::mem::replace(self, Self::NONE);
+      if let Self::FieldDouble(w) = v {
+        Some(w)
+      } else {
+        unreachable!()
+      }
+    } else {
+      None
+    }
+  }
+  /// If the union variant matches, return a reference to the FieldDoubleT.
+  pub fn as_field_double(&self) -> Option<&FieldDoubleT> {
+    if let Self::FieldDouble(v) = self { Some(v.as_ref()) } else { None }
+  }
+  /// If the union variant matches, return a mutable reference to the FieldDoubleT.
+  pub fn as_field_double_mut(&mut self) -> Option<&mut FieldDoubleT> {
+    if let Self::FieldDouble(v) = self { Some(v.as_mut()) } else { None }
+  }
+}
+pub enum FieldStringOffset {}
+#[derive(Copy, Clone, PartialEq)]
+
+pub struct FieldString<'a> {
+  pub _tab: flatbuffers::Table<'a>,
+}
+
+impl<'a> flatbuffers::Follow<'a> for FieldString<'a> {
+  type Inner = FieldString<'a>;
+  #[inline]
+  unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+    Self { _tab: unsafe { flatbuffers::Table::new(buf, loc) } }
+  }
+}
+
+impl<'a> FieldString<'a> {
+  pub const VT_FIELD: flatbuffers::VOffsetT = 4;
+
+  #[inline]
+  pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
+    FieldString { _tab: table }
+  }
+  #[allow(unused_mut)]
+  pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
+    _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
+    args: &'args FieldStringArgs<'args>
+  ) -> flatbuffers::WIPOffset<FieldString<'bldr>> {
+    let mut builder = FieldStringBuilder::new(_fbb);
+    if let Some(x) = args.field { builder.add_field(x); }
+    builder.finish()
+  }
+
+  pub fn unpack(&self) -> FieldStringT {
+    let field = self.field().map(|x| {
+      x.to_string()
+    });
+    FieldStringT {
+      field,
+    }
+  }
+
+  #[inline]
+  pub fn field(&self) -> Option<&'a str> {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<&str>>(FieldString::VT_FIELD, None)}
+  }
+}
+
+impl flatbuffers::Verifiable for FieldString<'_> {
+  #[inline]
+  fn run_verifier(
+    v: &mut flatbuffers::Verifier, pos: usize
+  ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
+    use self::flatbuffers::Verifiable;
+    v.visit_table(pos)?
+     .visit_field::<flatbuffers::ForwardsUOffset<&str>>("field", Self::VT_FIELD, false)?
+     .finish();
+    Ok(())
+  }
+}
+pub struct FieldStringArgs<'a> {
+    pub field: Option<flatbuffers::WIPOffset<&'a str>>,
+}
+impl<'a> Default for FieldStringArgs<'a> {
+  #[inline]
+  fn default() -> Self {
+    FieldStringArgs {
+      field: None,
+    }
+  }
+}
+
+pub struct FieldStringBuilder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
+  fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a, A>,
+  start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
+}
+impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> FieldStringBuilder<'a, 'b, A> {
+  #[inline]
+  pub fn add_field(&mut self, field: flatbuffers::WIPOffset<&'b  str>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(FieldString::VT_FIELD, field);
+  }
+  #[inline]
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> FieldStringBuilder<'a, 'b, A> {
+    let start = _fbb.start_table();
+    FieldStringBuilder {
+      fbb_: _fbb,
+      start_: start,
+    }
+  }
+  #[inline]
+  pub fn finish(self) -> flatbuffers::WIPOffset<FieldString<'a>> {
+    let o = self.fbb_.end_table(self.start_);
+    flatbuffers::WIPOffset::new(o.value())
+  }
+}
+
+impl core::fmt::Debug for FieldString<'_> {
+  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    let mut ds = f.debug_struct("FieldString");
+      ds.field("field", &self.field());
+      ds.finish()
+  }
+}
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
+pub struct FieldStringT {
+  pub field: Option<String>,
+}
+impl Default for FieldStringT {
+  fn default() -> Self {
+    Self {
+      field: None,
+    }
+  }
+}
+impl FieldStringT {
+  pub fn pack<'b, A: flatbuffers::Allocator + 'b>(
+    &self,
+    _fbb: &mut flatbuffers::FlatBufferBuilder<'b, A>
+  ) -> flatbuffers::WIPOffset<FieldString<'b>> {
+    let field = self.field.as_ref().map(|x|{
+      _fbb.create_string(x)
+    });
+    FieldString::create(_fbb, &FieldStringArgs{
+      field,
+    })
+  }
+}
+pub enum FieldBoolOffset {}
+#[derive(Copy, Clone, PartialEq)]
+
+pub struct FieldBool<'a> {
+  pub _tab: flatbuffers::Table<'a>,
+}
+
+impl<'a> flatbuffers::Follow<'a> for FieldBool<'a> {
+  type Inner = FieldBool<'a>;
+  #[inline]
+  unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+    Self { _tab: unsafe { flatbuffers::Table::new(buf, loc) } }
+  }
+}
+
+impl<'a> FieldBool<'a> {
+  pub const VT_FIELD: flatbuffers::VOffsetT = 4;
+
+  #[inline]
+  pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
+    FieldBool { _tab: table }
+  }
+  #[allow(unused_mut)]
+  pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
+    _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
+    args: &'args FieldBoolArgs
+  ) -> flatbuffers::WIPOffset<FieldBool<'bldr>> {
+    let mut builder = FieldBoolBuilder::new(_fbb);
+    builder.add_field(args.field);
+    builder.finish()
+  }
+
+  pub fn unpack(&self) -> FieldBoolT {
+    let field = self.field();
+    FieldBoolT {
+      field,
+    }
+  }
+
+  #[inline]
+  pub fn field(&self) -> bool {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<bool>(FieldBool::VT_FIELD, Some(false)).unwrap()}
+  }
+}
+
+impl flatbuffers::Verifiable for FieldBool<'_> {
+  #[inline]
+  fn run_verifier(
+    v: &mut flatbuffers::Verifier, pos: usize
+  ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
+    use self::flatbuffers::Verifiable;
+    v.visit_table(pos)?
+     .visit_field::<bool>("field", Self::VT_FIELD, false)?
+     .finish();
+    Ok(())
+  }
+}
+pub struct FieldBoolArgs {
+    pub field: bool,
+}
+impl<'a> Default for FieldBoolArgs {
+  #[inline]
+  fn default() -> Self {
+    FieldBoolArgs {
+      field: false,
+    }
+  }
+}
+
+pub struct FieldBoolBuilder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
+  fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a, A>,
+  start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
+}
+impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> FieldBoolBuilder<'a, 'b, A> {
+  #[inline]
+  pub fn add_field(&mut self, field: bool) {
+    self.fbb_.push_slot::<bool>(FieldBool::VT_FIELD, field, false);
+  }
+  #[inline]
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> FieldBoolBuilder<'a, 'b, A> {
+    let start = _fbb.start_table();
+    FieldBoolBuilder {
+      fbb_: _fbb,
+      start_: start,
+    }
+  }
+  #[inline]
+  pub fn finish(self) -> flatbuffers::WIPOffset<FieldBool<'a>> {
+    let o = self.fbb_.end_table(self.start_);
+    flatbuffers::WIPOffset::new(o.value())
+  }
+}
+
+impl core::fmt::Debug for FieldBool<'_> {
+  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    let mut ds = f.debug_struct("FieldBool");
+      ds.field("field", &self.field());
+      ds.finish()
+  }
+}
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
+pub struct FieldBoolT {
+  pub field: bool,
+}
+impl Default for FieldBoolT {
+  fn default() -> Self {
+    Self {
+      field: false,
+    }
+  }
+}
+impl FieldBoolT {
+  pub fn pack<'b, A: flatbuffers::Allocator + 'b>(
+    &self,
+    _fbb: &mut flatbuffers::FlatBufferBuilder<'b, A>
+  ) -> flatbuffers::WIPOffset<FieldBool<'b>> {
+    let field = self.field;
+    FieldBool::create(_fbb, &FieldBoolArgs{
+      field,
+    })
+  }
+}
+pub enum FieldI8Offset {}
+#[derive(Copy, Clone, PartialEq)]
+
+pub struct FieldI8<'a> {
+  pub _tab: flatbuffers::Table<'a>,
+}
+
+impl<'a> flatbuffers::Follow<'a> for FieldI8<'a> {
+  type Inner = FieldI8<'a>;
+  #[inline]
+  unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+    Self { _tab: unsafe { flatbuffers::Table::new(buf, loc) } }
+  }
+}
+
+impl<'a> FieldI8<'a> {
+  pub const VT_FIELD: flatbuffers::VOffsetT = 4;
+
+  #[inline]
+  pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
+    FieldI8 { _tab: table }
+  }
+  #[allow(unused_mut)]
+  pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
+    _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
+    args: &'args FieldI8Args
+  ) -> flatbuffers::WIPOffset<FieldI8<'bldr>> {
+    let mut builder = FieldI8Builder::new(_fbb);
+    builder.add_field(args.field);
+    builder.finish()
+  }
+
+  pub fn unpack(&self) -> FieldI8T {
+    let field = self.field();
+    FieldI8T {
+      field,
+    }
+  }
+
+  #[inline]
+  pub fn field(&self) -> i8 {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<i8>(FieldI8::VT_FIELD, Some(0)).unwrap()}
+  }
+}
+
+impl flatbuffers::Verifiable for FieldI8<'_> {
+  #[inline]
+  fn run_verifier(
+    v: &mut flatbuffers::Verifier, pos: usize
+  ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
+    use self::flatbuffers::Verifiable;
+    v.visit_table(pos)?
+     .visit_field::<i8>("field", Self::VT_FIELD, false)?
+     .finish();
+    Ok(())
+  }
+}
+pub struct FieldI8Args {
+    pub field: i8,
+}
+impl<'a> Default for FieldI8Args {
+  #[inline]
+  fn default() -> Self {
+    FieldI8Args {
+      field: 0,
+    }
+  }
+}
+
+pub struct FieldI8Builder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
+  fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a, A>,
+  start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
+}
+impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> FieldI8Builder<'a, 'b, A> {
+  #[inline]
+  pub fn add_field(&mut self, field: i8) {
+    self.fbb_.push_slot::<i8>(FieldI8::VT_FIELD, field, 0);
+  }
+  #[inline]
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> FieldI8Builder<'a, 'b, A> {
+    let start = _fbb.start_table();
+    FieldI8Builder {
+      fbb_: _fbb,
+      start_: start,
+    }
+  }
+  #[inline]
+  pub fn finish(self) -> flatbuffers::WIPOffset<FieldI8<'a>> {
+    let o = self.fbb_.end_table(self.start_);
+    flatbuffers::WIPOffset::new(o.value())
+  }
+}
+
+impl core::fmt::Debug for FieldI8<'_> {
+  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    let mut ds = f.debug_struct("FieldI8");
+      ds.field("field", &self.field());
+      ds.finish()
+  }
+}
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
+pub struct FieldI8T {
+  pub field: i8,
+}
+impl Default for FieldI8T {
+  fn default() -> Self {
+    Self {
+      field: 0,
+    }
+  }
+}
+impl FieldI8T {
+  pub fn pack<'b, A: flatbuffers::Allocator + 'b>(
+    &self,
+    _fbb: &mut flatbuffers::FlatBufferBuilder<'b, A>
+  ) -> flatbuffers::WIPOffset<FieldI8<'b>> {
+    let field = self.field;
+    FieldI8::create(_fbb, &FieldI8Args{
+      field,
+    })
+  }
+}
+pub enum FieldI16Offset {}
+#[derive(Copy, Clone, PartialEq)]
+
+pub struct FieldI16<'a> {
+  pub _tab: flatbuffers::Table<'a>,
+}
+
+impl<'a> flatbuffers::Follow<'a> for FieldI16<'a> {
+  type Inner = FieldI16<'a>;
+  #[inline]
+  unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+    Self { _tab: unsafe { flatbuffers::Table::new(buf, loc) } }
+  }
+}
+
+impl<'a> FieldI16<'a> {
+  pub const VT_FIELD: flatbuffers::VOffsetT = 4;
+
+  #[inline]
+  pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
+    FieldI16 { _tab: table }
+  }
+  #[allow(unused_mut)]
+  pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
+    _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
+    args: &'args FieldI16Args
+  ) -> flatbuffers::WIPOffset<FieldI16<'bldr>> {
+    let mut builder = FieldI16Builder::new(_fbb);
+    builder.add_field(args.field);
+    builder.finish()
+  }
+
+  pub fn unpack(&self) -> FieldI16T {
+    let field = self.field();
+    FieldI16T {
+      field,
+    }
+  }
+
+  #[inline]
+  pub fn field(&self) -> i16 {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<i16>(FieldI16::VT_FIELD, Some(0)).unwrap()}
+  }
+}
+
+impl flatbuffers::Verifiable for FieldI16<'_> {
+  #[inline]
+  fn run_verifier(
+    v: &mut flatbuffers::Verifier, pos: usize
+  ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
+    use self::flatbuffers::Verifiable;
+    v.visit_table(pos)?
+     .visit_field::<i16>("field", Self::VT_FIELD, false)?
+     .finish();
+    Ok(())
+  }
+}
+pub struct FieldI16Args {
+    pub field: i16,
+}
+impl<'a> Default for FieldI16Args {
+  #[inline]
+  fn default() -> Self {
+    FieldI16Args {
+      field: 0,
+    }
+  }
+}
+
+pub struct FieldI16Builder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
+  fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a, A>,
+  start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
+}
+impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> FieldI16Builder<'a, 'b, A> {
+  #[inline]
+  pub fn add_field(&mut self, field: i16) {
+    self.fbb_.push_slot::<i16>(FieldI16::VT_FIELD, field, 0);
+  }
+  #[inline]
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> FieldI16Builder<'a, 'b, A> {
+    let start = _fbb.start_table();
+    FieldI16Builder {
+      fbb_: _fbb,
+      start_: start,
+    }
+  }
+  #[inline]
+  pub fn finish(self) -> flatbuffers::WIPOffset<FieldI16<'a>> {
+    let o = self.fbb_.end_table(self.start_);
+    flatbuffers::WIPOffset::new(o.value())
+  }
+}
+
+impl core::fmt::Debug for FieldI16<'_> {
+  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    let mut ds = f.debug_struct("FieldI16");
+      ds.field("field", &self.field());
+      ds.finish()
+  }
+}
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
+pub struct FieldI16T {
+  pub field: i16,
+}
+impl Default for FieldI16T {
+  fn default() -> Self {
+    Self {
+      field: 0,
+    }
+  }
+}
+impl FieldI16T {
+  pub fn pack<'b, A: flatbuffers::Allocator + 'b>(
+    &self,
+    _fbb: &mut flatbuffers::FlatBufferBuilder<'b, A>
+  ) -> flatbuffers::WIPOffset<FieldI16<'b>> {
+    let field = self.field;
+    FieldI16::create(_fbb, &FieldI16Args{
+      field,
+    })
+  }
+}
+pub enum FieldI32Offset {}
+#[derive(Copy, Clone, PartialEq)]
+
+pub struct FieldI32<'a> {
+  pub _tab: flatbuffers::Table<'a>,
+}
+
+impl<'a> flatbuffers::Follow<'a> for FieldI32<'a> {
+  type Inner = FieldI32<'a>;
+  #[inline]
+  unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+    Self { _tab: unsafe { flatbuffers::Table::new(buf, loc) } }
+  }
+}
+
+impl<'a> FieldI32<'a> {
+  pub const VT_FIELD: flatbuffers::VOffsetT = 4;
+
+  #[inline]
+  pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
+    FieldI32 { _tab: table }
+  }
+  #[allow(unused_mut)]
+  pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
+    _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
+    args: &'args FieldI32Args
+  ) -> flatbuffers::WIPOffset<FieldI32<'bldr>> {
+    let mut builder = FieldI32Builder::new(_fbb);
+    builder.add_field(args.field);
+    builder.finish()
+  }
+
+  pub fn unpack(&self) -> FieldI32T {
+    let field = self.field();
+    FieldI32T {
+      field,
+    }
+  }
+
+  #[inline]
+  pub fn field(&self) -> i32 {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<i32>(FieldI32::VT_FIELD, Some(0)).unwrap()}
+  }
+}
+
+impl flatbuffers::Verifiable for FieldI32<'_> {
+  #[inline]
+  fn run_verifier(
+    v: &mut flatbuffers::Verifier, pos: usize
+  ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
+    use self::flatbuffers::Verifiable;
+    v.visit_table(pos)?
+     .visit_field::<i32>("field", Self::VT_FIELD, false)?
+     .finish();
+    Ok(())
+  }
+}
+pub struct FieldI32Args {
+    pub field: i32,
+}
+impl<'a> Default for FieldI32Args {
+  #[inline]
+  fn default() -> Self {
+    FieldI32Args {
+      field: 0,
+    }
+  }
+}
+
+pub struct FieldI32Builder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
+  fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a, A>,
+  start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
+}
+impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> FieldI32Builder<'a, 'b, A> {
+  #[inline]
+  pub fn add_field(&mut self, field: i32) {
+    self.fbb_.push_slot::<i32>(FieldI32::VT_FIELD, field, 0);
+  }
+  #[inline]
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> FieldI32Builder<'a, 'b, A> {
+    let start = _fbb.start_table();
+    FieldI32Builder {
+      fbb_: _fbb,
+      start_: start,
+    }
+  }
+  #[inline]
+  pub fn finish(self) -> flatbuffers::WIPOffset<FieldI32<'a>> {
+    let o = self.fbb_.end_table(self.start_);
+    flatbuffers::WIPOffset::new(o.value())
+  }
+}
+
+impl core::fmt::Debug for FieldI32<'_> {
+  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    let mut ds = f.debug_struct("FieldI32");
+      ds.field("field", &self.field());
+      ds.finish()
+  }
+}
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
+pub struct FieldI32T {
+  pub field: i32,
+}
+impl Default for FieldI32T {
+  fn default() -> Self {
+    Self {
+      field: 0,
+    }
+  }
+}
+impl FieldI32T {
+  pub fn pack<'b, A: flatbuffers::Allocator + 'b>(
+    &self,
+    _fbb: &mut flatbuffers::FlatBufferBuilder<'b, A>
+  ) -> flatbuffers::WIPOffset<FieldI32<'b>> {
+    let field = self.field;
+    FieldI32::create(_fbb, &FieldI32Args{
+      field,
+    })
+  }
+}
+pub enum FieldI64Offset {}
+#[derive(Copy, Clone, PartialEq)]
+
+pub struct FieldI64<'a> {
+  pub _tab: flatbuffers::Table<'a>,
+}
+
+impl<'a> flatbuffers::Follow<'a> for FieldI64<'a> {
+  type Inner = FieldI64<'a>;
+  #[inline]
+  unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+    Self { _tab: unsafe { flatbuffers::Table::new(buf, loc) } }
+  }
+}
+
+impl<'a> FieldI64<'a> {
+  pub const VT_FIELD: flatbuffers::VOffsetT = 4;
+
+  #[inline]
+  pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
+    FieldI64 { _tab: table }
+  }
+  #[allow(unused_mut)]
+  pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
+    _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
+    args: &'args FieldI64Args
+  ) -> flatbuffers::WIPOffset<FieldI64<'bldr>> {
+    let mut builder = FieldI64Builder::new(_fbb);
+    builder.add_field(args.field);
+    builder.finish()
+  }
+
+  pub fn unpack(&self) -> FieldI64T {
+    let field = self.field();
+    FieldI64T {
+      field,
+    }
+  }
+
+  #[inline]
+  pub fn field(&self) -> i64 {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<i64>(FieldI64::VT_FIELD, Some(0)).unwrap()}
+  }
+}
+
+impl flatbuffers::Verifiable for FieldI64<'_> {
+  #[inline]
+  fn run_verifier(
+    v: &mut flatbuffers::Verifier, pos: usize
+  ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
+    use self::flatbuffers::Verifiable;
+    v.visit_table(pos)?
+     .visit_field::<i64>("field", Self::VT_FIELD, false)?
+     .finish();
+    Ok(())
+  }
+}
+pub struct FieldI64Args {
+    pub field: i64,
+}
+impl<'a> Default for FieldI64Args {
+  #[inline]
+  fn default() -> Self {
+    FieldI64Args {
+      field: 0,
+    }
+  }
+}
+
+pub struct FieldI64Builder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
+  fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a, A>,
+  start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
+}
+impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> FieldI64Builder<'a, 'b, A> {
+  #[inline]
+  pub fn add_field(&mut self, field: i64) {
+    self.fbb_.push_slot::<i64>(FieldI64::VT_FIELD, field, 0);
+  }
+  #[inline]
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> FieldI64Builder<'a, 'b, A> {
+    let start = _fbb.start_table();
+    FieldI64Builder {
+      fbb_: _fbb,
+      start_: start,
+    }
+  }
+  #[inline]
+  pub fn finish(self) -> flatbuffers::WIPOffset<FieldI64<'a>> {
+    let o = self.fbb_.end_table(self.start_);
+    flatbuffers::WIPOffset::new(o.value())
+  }
+}
+
+impl core::fmt::Debug for FieldI64<'_> {
+  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    let mut ds = f.debug_struct("FieldI64");
+      ds.field("field", &self.field());
+      ds.finish()
+  }
+}
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
+pub struct FieldI64T {
+  pub field: i64,
+}
+impl Default for FieldI64T {
+  fn default() -> Self {
+    Self {
+      field: 0,
+    }
+  }
+}
+impl FieldI64T {
+  pub fn pack<'b, A: flatbuffers::Allocator + 'b>(
+    &self,
+    _fbb: &mut flatbuffers::FlatBufferBuilder<'b, A>
+  ) -> flatbuffers::WIPOffset<FieldI64<'b>> {
+    let field = self.field;
+    FieldI64::create(_fbb, &FieldI64Args{
+      field,
+    })
+  }
+}
+pub enum FieldU8Offset {}
+#[derive(Copy, Clone, PartialEq)]
+
+pub struct FieldU8<'a> {
+  pub _tab: flatbuffers::Table<'a>,
+}
+
+impl<'a> flatbuffers::Follow<'a> for FieldU8<'a> {
+  type Inner = FieldU8<'a>;
+  #[inline]
+  unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+    Self { _tab: unsafe { flatbuffers::Table::new(buf, loc) } }
+  }
+}
+
+impl<'a> FieldU8<'a> {
+  pub const VT_FIELD: flatbuffers::VOffsetT = 4;
+
+  #[inline]
+  pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
+    FieldU8 { _tab: table }
+  }
+  #[allow(unused_mut)]
+  pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
+    _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
+    args: &'args FieldU8Args
+  ) -> flatbuffers::WIPOffset<FieldU8<'bldr>> {
+    let mut builder = FieldU8Builder::new(_fbb);
+    builder.add_field(args.field);
+    builder.finish()
+  }
+
+  pub fn unpack(&self) -> FieldU8T {
+    let field = self.field();
+    FieldU8T {
+      field,
+    }
+  }
+
+  #[inline]
+  pub fn field(&self) -> u8 {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<u8>(FieldU8::VT_FIELD, Some(0)).unwrap()}
+  }
+}
+
+impl flatbuffers::Verifiable for FieldU8<'_> {
+  #[inline]
+  fn run_verifier(
+    v: &mut flatbuffers::Verifier, pos: usize
+  ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
+    use self::flatbuffers::Verifiable;
+    v.visit_table(pos)?
+     .visit_field::<u8>("field", Self::VT_FIELD, false)?
+     .finish();
+    Ok(())
+  }
+}
+pub struct FieldU8Args {
+    pub field: u8,
+}
+impl<'a> Default for FieldU8Args {
+  #[inline]
+  fn default() -> Self {
+    FieldU8Args {
+      field: 0,
+    }
+  }
+}
+
+pub struct FieldU8Builder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
+  fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a, A>,
+  start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
+}
+impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> FieldU8Builder<'a, 'b, A> {
+  #[inline]
+  pub fn add_field(&mut self, field: u8) {
+    self.fbb_.push_slot::<u8>(FieldU8::VT_FIELD, field, 0);
+  }
+  #[inline]
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> FieldU8Builder<'a, 'b, A> {
+    let start = _fbb.start_table();
+    FieldU8Builder {
+      fbb_: _fbb,
+      start_: start,
+    }
+  }
+  #[inline]
+  pub fn finish(self) -> flatbuffers::WIPOffset<FieldU8<'a>> {
+    let o = self.fbb_.end_table(self.start_);
+    flatbuffers::WIPOffset::new(o.value())
+  }
+}
+
+impl core::fmt::Debug for FieldU8<'_> {
+  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    let mut ds = f.debug_struct("FieldU8");
+      ds.field("field", &self.field());
+      ds.finish()
+  }
+}
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
+pub struct FieldU8T {
+  pub field: u8,
+}
+impl Default for FieldU8T {
+  fn default() -> Self {
+    Self {
+      field: 0,
+    }
+  }
+}
+impl FieldU8T {
+  pub fn pack<'b, A: flatbuffers::Allocator + 'b>(
+    &self,
+    _fbb: &mut flatbuffers::FlatBufferBuilder<'b, A>
+  ) -> flatbuffers::WIPOffset<FieldU8<'b>> {
+    let field = self.field;
+    FieldU8::create(_fbb, &FieldU8Args{
+      field,
+    })
+  }
+}
+pub enum FieldU16Offset {}
+#[derive(Copy, Clone, PartialEq)]
+
+pub struct FieldU16<'a> {
+  pub _tab: flatbuffers::Table<'a>,
+}
+
+impl<'a> flatbuffers::Follow<'a> for FieldU16<'a> {
+  type Inner = FieldU16<'a>;
+  #[inline]
+  unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+    Self { _tab: unsafe { flatbuffers::Table::new(buf, loc) } }
+  }
+}
+
+impl<'a> FieldU16<'a> {
+  pub const VT_FIELD: flatbuffers::VOffsetT = 4;
+
+  #[inline]
+  pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
+    FieldU16 { _tab: table }
+  }
+  #[allow(unused_mut)]
+  pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
+    _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
+    args: &'args FieldU16Args
+  ) -> flatbuffers::WIPOffset<FieldU16<'bldr>> {
+    let mut builder = FieldU16Builder::new(_fbb);
+    builder.add_field(args.field);
+    builder.finish()
+  }
+
+  pub fn unpack(&self) -> FieldU16T {
+    let field = self.field();
+    FieldU16T {
+      field,
+    }
+  }
+
+  #[inline]
+  pub fn field(&self) -> u16 {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<u16>(FieldU16::VT_FIELD, Some(0)).unwrap()}
+  }
+}
+
+impl flatbuffers::Verifiable for FieldU16<'_> {
+  #[inline]
+  fn run_verifier(
+    v: &mut flatbuffers::Verifier, pos: usize
+  ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
+    use self::flatbuffers::Verifiable;
+    v.visit_table(pos)?
+     .visit_field::<u16>("field", Self::VT_FIELD, false)?
+     .finish();
+    Ok(())
+  }
+}
+pub struct FieldU16Args {
+    pub field: u16,
+}
+impl<'a> Default for FieldU16Args {
+  #[inline]
+  fn default() -> Self {
+    FieldU16Args {
+      field: 0,
+    }
+  }
+}
+
+pub struct FieldU16Builder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
+  fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a, A>,
+  start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
+}
+impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> FieldU16Builder<'a, 'b, A> {
+  #[inline]
+  pub fn add_field(&mut self, field: u16) {
+    self.fbb_.push_slot::<u16>(FieldU16::VT_FIELD, field, 0);
+  }
+  #[inline]
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> FieldU16Builder<'a, 'b, A> {
+    let start = _fbb.start_table();
+    FieldU16Builder {
+      fbb_: _fbb,
+      start_: start,
+    }
+  }
+  #[inline]
+  pub fn finish(self) -> flatbuffers::WIPOffset<FieldU16<'a>> {
+    let o = self.fbb_.end_table(self.start_);
+    flatbuffers::WIPOffset::new(o.value())
+  }
+}
+
+impl core::fmt::Debug for FieldU16<'_> {
+  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    let mut ds = f.debug_struct("FieldU16");
+      ds.field("field", &self.field());
+      ds.finish()
+  }
+}
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
+pub struct FieldU16T {
+  pub field: u16,
+}
+impl Default for FieldU16T {
+  fn default() -> Self {
+    Self {
+      field: 0,
+    }
+  }
+}
+impl FieldU16T {
+  pub fn pack<'b, A: flatbuffers::Allocator + 'b>(
+    &self,
+    _fbb: &mut flatbuffers::FlatBufferBuilder<'b, A>
+  ) -> flatbuffers::WIPOffset<FieldU16<'b>> {
+    let field = self.field;
+    FieldU16::create(_fbb, &FieldU16Args{
+      field,
+    })
+  }
+}
+pub enum FieldU32Offset {}
+#[derive(Copy, Clone, PartialEq)]
+
+pub struct FieldU32<'a> {
+  pub _tab: flatbuffers::Table<'a>,
+}
+
+impl<'a> flatbuffers::Follow<'a> for FieldU32<'a> {
+  type Inner = FieldU32<'a>;
+  #[inline]
+  unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+    Self { _tab: unsafe { flatbuffers::Table::new(buf, loc) } }
+  }
+}
+
+impl<'a> FieldU32<'a> {
+  pub const VT_FIELD: flatbuffers::VOffsetT = 4;
+
+  #[inline]
+  pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
+    FieldU32 { _tab: table }
+  }
+  #[allow(unused_mut)]
+  pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
+    _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
+    args: &'args FieldU32Args
+  ) -> flatbuffers::WIPOffset<FieldU32<'bldr>> {
+    let mut builder = FieldU32Builder::new(_fbb);
+    builder.add_field(args.field);
+    builder.finish()
+  }
+
+  pub fn unpack(&self) -> FieldU32T {
+    let field = self.field();
+    FieldU32T {
+      field,
+    }
+  }
+
+  #[inline]
+  pub fn field(&self) -> u32 {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<u32>(FieldU32::VT_FIELD, Some(0)).unwrap()}
+  }
+}
+
+impl flatbuffers::Verifiable for FieldU32<'_> {
+  #[inline]
+  fn run_verifier(
+    v: &mut flatbuffers::Verifier, pos: usize
+  ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
+    use self::flatbuffers::Verifiable;
+    v.visit_table(pos)?
+     .visit_field::<u32>("field", Self::VT_FIELD, false)?
+     .finish();
+    Ok(())
+  }
+}
+pub struct FieldU32Args {
+    pub field: u32,
+}
+impl<'a> Default for FieldU32Args {
+  #[inline]
+  fn default() -> Self {
+    FieldU32Args {
+      field: 0,
+    }
+  }
+}
+
+pub struct FieldU32Builder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
+  fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a, A>,
+  start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
+}
+impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> FieldU32Builder<'a, 'b, A> {
+  #[inline]
+  pub fn add_field(&mut self, field: u32) {
+    self.fbb_.push_slot::<u32>(FieldU32::VT_FIELD, field, 0);
+  }
+  #[inline]
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> FieldU32Builder<'a, 'b, A> {
+    let start = _fbb.start_table();
+    FieldU32Builder {
+      fbb_: _fbb,
+      start_: start,
+    }
+  }
+  #[inline]
+  pub fn finish(self) -> flatbuffers::WIPOffset<FieldU32<'a>> {
+    let o = self.fbb_.end_table(self.start_);
+    flatbuffers::WIPOffset::new(o.value())
+  }
+}
+
+impl core::fmt::Debug for FieldU32<'_> {
+  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    let mut ds = f.debug_struct("FieldU32");
+      ds.field("field", &self.field());
+      ds.finish()
+  }
+}
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
+pub struct FieldU32T {
+  pub field: u32,
+}
+impl Default for FieldU32T {
+  fn default() -> Self {
+    Self {
+      field: 0,
+    }
+  }
+}
+impl FieldU32T {
+  pub fn pack<'b, A: flatbuffers::Allocator + 'b>(
+    &self,
+    _fbb: &mut flatbuffers::FlatBufferBuilder<'b, A>
+  ) -> flatbuffers::WIPOffset<FieldU32<'b>> {
+    let field = self.field;
+    FieldU32::create(_fbb, &FieldU32Args{
+      field,
+    })
+  }
+}
+pub enum FieldU64Offset {}
+#[derive(Copy, Clone, PartialEq)]
+
+pub struct FieldU64<'a> {
+  pub _tab: flatbuffers::Table<'a>,
+}
+
+impl<'a> flatbuffers::Follow<'a> for FieldU64<'a> {
+  type Inner = FieldU64<'a>;
+  #[inline]
+  unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+    Self { _tab: unsafe { flatbuffers::Table::new(buf, loc) } }
+  }
+}
+
+impl<'a> FieldU64<'a> {
+  pub const VT_FIELD: flatbuffers::VOffsetT = 4;
+
+  #[inline]
+  pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
+    FieldU64 { _tab: table }
+  }
+  #[allow(unused_mut)]
+  pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
+    _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
+    args: &'args FieldU64Args
+  ) -> flatbuffers::WIPOffset<FieldU64<'bldr>> {
+    let mut builder = FieldU64Builder::new(_fbb);
+    builder.add_field(args.field);
+    builder.finish()
+  }
+
+  pub fn unpack(&self) -> FieldU64T {
+    let field = self.field();
+    FieldU64T {
+      field,
+    }
+  }
+
+  #[inline]
+  pub fn field(&self) -> u64 {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<u64>(FieldU64::VT_FIELD, Some(0)).unwrap()}
+  }
+}
+
+impl flatbuffers::Verifiable for FieldU64<'_> {
+  #[inline]
+  fn run_verifier(
+    v: &mut flatbuffers::Verifier, pos: usize
+  ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
+    use self::flatbuffers::Verifiable;
+    v.visit_table(pos)?
+     .visit_field::<u64>("field", Self::VT_FIELD, false)?
+     .finish();
+    Ok(())
+  }
+}
+pub struct FieldU64Args {
+    pub field: u64,
+}
+impl<'a> Default for FieldU64Args {
+  #[inline]
+  fn default() -> Self {
+    FieldU64Args {
+      field: 0,
+    }
+  }
+}
+
+pub struct FieldU64Builder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
+  fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a, A>,
+  start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
+}
+impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> FieldU64Builder<'a, 'b, A> {
+  #[inline]
+  pub fn add_field(&mut self, field: u64) {
+    self.fbb_.push_slot::<u64>(FieldU64::VT_FIELD, field, 0);
+  }
+  #[inline]
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> FieldU64Builder<'a, 'b, A> {
+    let start = _fbb.start_table();
+    FieldU64Builder {
+      fbb_: _fbb,
+      start_: start,
+    }
+  }
+  #[inline]
+  pub fn finish(self) -> flatbuffers::WIPOffset<FieldU64<'a>> {
+    let o = self.fbb_.end_table(self.start_);
+    flatbuffers::WIPOffset::new(o.value())
+  }
+}
+
+impl core::fmt::Debug for FieldU64<'_> {
+  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    let mut ds = f.debug_struct("FieldU64");
+      ds.field("field", &self.field());
+      ds.finish()
+  }
+}
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
+pub struct FieldU64T {
+  pub field: u64,
+}
+impl Default for FieldU64T {
+  fn default() -> Self {
+    Self {
+      field: 0,
+    }
+  }
+}
+impl FieldU64T {
+  pub fn pack<'b, A: flatbuffers::Allocator + 'b>(
+    &self,
+    _fbb: &mut flatbuffers::FlatBufferBuilder<'b, A>
+  ) -> flatbuffers::WIPOffset<FieldU64<'b>> {
+    let field = self.field;
+    FieldU64::create(_fbb, &FieldU64Args{
+      field,
+    })
+  }
+}
+pub enum FieldFloatOffset {}
+#[derive(Copy, Clone, PartialEq)]
+
+pub struct FieldFloat<'a> {
+  pub _tab: flatbuffers::Table<'a>,
+}
+
+impl<'a> flatbuffers::Follow<'a> for FieldFloat<'a> {
+  type Inner = FieldFloat<'a>;
+  #[inline]
+  unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+    Self { _tab: unsafe { flatbuffers::Table::new(buf, loc) } }
+  }
+}
+
+impl<'a> FieldFloat<'a> {
+  pub const VT_FIELD: flatbuffers::VOffsetT = 4;
+
+  #[inline]
+  pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
+    FieldFloat { _tab: table }
+  }
+  #[allow(unused_mut)]
+  pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
+    _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
+    args: &'args FieldFloatArgs
+  ) -> flatbuffers::WIPOffset<FieldFloat<'bldr>> {
+    let mut builder = FieldFloatBuilder::new(_fbb);
+    builder.add_field(args.field);
+    builder.finish()
+  }
+
+  pub fn unpack(&self) -> FieldFloatT {
+    let field = self.field();
+    FieldFloatT {
+      field,
+    }
+  }
+
+  #[inline]
+  pub fn field(&self) -> f32 {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<f32>(FieldFloat::VT_FIELD, Some(0.0)).unwrap()}
+  }
+}
+
+impl flatbuffers::Verifiable for FieldFloat<'_> {
+  #[inline]
+  fn run_verifier(
+    v: &mut flatbuffers::Verifier, pos: usize
+  ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
+    use self::flatbuffers::Verifiable;
+    v.visit_table(pos)?
+     .visit_field::<f32>("field", Self::VT_FIELD, false)?
+     .finish();
+    Ok(())
+  }
+}
+pub struct FieldFloatArgs {
+    pub field: f32,
+}
+impl<'a> Default for FieldFloatArgs {
+  #[inline]
+  fn default() -> Self {
+    FieldFloatArgs {
+      field: 0.0,
+    }
+  }
+}
+
+pub struct FieldFloatBuilder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
+  fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a, A>,
+  start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
+}
+impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> FieldFloatBuilder<'a, 'b, A> {
+  #[inline]
+  pub fn add_field(&mut self, field: f32) {
+    self.fbb_.push_slot::<f32>(FieldFloat::VT_FIELD, field, 0.0);
+  }
+  #[inline]
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> FieldFloatBuilder<'a, 'b, A> {
+    let start = _fbb.start_table();
+    FieldFloatBuilder {
+      fbb_: _fbb,
+      start_: start,
+    }
+  }
+  #[inline]
+  pub fn finish(self) -> flatbuffers::WIPOffset<FieldFloat<'a>> {
+    let o = self.fbb_.end_table(self.start_);
+    flatbuffers::WIPOffset::new(o.value())
+  }
+}
+
+impl core::fmt::Debug for FieldFloat<'_> {
+  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    let mut ds = f.debug_struct("FieldFloat");
+      ds.field("field", &self.field());
+      ds.finish()
+  }
+}
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
+pub struct FieldFloatT {
+  pub field: f32,
+}
+impl Default for FieldFloatT {
+  fn default() -> Self {
+    Self {
+      field: 0.0,
+    }
+  }
+}
+impl FieldFloatT {
+  pub fn pack<'b, A: flatbuffers::Allocator + 'b>(
+    &self,
+    _fbb: &mut flatbuffers::FlatBufferBuilder<'b, A>
+  ) -> flatbuffers::WIPOffset<FieldFloat<'b>> {
+    let field = self.field;
+    FieldFloat::create(_fbb, &FieldFloatArgs{
+      field,
+    })
+  }
+}
+pub enum FieldDoubleOffset {}
+#[derive(Copy, Clone, PartialEq)]
+
+pub struct FieldDouble<'a> {
+  pub _tab: flatbuffers::Table<'a>,
+}
+
+impl<'a> flatbuffers::Follow<'a> for FieldDouble<'a> {
+  type Inner = FieldDouble<'a>;
+  #[inline]
+  unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+    Self { _tab: unsafe { flatbuffers::Table::new(buf, loc) } }
+  }
+}
+
+impl<'a> FieldDouble<'a> {
+  pub const VT_FIELD: flatbuffers::VOffsetT = 4;
+
+  #[inline]
+  pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
+    FieldDouble { _tab: table }
+  }
+  #[allow(unused_mut)]
+  pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
+    _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
+    args: &'args FieldDoubleArgs
+  ) -> flatbuffers::WIPOffset<FieldDouble<'bldr>> {
+    let mut builder = FieldDoubleBuilder::new(_fbb);
+    builder.add_field(args.field);
+    builder.finish()
+  }
+
+  pub fn unpack(&self) -> FieldDoubleT {
+    let field = self.field();
+    FieldDoubleT {
+      field,
+    }
+  }
+
+  #[inline]
+  pub fn field(&self) -> f64 {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<f64>(FieldDouble::VT_FIELD, Some(0.0)).unwrap()}
+  }
+}
+
+impl flatbuffers::Verifiable for FieldDouble<'_> {
+  #[inline]
+  fn run_verifier(
+    v: &mut flatbuffers::Verifier, pos: usize
+  ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
+    use self::flatbuffers::Verifiable;
+    v.visit_table(pos)?
+     .visit_field::<f64>("field", Self::VT_FIELD, false)?
+     .finish();
+    Ok(())
+  }
+}
+pub struct FieldDoubleArgs {
+    pub field: f64,
+}
+impl<'a> Default for FieldDoubleArgs {
+  #[inline]
+  fn default() -> Self {
+    FieldDoubleArgs {
+      field: 0.0,
+    }
+  }
+}
+
+pub struct FieldDoubleBuilder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
+  fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a, A>,
+  start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
+}
+impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> FieldDoubleBuilder<'a, 'b, A> {
+  #[inline]
+  pub fn add_field(&mut self, field: f64) {
+    self.fbb_.push_slot::<f64>(FieldDouble::VT_FIELD, field, 0.0);
+  }
+  #[inline]
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> FieldDoubleBuilder<'a, 'b, A> {
+    let start = _fbb.start_table();
+    FieldDoubleBuilder {
+      fbb_: _fbb,
+      start_: start,
+    }
+  }
+  #[inline]
+  pub fn finish(self) -> flatbuffers::WIPOffset<FieldDouble<'a>> {
+    let o = self.fbb_.end_table(self.start_);
+    flatbuffers::WIPOffset::new(o.value())
+  }
+}
+
+impl core::fmt::Debug for FieldDouble<'_> {
+  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    let mut ds = f.debug_struct("FieldDouble");
+      ds.field("field", &self.field());
+      ds.finish()
+  }
+}
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
+pub struct FieldDoubleT {
+  pub field: f64,
+}
+impl Default for FieldDoubleT {
+  fn default() -> Self {
+    Self {
+      field: 0.0,
+    }
+  }
+}
+impl FieldDoubleT {
+  pub fn pack<'b, A: flatbuffers::Allocator + 'b>(
+    &self,
+    _fbb: &mut flatbuffers::FlatBufferBuilder<'b, A>
+  ) -> flatbuffers::WIPOffset<FieldDouble<'b>> {
+    let field = self.field;
+    FieldDouble::create(_fbb, &FieldDoubleArgs{
+      field,
+    })
+  }
+}
 pub enum ValueOffset {}
 #[derive(Copy, Clone, PartialEq)]
 
@@ -342,7 +2187,7 @@ impl<'a> flatbuffers::Follow<'a> for Value<'a> {
 
 impl<'a> Value<'a> {
   pub const VT_NAME: flatbuffers::VOffsetT = 4;
-  pub const VT_VALTYPE: flatbuffers::VOffsetT = 6;
+  pub const VT_VALUE_TYPE: flatbuffers::VOffsetT = 6;
   pub const VT_VALUE: flatbuffers::VOffsetT = 8;
 
   #[inline]
@@ -357,7 +2202,7 @@ impl<'a> Value<'a> {
     let mut builder = ValueBuilder::new(_fbb);
     if let Some(x) = args.value { builder.add_value(x); }
     if let Some(x) = args.name { builder.add_name(x); }
-    builder.add_valtype(args.valtype);
+    builder.add_value_type(args.value_type);
     builder.finish()
   }
 
@@ -365,13 +2210,72 @@ impl<'a> Value<'a> {
     let name = self.name().map(|x| {
       x.to_string()
     });
-    let valtype = self.valtype();
-    let value = self.value().map(|x| {
-      x.to_string()
-    });
+    let value = match self.value_type() {
+      FieldType::NONE => FieldTypeT::NONE,
+      FieldType::FieldString => FieldTypeT::FieldString(Box::new(
+        self.value_as_field_string()
+            .expect("Invalid union table, expected `FieldType::FieldString`.")
+            .unpack()
+      )),
+      FieldType::FieldBool => FieldTypeT::FieldBool(Box::new(
+        self.value_as_field_bool()
+            .expect("Invalid union table, expected `FieldType::FieldBool`.")
+            .unpack()
+      )),
+      FieldType::FieldI8 => FieldTypeT::FieldI8(Box::new(
+        self.value_as_field_i8()
+            .expect("Invalid union table, expected `FieldType::FieldI8`.")
+            .unpack()
+      )),
+      FieldType::FieldI16 => FieldTypeT::FieldI16(Box::new(
+        self.value_as_field_i16()
+            .expect("Invalid union table, expected `FieldType::FieldI16`.")
+            .unpack()
+      )),
+      FieldType::FieldI32 => FieldTypeT::FieldI32(Box::new(
+        self.value_as_field_i32()
+            .expect("Invalid union table, expected `FieldType::FieldI32`.")
+            .unpack()
+      )),
+      FieldType::FieldI64 => FieldTypeT::FieldI64(Box::new(
+        self.value_as_field_i64()
+            .expect("Invalid union table, expected `FieldType::FieldI64`.")
+            .unpack()
+      )),
+      FieldType::FieldU8 => FieldTypeT::FieldU8(Box::new(
+        self.value_as_field_u8()
+            .expect("Invalid union table, expected `FieldType::FieldU8`.")
+            .unpack()
+      )),
+      FieldType::FieldU16 => FieldTypeT::FieldU16(Box::new(
+        self.value_as_field_u16()
+            .expect("Invalid union table, expected `FieldType::FieldU16`.")
+            .unpack()
+      )),
+      FieldType::FieldU32 => FieldTypeT::FieldU32(Box::new(
+        self.value_as_field_u32()
+            .expect("Invalid union table, expected `FieldType::FieldU32`.")
+            .unpack()
+      )),
+      FieldType::FieldU64 => FieldTypeT::FieldU64(Box::new(
+        self.value_as_field_u64()
+            .expect("Invalid union table, expected `FieldType::FieldU64`.")
+            .unpack()
+      )),
+      FieldType::FieldFloat => FieldTypeT::FieldFloat(Box::new(
+        self.value_as_field_float()
+            .expect("Invalid union table, expected `FieldType::FieldFloat`.")
+            .unpack()
+      )),
+      FieldType::FieldDouble => FieldTypeT::FieldDouble(Box::new(
+        self.value_as_field_double()
+            .expect("Invalid union table, expected `FieldType::FieldDouble`.")
+            .unpack()
+      )),
+      _ => FieldTypeT::NONE,
+    };
     ValueT {
       name,
-      valtype,
       value,
     }
   }
@@ -384,19 +2288,199 @@ impl<'a> Value<'a> {
     unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<&str>>(Value::VT_NAME, None)}
   }
   #[inline]
-  pub fn valtype(&self) -> ValueType {
+  pub fn value_type(&self) -> FieldType {
     // Safety:
     // Created from valid Table for this object
     // which contains a valid value in this slot
-    unsafe { self._tab.get::<ValueType>(Value::VT_VALTYPE, Some(ValueType::U8)).unwrap()}
+    unsafe { self._tab.get::<FieldType>(Value::VT_VALUE_TYPE, Some(FieldType::NONE)).unwrap()}
   }
   #[inline]
-  pub fn value(&self) -> Option<&'a str> {
+  pub fn value(&self) -> Option<flatbuffers::Table<'a>> {
     // Safety:
     // Created from valid Table for this object
     // which contains a valid value in this slot
-    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<&str>>(Value::VT_VALUE, None)}
+    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Table<'a>>>(Value::VT_VALUE, None)}
   }
+  #[inline]
+  #[allow(non_snake_case)]
+  pub fn value_as_field_string(&self) -> Option<FieldString<'a>> {
+    if self.value_type() == FieldType::FieldString {
+      self.value().map(|t| {
+       // Safety:
+       // Created from a valid Table for this object
+       // Which contains a valid union in this slot
+       unsafe { FieldString::init_from_table(t) }
+     })
+    } else {
+      None
+    }
+  }
+
+  #[inline]
+  #[allow(non_snake_case)]
+  pub fn value_as_field_bool(&self) -> Option<FieldBool<'a>> {
+    if self.value_type() == FieldType::FieldBool {
+      self.value().map(|t| {
+       // Safety:
+       // Created from a valid Table for this object
+       // Which contains a valid union in this slot
+       unsafe { FieldBool::init_from_table(t) }
+     })
+    } else {
+      None
+    }
+  }
+
+  #[inline]
+  #[allow(non_snake_case)]
+  pub fn value_as_field_i8(&self) -> Option<FieldI8<'a>> {
+    if self.value_type() == FieldType::FieldI8 {
+      self.value().map(|t| {
+       // Safety:
+       // Created from a valid Table for this object
+       // Which contains a valid union in this slot
+       unsafe { FieldI8::init_from_table(t) }
+     })
+    } else {
+      None
+    }
+  }
+
+  #[inline]
+  #[allow(non_snake_case)]
+  pub fn value_as_field_i16(&self) -> Option<FieldI16<'a>> {
+    if self.value_type() == FieldType::FieldI16 {
+      self.value().map(|t| {
+       // Safety:
+       // Created from a valid Table for this object
+       // Which contains a valid union in this slot
+       unsafe { FieldI16::init_from_table(t) }
+     })
+    } else {
+      None
+    }
+  }
+
+  #[inline]
+  #[allow(non_snake_case)]
+  pub fn value_as_field_i32(&self) -> Option<FieldI32<'a>> {
+    if self.value_type() == FieldType::FieldI32 {
+      self.value().map(|t| {
+       // Safety:
+       // Created from a valid Table for this object
+       // Which contains a valid union in this slot
+       unsafe { FieldI32::init_from_table(t) }
+     })
+    } else {
+      None
+    }
+  }
+
+  #[inline]
+  #[allow(non_snake_case)]
+  pub fn value_as_field_i64(&self) -> Option<FieldI64<'a>> {
+    if self.value_type() == FieldType::FieldI64 {
+      self.value().map(|t| {
+       // Safety:
+       // Created from a valid Table for this object
+       // Which contains a valid union in this slot
+       unsafe { FieldI64::init_from_table(t) }
+     })
+    } else {
+      None
+    }
+  }
+
+  #[inline]
+  #[allow(non_snake_case)]
+  pub fn value_as_field_u8(&self) -> Option<FieldU8<'a>> {
+    if self.value_type() == FieldType::FieldU8 {
+      self.value().map(|t| {
+       // Safety:
+       // Created from a valid Table for this object
+       // Which contains a valid union in this slot
+       unsafe { FieldU8::init_from_table(t) }
+     })
+    } else {
+      None
+    }
+  }
+
+  #[inline]
+  #[allow(non_snake_case)]
+  pub fn value_as_field_u16(&self) -> Option<FieldU16<'a>> {
+    if self.value_type() == FieldType::FieldU16 {
+      self.value().map(|t| {
+       // Safety:
+       // Created from a valid Table for this object
+       // Which contains a valid union in this slot
+       unsafe { FieldU16::init_from_table(t) }
+     })
+    } else {
+      None
+    }
+  }
+
+  #[inline]
+  #[allow(non_snake_case)]
+  pub fn value_as_field_u32(&self) -> Option<FieldU32<'a>> {
+    if self.value_type() == FieldType::FieldU32 {
+      self.value().map(|t| {
+       // Safety:
+       // Created from a valid Table for this object
+       // Which contains a valid union in this slot
+       unsafe { FieldU32::init_from_table(t) }
+     })
+    } else {
+      None
+    }
+  }
+
+  #[inline]
+  #[allow(non_snake_case)]
+  pub fn value_as_field_u64(&self) -> Option<FieldU64<'a>> {
+    if self.value_type() == FieldType::FieldU64 {
+      self.value().map(|t| {
+       // Safety:
+       // Created from a valid Table for this object
+       // Which contains a valid union in this slot
+       unsafe { FieldU64::init_from_table(t) }
+     })
+    } else {
+      None
+    }
+  }
+
+  #[inline]
+  #[allow(non_snake_case)]
+  pub fn value_as_field_float(&self) -> Option<FieldFloat<'a>> {
+    if self.value_type() == FieldType::FieldFloat {
+      self.value().map(|t| {
+       // Safety:
+       // Created from a valid Table for this object
+       // Which contains a valid union in this slot
+       unsafe { FieldFloat::init_from_table(t) }
+     })
+    } else {
+      None
+    }
+  }
+
+  #[inline]
+  #[allow(non_snake_case)]
+  pub fn value_as_field_double(&self) -> Option<FieldDouble<'a>> {
+    if self.value_type() == FieldType::FieldDouble {
+      self.value().map(|t| {
+       // Safety:
+       // Created from a valid Table for this object
+       // Which contains a valid union in this slot
+       unsafe { FieldDouble::init_from_table(t) }
+     })
+    } else {
+      None
+    }
+  }
+
 }
 
 impl flatbuffers::Verifiable for Value<'_> {
@@ -407,23 +2491,38 @@ impl flatbuffers::Verifiable for Value<'_> {
     use self::flatbuffers::Verifiable;
     v.visit_table(pos)?
      .visit_field::<flatbuffers::ForwardsUOffset<&str>>("name", Self::VT_NAME, false)?
-     .visit_field::<ValueType>("valtype", Self::VT_VALTYPE, false)?
-     .visit_field::<flatbuffers::ForwardsUOffset<&str>>("value", Self::VT_VALUE, false)?
+     .visit_union::<FieldType, _>("value_type", Self::VT_VALUE_TYPE, "value", Self::VT_VALUE, false, |key, v, pos| {
+        match key {
+          FieldType::FieldString => v.verify_union_variant::<flatbuffers::ForwardsUOffset<FieldString>>("FieldType::FieldString", pos),
+          FieldType::FieldBool => v.verify_union_variant::<flatbuffers::ForwardsUOffset<FieldBool>>("FieldType::FieldBool", pos),
+          FieldType::FieldI8 => v.verify_union_variant::<flatbuffers::ForwardsUOffset<FieldI8>>("FieldType::FieldI8", pos),
+          FieldType::FieldI16 => v.verify_union_variant::<flatbuffers::ForwardsUOffset<FieldI16>>("FieldType::FieldI16", pos),
+          FieldType::FieldI32 => v.verify_union_variant::<flatbuffers::ForwardsUOffset<FieldI32>>("FieldType::FieldI32", pos),
+          FieldType::FieldI64 => v.verify_union_variant::<flatbuffers::ForwardsUOffset<FieldI64>>("FieldType::FieldI64", pos),
+          FieldType::FieldU8 => v.verify_union_variant::<flatbuffers::ForwardsUOffset<FieldU8>>("FieldType::FieldU8", pos),
+          FieldType::FieldU16 => v.verify_union_variant::<flatbuffers::ForwardsUOffset<FieldU16>>("FieldType::FieldU16", pos),
+          FieldType::FieldU32 => v.verify_union_variant::<flatbuffers::ForwardsUOffset<FieldU32>>("FieldType::FieldU32", pos),
+          FieldType::FieldU64 => v.verify_union_variant::<flatbuffers::ForwardsUOffset<FieldU64>>("FieldType::FieldU64", pos),
+          FieldType::FieldFloat => v.verify_union_variant::<flatbuffers::ForwardsUOffset<FieldFloat>>("FieldType::FieldFloat", pos),
+          FieldType::FieldDouble => v.verify_union_variant::<flatbuffers::ForwardsUOffset<FieldDouble>>("FieldType::FieldDouble", pos),
+          _ => Ok(()),
+        }
+     })?
      .finish();
     Ok(())
   }
 }
 pub struct ValueArgs<'a> {
     pub name: Option<flatbuffers::WIPOffset<&'a str>>,
-    pub valtype: ValueType,
-    pub value: Option<flatbuffers::WIPOffset<&'a str>>,
+    pub value_type: FieldType,
+    pub value: Option<flatbuffers::WIPOffset<flatbuffers::UnionWIPOffset>>,
 }
 impl<'a> Default for ValueArgs<'a> {
   #[inline]
   fn default() -> Self {
     ValueArgs {
       name: None,
-      valtype: ValueType::U8,
+      value_type: FieldType::NONE,
       value: None,
     }
   }
@@ -439,11 +2538,11 @@ impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> ValueBuilder<'a, 'b, A> {
     self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(Value::VT_NAME, name);
   }
   #[inline]
-  pub fn add_valtype(&mut self, valtype: ValueType) {
-    self.fbb_.push_slot::<ValueType>(Value::VT_VALTYPE, valtype, ValueType::U8);
+  pub fn add_value_type(&mut self, value_type: FieldType) {
+    self.fbb_.push_slot::<FieldType>(Value::VT_VALUE_TYPE, value_type, FieldType::NONE);
   }
   #[inline]
-  pub fn add_value(&mut self, value: flatbuffers::WIPOffset<&'b  str>) {
+  pub fn add_value(&mut self, value: flatbuffers::WIPOffset<flatbuffers::UnionWIPOffset>) {
     self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(Value::VT_VALUE, value);
   }
   #[inline]
@@ -465,8 +2564,97 @@ impl core::fmt::Debug for Value<'_> {
   fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
     let mut ds = f.debug_struct("Value");
       ds.field("name", &self.name());
-      ds.field("valtype", &self.valtype());
-      ds.field("value", &self.value());
+      ds.field("value_type", &self.value_type());
+      match self.value_type() {
+        FieldType::FieldString => {
+          if let Some(x) = self.value_as_field_string() {
+            ds.field("value", &x)
+          } else {
+            ds.field("value", &"InvalidFlatbuffer: Union discriminant does not match value.")
+          }
+        },
+        FieldType::FieldBool => {
+          if let Some(x) = self.value_as_field_bool() {
+            ds.field("value", &x)
+          } else {
+            ds.field("value", &"InvalidFlatbuffer: Union discriminant does not match value.")
+          }
+        },
+        FieldType::FieldI8 => {
+          if let Some(x) = self.value_as_field_i8() {
+            ds.field("value", &x)
+          } else {
+            ds.field("value", &"InvalidFlatbuffer: Union discriminant does not match value.")
+          }
+        },
+        FieldType::FieldI16 => {
+          if let Some(x) = self.value_as_field_i16() {
+            ds.field("value", &x)
+          } else {
+            ds.field("value", &"InvalidFlatbuffer: Union discriminant does not match value.")
+          }
+        },
+        FieldType::FieldI32 => {
+          if let Some(x) = self.value_as_field_i32() {
+            ds.field("value", &x)
+          } else {
+            ds.field("value", &"InvalidFlatbuffer: Union discriminant does not match value.")
+          }
+        },
+        FieldType::FieldI64 => {
+          if let Some(x) = self.value_as_field_i64() {
+            ds.field("value", &x)
+          } else {
+            ds.field("value", &"InvalidFlatbuffer: Union discriminant does not match value.")
+          }
+        },
+        FieldType::FieldU8 => {
+          if let Some(x) = self.value_as_field_u8() {
+            ds.field("value", &x)
+          } else {
+            ds.field("value", &"InvalidFlatbuffer: Union discriminant does not match value.")
+          }
+        },
+        FieldType::FieldU16 => {
+          if let Some(x) = self.value_as_field_u16() {
+            ds.field("value", &x)
+          } else {
+            ds.field("value", &"InvalidFlatbuffer: Union discriminant does not match value.")
+          }
+        },
+        FieldType::FieldU32 => {
+          if let Some(x) = self.value_as_field_u32() {
+            ds.field("value", &x)
+          } else {
+            ds.field("value", &"InvalidFlatbuffer: Union discriminant does not match value.")
+          }
+        },
+        FieldType::FieldU64 => {
+          if let Some(x) = self.value_as_field_u64() {
+            ds.field("value", &x)
+          } else {
+            ds.field("value", &"InvalidFlatbuffer: Union discriminant does not match value.")
+          }
+        },
+        FieldType::FieldFloat => {
+          if let Some(x) = self.value_as_field_float() {
+            ds.field("value", &x)
+          } else {
+            ds.field("value", &"InvalidFlatbuffer: Union discriminant does not match value.")
+          }
+        },
+        FieldType::FieldDouble => {
+          if let Some(x) = self.value_as_field_double() {
+            ds.field("value", &x)
+          } else {
+            ds.field("value", &"InvalidFlatbuffer: Union discriminant does not match value.")
+          }
+        },
+        _ => {
+          let x: Option<()> = None;
+          ds.field("value", &x)
+        },
+      };
       ds.finish()
   }
 }
@@ -474,15 +2662,13 @@ impl core::fmt::Debug for Value<'_> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct ValueT {
   pub name: Option<String>,
-  pub valtype: ValueType,
-  pub value: Option<String>,
+  pub value: FieldTypeT,
 }
 impl Default for ValueT {
   fn default() -> Self {
     Self {
       name: None,
-      valtype: ValueType::U8,
-      value: None,
+      value: FieldTypeT::NONE,
     }
   }
 }
@@ -494,13 +2680,11 @@ impl ValueT {
     let name = self.name.as_ref().map(|x|{
       _fbb.create_string(x)
     });
-    let valtype = self.valtype;
-    let value = self.value.as_ref().map(|x|{
-      _fbb.create_string(x)
-    });
+    let value_type = self.value.field_type_type();
+    let value = self.value.pack(_fbb);
     Value::create(_fbb, &ValueArgs{
       name,
-      valtype,
+      value_type,
       value,
     })
   }

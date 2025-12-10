@@ -2,7 +2,9 @@ use crate::{controllers::controller_result::CR, errors::spi_controller_err::SpiC
 use alloc::vec::Vec;
 use core::convert::From;
 
-pub struct SpiWriteU8Res;
+pub struct SpiWriteU8Res {
+    pub success: bool,
+}
 
 impl From<CR<SpiWriteU8Res, SpiControllerErr>> for Vec<u8> {
     fn from(value: CR<SpiWriteU8Res, SpiControllerErr>) -> Self {

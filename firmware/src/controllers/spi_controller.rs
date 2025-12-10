@@ -7,9 +7,7 @@ use crate::{
     response_mappers::spi_controller_response::{
         SpiReadU8Res, SpiReadU16Res, SpiWriteThenReadRes, SpiWriteU8Res,
     },
-    schema_generated::firmoto::{
-        ReturnValue, ReturnValueArgs, Value, ValueArgs, ValueT, ValueType,
-    },
+    schema_generated::firmoto::{ReturnValue, ReturnValueArgs, Value, ValueArgs, ValueT},
     service_wrappers::SpiServiceWrapperTrait,
 };
 use alloc::vec::Vec;
@@ -49,11 +47,9 @@ where
     fn write_u8(&mut self, req: SpiWriteU8Req) -> CRes<SpiWriteU8Res> {
         let mut _builder = FlatBufferBuilder::with_capacity(2048);
 
-        let _result = self.wrapper.write_u8(8u8, 8u8);
+        let success = self.wrapper.write_u8(8u8, 8u8).is_ok();
 
-        // NOTE: think simpler and better way
-        // to do this
-        CR(Ok(SpiWriteU8Res))
+        CR(Ok(SpiWriteU8Res { success }))
     }
 
     fn read_u16(&mut self, req: SpiReadU16Req) -> CRes<SpiReadU16Res> {

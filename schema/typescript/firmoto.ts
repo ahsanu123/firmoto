@@ -2,9 +2,21 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
 
+export { FieldBool, FieldBoolT } from './firmoto/field-bool.js';
+export { FieldDouble, FieldDoubleT } from './firmoto/field-double.js';
+export { FieldFloat, FieldFloatT } from './firmoto/field-float.js';
+export { FieldI16, FieldI16T } from './firmoto/field-i16.js';
+export { FieldI32, FieldI32T } from './firmoto/field-i32.js';
+export { FieldI64, FieldI64T } from './firmoto/field-i64.js';
+export { FieldI8, FieldI8T } from './firmoto/field-i8.js';
+export { FieldString, FieldStringT } from './firmoto/field-string.js';
+export { FieldType } from './firmoto/field-type.js';
+export { FieldU16, FieldU16T } from './firmoto/field-u16.js';
+export { FieldU32, FieldU32T } from './firmoto/field-u32.js';
+export { FieldU64, FieldU64T } from './firmoto/field-u64.js';
+export { FieldU8, FieldU8T } from './firmoto/field-u8.js';
 export { Operation, OperationT } from './firmoto/operation.js';
 export { OperationType } from './firmoto/operation-type.js';
 export { ReturnValue, ReturnValueT } from './firmoto/return-value.js';
 export { SubOperationType } from './firmoto/sub-operation-type.js';
 export { Value, ValueT } from './firmoto/value.js';
-export { ValueType } from './firmoto/value-type.js';

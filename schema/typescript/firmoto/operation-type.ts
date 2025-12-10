@@ -5,5 +5,6 @@
 export enum OperationType {
   GPIO = 0,
   I2C = 1,
-  SPI = 2
+  SPI = 2,
+  CAN = 3
 }

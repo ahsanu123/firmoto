@@ -10,18 +10,21 @@ const (
 	OperationTypeGPIO OperationType = 0
 	OperationTypeI2C  OperationType = 1
 	OperationTypeSPI  OperationType = 2
+	OperationTypeCAN  OperationType = 3
 )
 
 var EnumNamesOperationType = map[OperationType]string{
 	OperationTypeGPIO: "GPIO",
 	OperationTypeI2C:  "I2C",
 	OperationTypeSPI:  "SPI",
+	OperationTypeCAN:  "CAN",
 }
 
 var EnumValuesOperationType = map[string]OperationType{
 	"GPIO": OperationTypeGPIO,
 	"I2C":  OperationTypeI2C,
 	"SPI":  OperationTypeSPI,
+	"CAN":  OperationTypeCAN,
 }
 
 func (v OperationType) String() string {

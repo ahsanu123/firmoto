@@ -15,6 +15,54 @@ static_assert(FLATBUFFERS_VERSION_MAJOR == 25 &&
 
 namespace Firmoto {
 
+struct FieldString;
+struct FieldStringBuilder;
+struct FieldStringT;
+
+struct FieldBool;
+struct FieldBoolBuilder;
+struct FieldBoolT;
+
+struct FieldI8;
+struct FieldI8Builder;
+struct FieldI8T;
+
+struct FieldI16;
+struct FieldI16Builder;
+struct FieldI16T;
+
+struct FieldI32;
+struct FieldI32Builder;
+struct FieldI32T;
+
+struct FieldI64;
+struct FieldI64Builder;
+struct FieldI64T;
+
+struct FieldU8;
+struct FieldU8Builder;
+struct FieldU8T;
+
+struct FieldU16;
+struct FieldU16Builder;
+struct FieldU16T;
+
+struct FieldU32;
+struct FieldU32Builder;
+struct FieldU32T;
+
+struct FieldU64;
+struct FieldU64Builder;
+struct FieldU64T;
+
+struct FieldFloat;
+struct FieldFloatBuilder;
+struct FieldFloatT;
+
+struct FieldDouble;
+struct FieldDoubleBuilder;
+struct FieldDoubleT;
+
 struct Value;
 struct ValueBuilder;
 struct ValueT;
@@ -31,31 +79,34 @@ enum OperationType : int8_t {
   OperationType_GPIO = 0,
   OperationType_I2C = 1,
   OperationType_SPI = 2,
+  OperationType_CAN = 3,
   OperationType_MIN = OperationType_GPIO,
-  OperationType_MAX = OperationType_SPI
+  OperationType_MAX = OperationType_CAN
 };
 
-inline const OperationType (&EnumValuesOperationType())[3] {
+inline const OperationType (&EnumValuesOperationType())[4] {
   static const OperationType values[] = {
     OperationType_GPIO,
     OperationType_I2C,
-    OperationType_SPI
+    OperationType_SPI,
+    OperationType_CAN
   };
   return values;
 }
 
 inline const char * const *EnumNamesOperationType() {
-  static const char * const names[4] = {
+  static const char * const names[5] = {
     "GPIO",
     "I2C",
     "SPI",
+    "CAN",
     nullptr
   };
   return names;
 }
 
 inline const char *EnumNameOperationType(OperationType e) {
-  if (::flatbuffers::IsOutRange(e, OperationType_GPIO, OperationType_SPI)) return "";
+  if (::flatbuffers::IsOutRange(e, OperationType_GPIO, OperationType_CAN)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesOperationType()[index];
 }
@@ -65,102 +116,979 @@ enum SubOperationType : int8_t {
   SubOperationType_SPI_READ_U8 = 1,
   SubOperationType_SPI_READ_U16 = 2,
   SubOperationType_SPI_READ_N = 3,
+  SubOperationType_I2C_READ_U8 = 4,
+  SubOperationType_I2C_WRITE_U8 = 5,
   SubOperationType_MIN = SubOperationType_SPI_WRITE_U8,
-  SubOperationType_MAX = SubOperationType_SPI_READ_N
+  SubOperationType_MAX = SubOperationType_I2C_WRITE_U8
 };
 
-inline const SubOperationType (&EnumValuesSubOperationType())[4] {
+inline const SubOperationType (&EnumValuesSubOperationType())[6] {
   static const SubOperationType values[] = {
     SubOperationType_SPI_WRITE_U8,
     SubOperationType_SPI_READ_U8,
     SubOperationType_SPI_READ_U16,
-    SubOperationType_SPI_READ_N
+    SubOperationType_SPI_READ_N,
+    SubOperationType_I2C_READ_U8,
+    SubOperationType_I2C_WRITE_U8
   };
   return values;
 }
 
 inline const char * const *EnumNamesSubOperationType() {
-  static const char * const names[5] = {
+  static const char * const names[7] = {
     "SPI_WRITE_U8",
     "SPI_READ_U8",
     "SPI_READ_U16",
     "SPI_READ_N",
+    "I2C_READ_U8",
+    "I2C_WRITE_U8",
     nullptr
   };
   return names;
 }
 
 inline const char *EnumNameSubOperationType(SubOperationType e) {
-  if (::flatbuffers::IsOutRange(e, SubOperationType_SPI_WRITE_U8, SubOperationType_SPI_READ_N)) return "";
+  if (::flatbuffers::IsOutRange(e, SubOperationType_SPI_WRITE_U8, SubOperationType_I2C_WRITE_U8)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesSubOperationType()[index];
 }
 
-enum ValueType : int8_t {
-  ValueType_U8 = 0,
-  ValueType_U16 = 1,
-  ValueType_U32 = 2,
-  ValueType_U64 = 3,
-  ValueType_I8 = 4,
-  ValueType_I16 = 5,
-  ValueType_I32 = 6,
-  ValueType_I64 = 7,
-  ValueType_F32 = 8,
-  ValueType_F64 = 9,
-  ValueType_String = 10,
-  ValueType_Boolean = 11,
-  ValueType_MIN = ValueType_U8,
-  ValueType_MAX = ValueType_Boolean
+enum FieldType : uint8_t {
+  FieldType_NONE = 0,
+  FieldType_FieldString = 1,
+  FieldType_FieldBool = 2,
+  FieldType_FieldI8 = 3,
+  FieldType_FieldI16 = 4,
+  FieldType_FieldI32 = 5,
+  FieldType_FieldI64 = 6,
+  FieldType_FieldU8 = 7,
+  FieldType_FieldU16 = 8,
+  FieldType_FieldU32 = 9,
+  FieldType_FieldU64 = 10,
+  FieldType_FieldFloat = 11,
+  FieldType_FieldDouble = 12,
+  FieldType_MIN = FieldType_NONE,
+  FieldType_MAX = FieldType_FieldDouble
 };
 
-inline const ValueType (&EnumValuesValueType())[12] {
-  static const ValueType values[] = {
-    ValueType_U8,
-    ValueType_U16,
-    ValueType_U32,
-    ValueType_U64,
-    ValueType_I8,
-    ValueType_I16,
-    ValueType_I32,
-    ValueType_I64,
-    ValueType_F32,
-    ValueType_F64,
-    ValueType_String,
-    ValueType_Boolean
+inline const FieldType (&EnumValuesFieldType())[13] {
+  static const FieldType values[] = {
+    FieldType_NONE,
+    FieldType_FieldString,
+    FieldType_FieldBool,
+    FieldType_FieldI8,
+    FieldType_FieldI16,
+    FieldType_FieldI32,
+    FieldType_FieldI64,
+    FieldType_FieldU8,
+    FieldType_FieldU16,
+    FieldType_FieldU32,
+    FieldType_FieldU64,
+    FieldType_FieldFloat,
+    FieldType_FieldDouble
   };
   return values;
 }
 
-inline const char * const *EnumNamesValueType() {
-  static const char * const names[13] = {
-    "U8",
-    "U16",
-    "U32",
-    "U64",
-    "I8",
-    "I16",
-    "I32",
-    "I64",
-    "F32",
-    "F64",
-    "String",
-    "Boolean",
+inline const char * const *EnumNamesFieldType() {
+  static const char * const names[14] = {
+    "NONE",
+    "FieldString",
+    "FieldBool",
+    "FieldI8",
+    "FieldI16",
+    "FieldI32",
+    "FieldI64",
+    "FieldU8",
+    "FieldU16",
+    "FieldU32",
+    "FieldU64",
+    "FieldFloat",
+    "FieldDouble",
     nullptr
   };
   return names;
 }
 
-inline const char *EnumNameValueType(ValueType e) {
-  if (::flatbuffers::IsOutRange(e, ValueType_U8, ValueType_Boolean)) return "";
+inline const char *EnumNameFieldType(FieldType e) {
+  if (::flatbuffers::IsOutRange(e, FieldType_NONE, FieldType_FieldDouble)) return "";
   const size_t index = static_cast<size_t>(e);
-  return EnumNamesValueType()[index];
+  return EnumNamesFieldType()[index];
 }
+
+template<typename T> struct FieldTypeTraits {
+  static const FieldType enum_value = FieldType_NONE;
+};
+
+template<> struct FieldTypeTraits<Firmoto::FieldString> {
+  static const FieldType enum_value = FieldType_FieldString;
+};
+
+template<> struct FieldTypeTraits<Firmoto::FieldBool> {
+  static const FieldType enum_value = FieldType_FieldBool;
+};
+
+template<> struct FieldTypeTraits<Firmoto::FieldI8> {
+  static const FieldType enum_value = FieldType_FieldI8;
+};
+
+template<> struct FieldTypeTraits<Firmoto::FieldI16> {
+  static const FieldType enum_value = FieldType_FieldI16;
+};
+
+template<> struct FieldTypeTraits<Firmoto::FieldI32> {
+  static const FieldType enum_value = FieldType_FieldI32;
+};
+
+template<> struct FieldTypeTraits<Firmoto::FieldI64> {
+  static const FieldType enum_value = FieldType_FieldI64;
+};
+
+template<> struct FieldTypeTraits<Firmoto::FieldU8> {
+  static const FieldType enum_value = FieldType_FieldU8;
+};
+
+template<> struct FieldTypeTraits<Firmoto::FieldU16> {
+  static const FieldType enum_value = FieldType_FieldU16;
+};
+
+template<> struct FieldTypeTraits<Firmoto::FieldU32> {
+  static const FieldType enum_value = FieldType_FieldU32;
+};
+
+template<> struct FieldTypeTraits<Firmoto::FieldU64> {
+  static const FieldType enum_value = FieldType_FieldU64;
+};
+
+template<> struct FieldTypeTraits<Firmoto::FieldFloat> {
+  static const FieldType enum_value = FieldType_FieldFloat;
+};
+
+template<> struct FieldTypeTraits<Firmoto::FieldDouble> {
+  static const FieldType enum_value = FieldType_FieldDouble;
+};
+
+template<typename T> struct FieldTypeUnionTraits {
+  static const FieldType enum_value = FieldType_NONE;
+};
+
+template<> struct FieldTypeUnionTraits<Firmoto::FieldStringT> {
+  static const FieldType enum_value = FieldType_FieldString;
+};
+
+template<> struct FieldTypeUnionTraits<Firmoto::FieldBoolT> {
+  static const FieldType enum_value = FieldType_FieldBool;
+};
+
+template<> struct FieldTypeUnionTraits<Firmoto::FieldI8T> {
+  static const FieldType enum_value = FieldType_FieldI8;
+};
+
+template<> struct FieldTypeUnionTraits<Firmoto::FieldI16T> {
+  static const FieldType enum_value = FieldType_FieldI16;
+};
+
+template<> struct FieldTypeUnionTraits<Firmoto::FieldI32T> {
+  static const FieldType enum_value = FieldType_FieldI32;
+};
+
+template<> struct FieldTypeUnionTraits<Firmoto::FieldI64T> {
+  static const FieldType enum_value = FieldType_FieldI64;
+};
+
+template<> struct FieldTypeUnionTraits<Firmoto::FieldU8T> {
+  static const FieldType enum_value = FieldType_FieldU8;
+};
+
+template<> struct FieldTypeUnionTraits<Firmoto::FieldU16T> {
+  static const FieldType enum_value = FieldType_FieldU16;
+};
+
+template<> struct FieldTypeUnionTraits<Firmoto::FieldU32T> {
+  static const FieldType enum_value = FieldType_FieldU32;
+};
+
+template<> struct FieldTypeUnionTraits<Firmoto::FieldU64T> {
+  static const FieldType enum_value = FieldType_FieldU64;
+};
+
+template<> struct FieldTypeUnionTraits<Firmoto::FieldFloatT> {
+  static const FieldType enum_value = FieldType_FieldFloat;
+};
+
+template<> struct FieldTypeUnionTraits<Firmoto::FieldDoubleT> {
+  static const FieldType enum_value = FieldType_FieldDouble;
+};
+
+struct FieldTypeUnion {
+  FieldType type;
+  void *value;
+
+  FieldTypeUnion() : type(FieldType_NONE), value(nullptr) {}
+  FieldTypeUnion(FieldTypeUnion&& u) FLATBUFFERS_NOEXCEPT :
+    type(FieldType_NONE), value(nullptr)
+    { std::swap(type, u.type); std::swap(value, u.value); }
+  FieldTypeUnion(const FieldTypeUnion &);
+  FieldTypeUnion &operator=(const FieldTypeUnion &u)
+    { FieldTypeUnion t(u); std::swap(type, t.type); std::swap(value, t.value); return *this; }
+  FieldTypeUnion &operator=(FieldTypeUnion &&u) FLATBUFFERS_NOEXCEPT
+    { std::swap(type, u.type); std::swap(value, u.value); return *this; }
+  ~FieldTypeUnion() { Reset(); }
+
+  void Reset();
+
+  template <typename T>
+  void Set(T&& val) {
+    typedef typename std::remove_reference<T>::type RT;
+    Reset();
+    type = FieldTypeUnionTraits<RT>::enum_value;
+    if (type != FieldType_NONE) {
+      value = new RT(std::forward<T>(val));
+    }
+  }
+
+  static void *UnPack(const void *obj, FieldType type, const ::flatbuffers::resolver_function_t *resolver);
+  ::flatbuffers::Offset<void> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr) const;
+
+  Firmoto::FieldStringT *AsFieldString() {
+    return type == FieldType_FieldString ?
+      reinterpret_cast<Firmoto::FieldStringT *>(value) : nullptr;
+  }
+  const Firmoto::FieldStringT *AsFieldString() const {
+    return type == FieldType_FieldString ?
+      reinterpret_cast<const Firmoto::FieldStringT *>(value) : nullptr;
+  }
+  Firmoto::FieldBoolT *AsFieldBool() {
+    return type == FieldType_FieldBool ?
+      reinterpret_cast<Firmoto::FieldBoolT *>(value) : nullptr;
+  }
+  const Firmoto::FieldBoolT *AsFieldBool() const {
+    return type == FieldType_FieldBool ?
+      reinterpret_cast<const Firmoto::FieldBoolT *>(value) : nullptr;
+  }
+  Firmoto::FieldI8T *AsFieldI8() {
+    return type == FieldType_FieldI8 ?
+      reinterpret_cast<Firmoto::FieldI8T *>(value) : nullptr;
+  }
+  const Firmoto::FieldI8T *AsFieldI8() const {
+    return type == FieldType_FieldI8 ?
+      reinterpret_cast<const Firmoto::FieldI8T *>(value) : nullptr;
+  }
+  Firmoto::FieldI16T *AsFieldI16() {
+    return type == FieldType_FieldI16 ?
+      reinterpret_cast<Firmoto::FieldI16T *>(value) : nullptr;
+  }
+  const Firmoto::FieldI16T *AsFieldI16() const {
+    return type == FieldType_FieldI16 ?
+      reinterpret_cast<const Firmoto::FieldI16T *>(value) : nullptr;
+  }
+  Firmoto::FieldI32T *AsFieldI32() {
+    return type == FieldType_FieldI32 ?
+      reinterpret_cast<Firmoto::FieldI32T *>(value) : nullptr;
+  }
+  const Firmoto::FieldI32T *AsFieldI32() const {
+    return type == FieldType_FieldI32 ?
+      reinterpret_cast<const Firmoto::FieldI32T *>(value) : nullptr;
+  }
+  Firmoto::FieldI64T *AsFieldI64() {
+    return type == FieldType_FieldI64 ?
+      reinterpret_cast<Firmoto::FieldI64T *>(value) : nullptr;
+  }
+  const Firmoto::FieldI64T *AsFieldI64() const {
+    return type == FieldType_FieldI64 ?
+      reinterpret_cast<const Firmoto::FieldI64T *>(value) : nullptr;
+  }
+  Firmoto::FieldU8T *AsFieldU8() {
+    return type == FieldType_FieldU8 ?
+      reinterpret_cast<Firmoto::FieldU8T *>(value) : nullptr;
+  }
+  const Firmoto::FieldU8T *AsFieldU8() const {
+    return type == FieldType_FieldU8 ?
+      reinterpret_cast<const Firmoto::FieldU8T *>(value) : nullptr;
+  }
+  Firmoto::FieldU16T *AsFieldU16() {
+    return type == FieldType_FieldU16 ?
+      reinterpret_cast<Firmoto::FieldU16T *>(value) : nullptr;
+  }
+  const Firmoto::FieldU16T *AsFieldU16() const {
+    return type == FieldType_FieldU16 ?
+      reinterpret_cast<const Firmoto::FieldU16T *>(value) : nullptr;
+  }
+  Firmoto::FieldU32T *AsFieldU32() {
+    return type == FieldType_FieldU32 ?
+      reinterpret_cast<Firmoto::FieldU32T *>(value) : nullptr;
+  }
+  const Firmoto::FieldU32T *AsFieldU32() const {
+    return type == FieldType_FieldU32 ?
+      reinterpret_cast<const Firmoto::FieldU32T *>(value) : nullptr;
+  }
+  Firmoto::FieldU64T *AsFieldU64() {
+    return type == FieldType_FieldU64 ?
+      reinterpret_cast<Firmoto::FieldU64T *>(value) : nullptr;
+  }
+  const Firmoto::FieldU64T *AsFieldU64() const {
+    return type == FieldType_FieldU64 ?
+      reinterpret_cast<const Firmoto::FieldU64T *>(value) : nullptr;
+  }
+  Firmoto::FieldFloatT *AsFieldFloat() {
+    return type == FieldType_FieldFloat ?
+      reinterpret_cast<Firmoto::FieldFloatT *>(value) : nullptr;
+  }
+  const Firmoto::FieldFloatT *AsFieldFloat() const {
+    return type == FieldType_FieldFloat ?
+      reinterpret_cast<const Firmoto::FieldFloatT *>(value) : nullptr;
+  }
+  Firmoto::FieldDoubleT *AsFieldDouble() {
+    return type == FieldType_FieldDouble ?
+      reinterpret_cast<Firmoto::FieldDoubleT *>(value) : nullptr;
+  }
+  const Firmoto::FieldDoubleT *AsFieldDouble() const {
+    return type == FieldType_FieldDouble ?
+      reinterpret_cast<const Firmoto::FieldDoubleT *>(value) : nullptr;
+  }
+};
+
+bool VerifyFieldType(::flatbuffers::Verifier &verifier, const void *obj, FieldType type);
+bool VerifyFieldTypeVector(::flatbuffers::Verifier &verifier, const ::flatbuffers::Vector<::flatbuffers::Offset<void>> *values, const ::flatbuffers::Vector<uint8_t> *types);
+
+struct FieldStringT : public ::flatbuffers::NativeTable {
+  typedef FieldString TableType;
+  std::string field{};
+};
+
+struct FieldString FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef FieldStringT NativeTableType;
+  typedef FieldStringBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_FIELD = 4
+  };
+  const ::flatbuffers::String *field() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_FIELD);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_FIELD) &&
+           verifier.VerifyString(field()) &&
+           verifier.EndTable();
+  }
+  FieldStringT *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(FieldStringT *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<FieldString> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldStringT* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct FieldStringBuilder {
+  typedef FieldString Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_field(::flatbuffers::Offset<::flatbuffers::String> field) {
+    fbb_.AddOffset(FieldString::VT_FIELD, field);
+  }
+  explicit FieldStringBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<FieldString> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<FieldString>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<FieldString> CreateFieldString(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    ::flatbuffers::Offset<::flatbuffers::String> field = 0) {
+  FieldStringBuilder builder_(_fbb);
+  builder_.add_field(field);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<FieldString> CreateFieldStringDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    const char *field = nullptr) {
+  auto field__ = field ? _fbb.CreateString(field) : 0;
+  return Firmoto::CreateFieldString(
+      _fbb,
+      field__);
+}
+
+::flatbuffers::Offset<FieldString> CreateFieldString(::flatbuffers::FlatBufferBuilder &_fbb, const FieldStringT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct FieldBoolT : public ::flatbuffers::NativeTable {
+  typedef FieldBool TableType;
+  bool field = false;
+};
+
+struct FieldBool FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef FieldBoolT NativeTableType;
+  typedef FieldBoolBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_FIELD = 4
+  };
+  bool field() const {
+    return GetField<uint8_t>(VT_FIELD, 0) != 0;
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_FIELD, 1) &&
+           verifier.EndTable();
+  }
+  FieldBoolT *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(FieldBoolT *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<FieldBool> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldBoolT* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct FieldBoolBuilder {
+  typedef FieldBool Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_field(bool field) {
+    fbb_.AddElement<uint8_t>(FieldBool::VT_FIELD, static_cast<uint8_t>(field), 0);
+  }
+  explicit FieldBoolBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<FieldBool> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<FieldBool>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<FieldBool> CreateFieldBool(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    bool field = false) {
+  FieldBoolBuilder builder_(_fbb);
+  builder_.add_field(field);
+  return builder_.Finish();
+}
+
+::flatbuffers::Offset<FieldBool> CreateFieldBool(::flatbuffers::FlatBufferBuilder &_fbb, const FieldBoolT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct FieldI8T : public ::flatbuffers::NativeTable {
+  typedef FieldI8 TableType;
+  int8_t field = 0;
+};
+
+struct FieldI8 FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef FieldI8T NativeTableType;
+  typedef FieldI8Builder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_FIELD = 4
+  };
+  int8_t field() const {
+    return GetField<int8_t>(VT_FIELD, 0);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<int8_t>(verifier, VT_FIELD, 1) &&
+           verifier.EndTable();
+  }
+  FieldI8T *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(FieldI8T *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<FieldI8> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldI8T* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct FieldI8Builder {
+  typedef FieldI8 Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_field(int8_t field) {
+    fbb_.AddElement<int8_t>(FieldI8::VT_FIELD, field, 0);
+  }
+  explicit FieldI8Builder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<FieldI8> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<FieldI8>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<FieldI8> CreateFieldI8(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    int8_t field = 0) {
+  FieldI8Builder builder_(_fbb);
+  builder_.add_field(field);
+  return builder_.Finish();
+}
+
+::flatbuffers::Offset<FieldI8> CreateFieldI8(::flatbuffers::FlatBufferBuilder &_fbb, const FieldI8T *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct FieldI16T : public ::flatbuffers::NativeTable {
+  typedef FieldI16 TableType;
+  int16_t field = 0;
+};
+
+struct FieldI16 FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef FieldI16T NativeTableType;
+  typedef FieldI16Builder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_FIELD = 4
+  };
+  int16_t field() const {
+    return GetField<int16_t>(VT_FIELD, 0);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<int16_t>(verifier, VT_FIELD, 2) &&
+           verifier.EndTable();
+  }
+  FieldI16T *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(FieldI16T *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<FieldI16> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldI16T* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct FieldI16Builder {
+  typedef FieldI16 Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_field(int16_t field) {
+    fbb_.AddElement<int16_t>(FieldI16::VT_FIELD, field, 0);
+  }
+  explicit FieldI16Builder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<FieldI16> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<FieldI16>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<FieldI16> CreateFieldI16(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    int16_t field = 0) {
+  FieldI16Builder builder_(_fbb);
+  builder_.add_field(field);
+  return builder_.Finish();
+}
+
+::flatbuffers::Offset<FieldI16> CreateFieldI16(::flatbuffers::FlatBufferBuilder &_fbb, const FieldI16T *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct FieldI32T : public ::flatbuffers::NativeTable {
+  typedef FieldI32 TableType;
+  int32_t field = 0;
+};
+
+struct FieldI32 FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef FieldI32T NativeTableType;
+  typedef FieldI32Builder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_FIELD = 4
+  };
+  int32_t field() const {
+    return GetField<int32_t>(VT_FIELD, 0);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<int32_t>(verifier, VT_FIELD, 4) &&
+           verifier.EndTable();
+  }
+  FieldI32T *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(FieldI32T *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<FieldI32> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldI32T* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct FieldI32Builder {
+  typedef FieldI32 Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_field(int32_t field) {
+    fbb_.AddElement<int32_t>(FieldI32::VT_FIELD, field, 0);
+  }
+  explicit FieldI32Builder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<FieldI32> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<FieldI32>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<FieldI32> CreateFieldI32(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    int32_t field = 0) {
+  FieldI32Builder builder_(_fbb);
+  builder_.add_field(field);
+  return builder_.Finish();
+}
+
+::flatbuffers::Offset<FieldI32> CreateFieldI32(::flatbuffers::FlatBufferBuilder &_fbb, const FieldI32T *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct FieldI64T : public ::flatbuffers::NativeTable {
+  typedef FieldI64 TableType;
+  int64_t field = 0;
+};
+
+struct FieldI64 FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef FieldI64T NativeTableType;
+  typedef FieldI64Builder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_FIELD = 4
+  };
+  int64_t field() const {
+    return GetField<int64_t>(VT_FIELD, 0);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<int64_t>(verifier, VT_FIELD, 8) &&
+           verifier.EndTable();
+  }
+  FieldI64T *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(FieldI64T *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<FieldI64> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldI64T* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct FieldI64Builder {
+  typedef FieldI64 Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_field(int64_t field) {
+    fbb_.AddElement<int64_t>(FieldI64::VT_FIELD, field, 0);
+  }
+  explicit FieldI64Builder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<FieldI64> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<FieldI64>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<FieldI64> CreateFieldI64(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    int64_t field = 0) {
+  FieldI64Builder builder_(_fbb);
+  builder_.add_field(field);
+  return builder_.Finish();
+}
+
+::flatbuffers::Offset<FieldI64> CreateFieldI64(::flatbuffers::FlatBufferBuilder &_fbb, const FieldI64T *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct FieldU8T : public ::flatbuffers::NativeTable {
+  typedef FieldU8 TableType;
+  uint8_t field = 0;
+};
+
+struct FieldU8 FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef FieldU8T NativeTableType;
+  typedef FieldU8Builder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_FIELD = 4
+  };
+  uint8_t field() const {
+    return GetField<uint8_t>(VT_FIELD, 0);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_FIELD, 1) &&
+           verifier.EndTable();
+  }
+  FieldU8T *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(FieldU8T *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<FieldU8> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldU8T* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct FieldU8Builder {
+  typedef FieldU8 Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_field(uint8_t field) {
+    fbb_.AddElement<uint8_t>(FieldU8::VT_FIELD, field, 0);
+  }
+  explicit FieldU8Builder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<FieldU8> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<FieldU8>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<FieldU8> CreateFieldU8(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t field = 0) {
+  FieldU8Builder builder_(_fbb);
+  builder_.add_field(field);
+  return builder_.Finish();
+}
+
+::flatbuffers::Offset<FieldU8> CreateFieldU8(::flatbuffers::FlatBufferBuilder &_fbb, const FieldU8T *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct FieldU16T : public ::flatbuffers::NativeTable {
+  typedef FieldU16 TableType;
+  uint16_t field = 0;
+};
+
+struct FieldU16 FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef FieldU16T NativeTableType;
+  typedef FieldU16Builder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_FIELD = 4
+  };
+  uint16_t field() const {
+    return GetField<uint16_t>(VT_FIELD, 0);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint16_t>(verifier, VT_FIELD, 2) &&
+           verifier.EndTable();
+  }
+  FieldU16T *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(FieldU16T *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<FieldU16> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldU16T* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct FieldU16Builder {
+  typedef FieldU16 Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_field(uint16_t field) {
+    fbb_.AddElement<uint16_t>(FieldU16::VT_FIELD, field, 0);
+  }
+  explicit FieldU16Builder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<FieldU16> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<FieldU16>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<FieldU16> CreateFieldU16(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint16_t field = 0) {
+  FieldU16Builder builder_(_fbb);
+  builder_.add_field(field);
+  return builder_.Finish();
+}
+
+::flatbuffers::Offset<FieldU16> CreateFieldU16(::flatbuffers::FlatBufferBuilder &_fbb, const FieldU16T *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct FieldU32T : public ::flatbuffers::NativeTable {
+  typedef FieldU32 TableType;
+  uint32_t field = 0;
+};
+
+struct FieldU32 FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef FieldU32T NativeTableType;
+  typedef FieldU32Builder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_FIELD = 4
+  };
+  uint32_t field() const {
+    return GetField<uint32_t>(VT_FIELD, 0);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint32_t>(verifier, VT_FIELD, 4) &&
+           verifier.EndTable();
+  }
+  FieldU32T *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(FieldU32T *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<FieldU32> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldU32T* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct FieldU32Builder {
+  typedef FieldU32 Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_field(uint32_t field) {
+    fbb_.AddElement<uint32_t>(FieldU32::VT_FIELD, field, 0);
+  }
+  explicit FieldU32Builder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<FieldU32> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<FieldU32>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<FieldU32> CreateFieldU32(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t field = 0) {
+  FieldU32Builder builder_(_fbb);
+  builder_.add_field(field);
+  return builder_.Finish();
+}
+
+::flatbuffers::Offset<FieldU32> CreateFieldU32(::flatbuffers::FlatBufferBuilder &_fbb, const FieldU32T *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct FieldU64T : public ::flatbuffers::NativeTable {
+  typedef FieldU64 TableType;
+  uint64_t field = 0;
+};
+
+struct FieldU64 FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef FieldU64T NativeTableType;
+  typedef FieldU64Builder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_FIELD = 4
+  };
+  uint64_t field() const {
+    return GetField<uint64_t>(VT_FIELD, 0);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint64_t>(verifier, VT_FIELD, 8) &&
+           verifier.EndTable();
+  }
+  FieldU64T *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(FieldU64T *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<FieldU64> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldU64T* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct FieldU64Builder {
+  typedef FieldU64 Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_field(uint64_t field) {
+    fbb_.AddElement<uint64_t>(FieldU64::VT_FIELD, field, 0);
+  }
+  explicit FieldU64Builder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<FieldU64> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<FieldU64>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<FieldU64> CreateFieldU64(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint64_t field = 0) {
+  FieldU64Builder builder_(_fbb);
+  builder_.add_field(field);
+  return builder_.Finish();
+}
+
+::flatbuffers::Offset<FieldU64> CreateFieldU64(::flatbuffers::FlatBufferBuilder &_fbb, const FieldU64T *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct FieldFloatT : public ::flatbuffers::NativeTable {
+  typedef FieldFloat TableType;
+  float field = 0.0f;
+};
+
+struct FieldFloat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef FieldFloatT NativeTableType;
+  typedef FieldFloatBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_FIELD = 4
+  };
+  float field() const {
+    return GetField<float>(VT_FIELD, 0.0f);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_FIELD, 4) &&
+           verifier.EndTable();
+  }
+  FieldFloatT *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(FieldFloatT *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<FieldFloat> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldFloatT* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct FieldFloatBuilder {
+  typedef FieldFloat Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_field(float field) {
+    fbb_.AddElement<float>(FieldFloat::VT_FIELD, field, 0.0f);
+  }
+  explicit FieldFloatBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<FieldFloat> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<FieldFloat>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<FieldFloat> CreateFieldFloat(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    float field = 0.0f) {
+  FieldFloatBuilder builder_(_fbb);
+  builder_.add_field(field);
+  return builder_.Finish();
+}
+
+::flatbuffers::Offset<FieldFloat> CreateFieldFloat(::flatbuffers::FlatBufferBuilder &_fbb, const FieldFloatT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct FieldDoubleT : public ::flatbuffers::NativeTable {
+  typedef FieldDouble TableType;
+  double field = 0.0;
+};
+
+struct FieldDouble FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef FieldDoubleT NativeTableType;
+  typedef FieldDoubleBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_FIELD = 4
+  };
+  double field() const {
+    return GetField<double>(VT_FIELD, 0.0);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<double>(verifier, VT_FIELD, 8) &&
+           verifier.EndTable();
+  }
+  FieldDoubleT *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(FieldDoubleT *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<FieldDouble> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldDoubleT* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct FieldDoubleBuilder {
+  typedef FieldDouble Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_field(double field) {
+    fbb_.AddElement<double>(FieldDouble::VT_FIELD, field, 0.0);
+  }
+  explicit FieldDoubleBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<FieldDouble> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<FieldDouble>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<FieldDouble> CreateFieldDouble(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    double field = 0.0) {
+  FieldDoubleBuilder builder_(_fbb);
+  builder_.add_field(field);
+  return builder_.Finish();
+}
+
+::flatbuffers::Offset<FieldDouble> CreateFieldDouble(::flatbuffers::FlatBufferBuilder &_fbb, const FieldDoubleT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
 
 struct ValueT : public ::flatbuffers::NativeTable {
   typedef Value TableType;
   std::string name{};
-  Firmoto::ValueType valtype = Firmoto::ValueType_U8;
-  std::string value{};
+  Firmoto::FieldTypeUnion value{};
 };
 
 struct Value FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
@@ -168,31 +1096,116 @@ struct Value FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ValueBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_NAME = 4,
-    VT_VALTYPE = 6,
+    VT_VALUE_TYPE = 6,
     VT_VALUE = 8
   };
   const ::flatbuffers::String *name() const {
     return GetPointer<const ::flatbuffers::String *>(VT_NAME);
   }
-  Firmoto::ValueType valtype() const {
-    return static_cast<Firmoto::ValueType>(GetField<int8_t>(VT_VALTYPE, 0));
+  Firmoto::FieldType value_type() const {
+    return static_cast<Firmoto::FieldType>(GetField<uint8_t>(VT_VALUE_TYPE, 0));
   }
-  const ::flatbuffers::String *value() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_VALUE);
+  const void *value() const {
+    return GetPointer<const void *>(VT_VALUE);
+  }
+  template<typename T> const T *value_as() const;
+  const Firmoto::FieldString *value_as_FieldString() const {
+    return value_type() == Firmoto::FieldType_FieldString ? static_cast<const Firmoto::FieldString *>(value()) : nullptr;
+  }
+  const Firmoto::FieldBool *value_as_FieldBool() const {
+    return value_type() == Firmoto::FieldType_FieldBool ? static_cast<const Firmoto::FieldBool *>(value()) : nullptr;
+  }
+  const Firmoto::FieldI8 *value_as_FieldI8() const {
+    return value_type() == Firmoto::FieldType_FieldI8 ? static_cast<const Firmoto::FieldI8 *>(value()) : nullptr;
+  }
+  const Firmoto::FieldI16 *value_as_FieldI16() const {
+    return value_type() == Firmoto::FieldType_FieldI16 ? static_cast<const Firmoto::FieldI16 *>(value()) : nullptr;
+  }
+  const Firmoto::FieldI32 *value_as_FieldI32() const {
+    return value_type() == Firmoto::FieldType_FieldI32 ? static_cast<const Firmoto::FieldI32 *>(value()) : nullptr;
+  }
+  const Firmoto::FieldI64 *value_as_FieldI64() const {
+    return value_type() == Firmoto::FieldType_FieldI64 ? static_cast<const Firmoto::FieldI64 *>(value()) : nullptr;
+  }
+  const Firmoto::FieldU8 *value_as_FieldU8() const {
+    return value_type() == Firmoto::FieldType_FieldU8 ? static_cast<const Firmoto::FieldU8 *>(value()) : nullptr;
+  }
+  const Firmoto::FieldU16 *value_as_FieldU16() const {
+    return value_type() == Firmoto::FieldType_FieldU16 ? static_cast<const Firmoto::FieldU16 *>(value()) : nullptr;
+  }
+  const Firmoto::FieldU32 *value_as_FieldU32() const {
+    return value_type() == Firmoto::FieldType_FieldU32 ? static_cast<const Firmoto::FieldU32 *>(value()) : nullptr;
+  }
+  const Firmoto::FieldU64 *value_as_FieldU64() const {
+    return value_type() == Firmoto::FieldType_FieldU64 ? static_cast<const Firmoto::FieldU64 *>(value()) : nullptr;
+  }
+  const Firmoto::FieldFloat *value_as_FieldFloat() const {
+    return value_type() == Firmoto::FieldType_FieldFloat ? static_cast<const Firmoto::FieldFloat *>(value()) : nullptr;
+  }
+  const Firmoto::FieldDouble *value_as_FieldDouble() const {
+    return value_type() == Firmoto::FieldType_FieldDouble ? static_cast<const Firmoto::FieldDouble *>(value()) : nullptr;
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_NAME) &&
            verifier.VerifyString(name()) &&
-           VerifyField<int8_t>(verifier, VT_VALTYPE, 1) &&
+           VerifyField<uint8_t>(verifier, VT_VALUE_TYPE, 1) &&
            VerifyOffset(verifier, VT_VALUE) &&
-           verifier.VerifyString(value()) &&
+           VerifyFieldType(verifier, value(), value_type()) &&
            verifier.EndTable();
   }
   ValueT *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
   void UnPackTo(ValueT *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
   static ::flatbuffers::Offset<Value> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const ValueT* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
 };
+
+template<> inline const Firmoto::FieldString *Value::value_as<Firmoto::FieldString>() const {
+  return value_as_FieldString();
+}
+
+template<> inline const Firmoto::FieldBool *Value::value_as<Firmoto::FieldBool>() const {
+  return value_as_FieldBool();
+}
+
+template<> inline const Firmoto::FieldI8 *Value::value_as<Firmoto::FieldI8>() const {
+  return value_as_FieldI8();
+}
+
+template<> inline const Firmoto::FieldI16 *Value::value_as<Firmoto::FieldI16>() const {
+  return value_as_FieldI16();
+}
+
+template<> inline const Firmoto::FieldI32 *Value::value_as<Firmoto::FieldI32>() const {
+  return value_as_FieldI32();
+}
+
+template<> inline const Firmoto::FieldI64 *Value::value_as<Firmoto::FieldI64>() const {
+  return value_as_FieldI64();
+}
+
+template<> inline const Firmoto::FieldU8 *Value::value_as<Firmoto::FieldU8>() const {
+  return value_as_FieldU8();
+}
+
+template<> inline const Firmoto::FieldU16 *Value::value_as<Firmoto::FieldU16>() const {
+  return value_as_FieldU16();
+}
+
+template<> inline const Firmoto::FieldU32 *Value::value_as<Firmoto::FieldU32>() const {
+  return value_as_FieldU32();
+}
+
+template<> inline const Firmoto::FieldU64 *Value::value_as<Firmoto::FieldU64>() const {
+  return value_as_FieldU64();
+}
+
+template<> inline const Firmoto::FieldFloat *Value::value_as<Firmoto::FieldFloat>() const {
+  return value_as_FieldFloat();
+}
+
+template<> inline const Firmoto::FieldDouble *Value::value_as<Firmoto::FieldDouble>() const {
+  return value_as_FieldDouble();
+}
 
 struct ValueBuilder {
   typedef Value Table;
@@ -201,10 +1214,10 @@ struct ValueBuilder {
   void add_name(::flatbuffers::Offset<::flatbuffers::String> name) {
     fbb_.AddOffset(Value::VT_NAME, name);
   }
-  void add_valtype(Firmoto::ValueType valtype) {
-    fbb_.AddElement<int8_t>(Value::VT_VALTYPE, static_cast<int8_t>(valtype), 0);
+  void add_value_type(Firmoto::FieldType value_type) {
+    fbb_.AddElement<uint8_t>(Value::VT_VALUE_TYPE, static_cast<uint8_t>(value_type), 0);
   }
-  void add_value(::flatbuffers::Offset<::flatbuffers::String> value) {
+  void add_value(::flatbuffers::Offset<void> value) {
     fbb_.AddOffset(Value::VT_VALUE, value);
   }
   explicit ValueBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
@@ -221,27 +1234,26 @@ struct ValueBuilder {
 inline ::flatbuffers::Offset<Value> CreateValue(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     ::flatbuffers::Offset<::flatbuffers::String> name = 0,
-    Firmoto::ValueType valtype = Firmoto::ValueType_U8,
-    ::flatbuffers::Offset<::flatbuffers::String> value = 0) {
+    Firmoto::FieldType value_type = Firmoto::FieldType_NONE,
+    ::flatbuffers::Offset<void> value = 0) {
   ValueBuilder builder_(_fbb);
   builder_.add_value(value);
   builder_.add_name(name);
-  builder_.add_valtype(valtype);
+  builder_.add_value_type(value_type);
   return builder_.Finish();
 }
 
 inline ::flatbuffers::Offset<Value> CreateValueDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     const char *name = nullptr,
-    Firmoto::ValueType valtype = Firmoto::ValueType_U8,
-    const char *value = nullptr) {
+    Firmoto::FieldType value_type = Firmoto::FieldType_NONE,
+    ::flatbuffers::Offset<void> value = 0) {
   auto name__ = name ? _fbb.CreateString(name) : 0;
-  auto value__ = value ? _fbb.CreateString(value) : 0;
   return Firmoto::CreateValue(
       _fbb,
       name__,
-      valtype,
-      value__);
+      value_type,
+      value);
 }
 
 ::flatbuffers::Offset<Value> CreateValue(::flatbuffers::FlatBufferBuilder &_fbb, const ValueT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
@@ -437,6 +1449,318 @@ inline ::flatbuffers::Offset<ReturnValue> CreateReturnValueDirect(
 
 ::flatbuffers::Offset<ReturnValue> CreateReturnValue(::flatbuffers::FlatBufferBuilder &_fbb, const ReturnValueT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
 
+inline FieldStringT *FieldString::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<FieldStringT>(new FieldStringT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void FieldString::UnPackTo(FieldStringT *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = field(); if (_e) _o->field = _e->str(); }
+}
+
+inline ::flatbuffers::Offset<FieldString> FieldString::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldStringT* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateFieldString(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<FieldString> CreateFieldString(::flatbuffers::FlatBufferBuilder &_fbb, const FieldStringT *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const FieldStringT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _field = _o->field.empty() ? 0 : _fbb.CreateString(_o->field);
+  return Firmoto::CreateFieldString(
+      _fbb,
+      _field);
+}
+
+inline FieldBoolT *FieldBool::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<FieldBoolT>(new FieldBoolT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void FieldBool::UnPackTo(FieldBoolT *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = field(); _o->field = _e; }
+}
+
+inline ::flatbuffers::Offset<FieldBool> FieldBool::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldBoolT* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateFieldBool(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<FieldBool> CreateFieldBool(::flatbuffers::FlatBufferBuilder &_fbb, const FieldBoolT *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const FieldBoolT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _field = _o->field;
+  return Firmoto::CreateFieldBool(
+      _fbb,
+      _field);
+}
+
+inline FieldI8T *FieldI8::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<FieldI8T>(new FieldI8T());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void FieldI8::UnPackTo(FieldI8T *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = field(); _o->field = _e; }
+}
+
+inline ::flatbuffers::Offset<FieldI8> FieldI8::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldI8T* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateFieldI8(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<FieldI8> CreateFieldI8(::flatbuffers::FlatBufferBuilder &_fbb, const FieldI8T *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const FieldI8T* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _field = _o->field;
+  return Firmoto::CreateFieldI8(
+      _fbb,
+      _field);
+}
+
+inline FieldI16T *FieldI16::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<FieldI16T>(new FieldI16T());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void FieldI16::UnPackTo(FieldI16T *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = field(); _o->field = _e; }
+}
+
+inline ::flatbuffers::Offset<FieldI16> FieldI16::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldI16T* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateFieldI16(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<FieldI16> CreateFieldI16(::flatbuffers::FlatBufferBuilder &_fbb, const FieldI16T *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const FieldI16T* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _field = _o->field;
+  return Firmoto::CreateFieldI16(
+      _fbb,
+      _field);
+}
+
+inline FieldI32T *FieldI32::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<FieldI32T>(new FieldI32T());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void FieldI32::UnPackTo(FieldI32T *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = field(); _o->field = _e; }
+}
+
+inline ::flatbuffers::Offset<FieldI32> FieldI32::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldI32T* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateFieldI32(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<FieldI32> CreateFieldI32(::flatbuffers::FlatBufferBuilder &_fbb, const FieldI32T *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const FieldI32T* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _field = _o->field;
+  return Firmoto::CreateFieldI32(
+      _fbb,
+      _field);
+}
+
+inline FieldI64T *FieldI64::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<FieldI64T>(new FieldI64T());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void FieldI64::UnPackTo(FieldI64T *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = field(); _o->field = _e; }
+}
+
+inline ::flatbuffers::Offset<FieldI64> FieldI64::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldI64T* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateFieldI64(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<FieldI64> CreateFieldI64(::flatbuffers::FlatBufferBuilder &_fbb, const FieldI64T *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const FieldI64T* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _field = _o->field;
+  return Firmoto::CreateFieldI64(
+      _fbb,
+      _field);
+}
+
+inline FieldU8T *FieldU8::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<FieldU8T>(new FieldU8T());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void FieldU8::UnPackTo(FieldU8T *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = field(); _o->field = _e; }
+}
+
+inline ::flatbuffers::Offset<FieldU8> FieldU8::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldU8T* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateFieldU8(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<FieldU8> CreateFieldU8(::flatbuffers::FlatBufferBuilder &_fbb, const FieldU8T *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const FieldU8T* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _field = _o->field;
+  return Firmoto::CreateFieldU8(
+      _fbb,
+      _field);
+}
+
+inline FieldU16T *FieldU16::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<FieldU16T>(new FieldU16T());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void FieldU16::UnPackTo(FieldU16T *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = field(); _o->field = _e; }
+}
+
+inline ::flatbuffers::Offset<FieldU16> FieldU16::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldU16T* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateFieldU16(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<FieldU16> CreateFieldU16(::flatbuffers::FlatBufferBuilder &_fbb, const FieldU16T *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const FieldU16T* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _field = _o->field;
+  return Firmoto::CreateFieldU16(
+      _fbb,
+      _field);
+}
+
+inline FieldU32T *FieldU32::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<FieldU32T>(new FieldU32T());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void FieldU32::UnPackTo(FieldU32T *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = field(); _o->field = _e; }
+}
+
+inline ::flatbuffers::Offset<FieldU32> FieldU32::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldU32T* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateFieldU32(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<FieldU32> CreateFieldU32(::flatbuffers::FlatBufferBuilder &_fbb, const FieldU32T *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const FieldU32T* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _field = _o->field;
+  return Firmoto::CreateFieldU32(
+      _fbb,
+      _field);
+}
+
+inline FieldU64T *FieldU64::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<FieldU64T>(new FieldU64T());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void FieldU64::UnPackTo(FieldU64T *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = field(); _o->field = _e; }
+}
+
+inline ::flatbuffers::Offset<FieldU64> FieldU64::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldU64T* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateFieldU64(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<FieldU64> CreateFieldU64(::flatbuffers::FlatBufferBuilder &_fbb, const FieldU64T *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const FieldU64T* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _field = _o->field;
+  return Firmoto::CreateFieldU64(
+      _fbb,
+      _field);
+}
+
+inline FieldFloatT *FieldFloat::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<FieldFloatT>(new FieldFloatT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void FieldFloat::UnPackTo(FieldFloatT *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = field(); _o->field = _e; }
+}
+
+inline ::flatbuffers::Offset<FieldFloat> FieldFloat::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldFloatT* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateFieldFloat(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<FieldFloat> CreateFieldFloat(::flatbuffers::FlatBufferBuilder &_fbb, const FieldFloatT *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const FieldFloatT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _field = _o->field;
+  return Firmoto::CreateFieldFloat(
+      _fbb,
+      _field);
+}
+
+inline FieldDoubleT *FieldDouble::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<FieldDoubleT>(new FieldDoubleT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void FieldDouble::UnPackTo(FieldDoubleT *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = field(); _o->field = _e; }
+}
+
+inline ::flatbuffers::Offset<FieldDouble> FieldDouble::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const FieldDoubleT* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateFieldDouble(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<FieldDouble> CreateFieldDouble(::flatbuffers::FlatBufferBuilder &_fbb, const FieldDoubleT *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const FieldDoubleT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _field = _o->field;
+  return Firmoto::CreateFieldDouble(
+      _fbb,
+      _field);
+}
+
 inline ValueT *Value::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
   auto _o = std::unique_ptr<ValueT>(new ValueT());
   UnPackTo(_o.get(), _resolver);
@@ -447,8 +1771,8 @@ inline void Value::UnPackTo(ValueT *_o, const ::flatbuffers::resolver_function_t
   (void)_o;
   (void)_resolver;
   { auto _e = name(); if (_e) _o->name = _e->str(); }
-  { auto _e = valtype(); _o->valtype = _e; }
-  { auto _e = value(); if (_e) _o->value = _e->str(); }
+  { auto _e = value_type(); _o->value.type = _e; }
+  { auto _e = value(); if (_e) _o->value.value = Firmoto::FieldTypeUnion::UnPack(_e, value_type(), _resolver); }
 }
 
 inline ::flatbuffers::Offset<Value> Value::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const ValueT* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
@@ -460,12 +1784,12 @@ inline ::flatbuffers::Offset<Value> CreateValue(::flatbuffers::FlatBufferBuilder
   (void)_o;
   struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const ValueT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
   auto _name = _o->name.empty() ? 0 : _fbb.CreateString(_o->name);
-  auto _valtype = _o->valtype;
-  auto _value = _o->value.empty() ? 0 : _fbb.CreateString(_o->value);
+  auto _value_type = _o->value.type;
+  auto _value = _o->value.Pack(_fbb);
   return Firmoto::CreateValue(
       _fbb,
       _name,
-      _valtype,
+      _value_type,
       _value);
 }
 
@@ -560,6 +1884,308 @@ inline ::flatbuffers::Offset<ReturnValue> CreateReturnValue(::flatbuffers::FlatB
   return Firmoto::CreateReturnValue(
       _fbb,
       _data);
+}
+
+inline bool VerifyFieldType(::flatbuffers::Verifier &verifier, const void *obj, FieldType type) {
+  switch (type) {
+    case FieldType_NONE: {
+      return true;
+    }
+    case FieldType_FieldString: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldString *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case FieldType_FieldBool: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldBool *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case FieldType_FieldI8: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldI8 *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case FieldType_FieldI16: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldI16 *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case FieldType_FieldI32: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldI32 *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case FieldType_FieldI64: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldI64 *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case FieldType_FieldU8: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldU8 *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case FieldType_FieldU16: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldU16 *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case FieldType_FieldU32: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldU32 *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case FieldType_FieldU64: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldU64 *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case FieldType_FieldFloat: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldFloat *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case FieldType_FieldDouble: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldDouble *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    default: return true;
+  }
+}
+
+inline bool VerifyFieldTypeVector(::flatbuffers::Verifier &verifier, const ::flatbuffers::Vector<::flatbuffers::Offset<void>> *values, const ::flatbuffers::Vector<uint8_t> *types) {
+  if (!values || !types) return !values && !types;
+  if (values->size() != types->size()) return false;
+  for (::flatbuffers::uoffset_t i = 0; i < values->size(); ++i) {
+    if (!VerifyFieldType(
+        verifier,  values->Get(i), types->GetEnum<FieldType>(i))) {
+      return false;
+    }
+  }
+  return true;
+}
+
+inline void *FieldTypeUnion::UnPack(const void *obj, FieldType type, const ::flatbuffers::resolver_function_t *resolver) {
+  (void)resolver;
+  switch (type) {
+    case FieldType_FieldString: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldString *>(obj);
+      return ptr->UnPack(resolver);
+    }
+    case FieldType_FieldBool: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldBool *>(obj);
+      return ptr->UnPack(resolver);
+    }
+    case FieldType_FieldI8: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldI8 *>(obj);
+      return ptr->UnPack(resolver);
+    }
+    case FieldType_FieldI16: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldI16 *>(obj);
+      return ptr->UnPack(resolver);
+    }
+    case FieldType_FieldI32: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldI32 *>(obj);
+      return ptr->UnPack(resolver);
+    }
+    case FieldType_FieldI64: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldI64 *>(obj);
+      return ptr->UnPack(resolver);
+    }
+    case FieldType_FieldU8: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldU8 *>(obj);
+      return ptr->UnPack(resolver);
+    }
+    case FieldType_FieldU16: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldU16 *>(obj);
+      return ptr->UnPack(resolver);
+    }
+    case FieldType_FieldU32: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldU32 *>(obj);
+      return ptr->UnPack(resolver);
+    }
+    case FieldType_FieldU64: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldU64 *>(obj);
+      return ptr->UnPack(resolver);
+    }
+    case FieldType_FieldFloat: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldFloat *>(obj);
+      return ptr->UnPack(resolver);
+    }
+    case FieldType_FieldDouble: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldDouble *>(obj);
+      return ptr->UnPack(resolver);
+    }
+    default: return nullptr;
+  }
+}
+
+inline ::flatbuffers::Offset<void> FieldTypeUnion::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const ::flatbuffers::rehasher_function_t *_rehasher) const {
+  (void)_rehasher;
+  switch (type) {
+    case FieldType_FieldString: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldStringT *>(value);
+      return CreateFieldString(_fbb, ptr, _rehasher).Union();
+    }
+    case FieldType_FieldBool: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldBoolT *>(value);
+      return CreateFieldBool(_fbb, ptr, _rehasher).Union();
+    }
+    case FieldType_FieldI8: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldI8T *>(value);
+      return CreateFieldI8(_fbb, ptr, _rehasher).Union();
+    }
+    case FieldType_FieldI16: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldI16T *>(value);
+      return CreateFieldI16(_fbb, ptr, _rehasher).Union();
+    }
+    case FieldType_FieldI32: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldI32T *>(value);
+      return CreateFieldI32(_fbb, ptr, _rehasher).Union();
+    }
+    case FieldType_FieldI64: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldI64T *>(value);
+      return CreateFieldI64(_fbb, ptr, _rehasher).Union();
+    }
+    case FieldType_FieldU8: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldU8T *>(value);
+      return CreateFieldU8(_fbb, ptr, _rehasher).Union();
+    }
+    case FieldType_FieldU16: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldU16T *>(value);
+      return CreateFieldU16(_fbb, ptr, _rehasher).Union();
+    }
+    case FieldType_FieldU32: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldU32T *>(value);
+      return CreateFieldU32(_fbb, ptr, _rehasher).Union();
+    }
+    case FieldType_FieldU64: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldU64T *>(value);
+      return CreateFieldU64(_fbb, ptr, _rehasher).Union();
+    }
+    case FieldType_FieldFloat: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldFloatT *>(value);
+      return CreateFieldFloat(_fbb, ptr, _rehasher).Union();
+    }
+    case FieldType_FieldDouble: {
+      auto ptr = reinterpret_cast<const Firmoto::FieldDoubleT *>(value);
+      return CreateFieldDouble(_fbb, ptr, _rehasher).Union();
+    }
+    default: return 0;
+  }
+}
+
+inline FieldTypeUnion::FieldTypeUnion(const FieldTypeUnion &u) : type(u.type), value(nullptr) {
+  switch (type) {
+    case FieldType_FieldString: {
+      value = new Firmoto::FieldStringT(*reinterpret_cast<Firmoto::FieldStringT *>(u.value));
+      break;
+    }
+    case FieldType_FieldBool: {
+      value = new Firmoto::FieldBoolT(*reinterpret_cast<Firmoto::FieldBoolT *>(u.value));
+      break;
+    }
+    case FieldType_FieldI8: {
+      value = new Firmoto::FieldI8T(*reinterpret_cast<Firmoto::FieldI8T *>(u.value));
+      break;
+    }
+    case FieldType_FieldI16: {
+      value = new Firmoto::FieldI16T(*reinterpret_cast<Firmoto::FieldI16T *>(u.value));
+      break;
+    }
+    case FieldType_FieldI32: {
+      value = new Firmoto::FieldI32T(*reinterpret_cast<Firmoto::FieldI32T *>(u.value));
+      break;
+    }
+    case FieldType_FieldI64: {
+      value = new Firmoto::FieldI64T(*reinterpret_cast<Firmoto::FieldI64T *>(u.value));
+      break;
+    }
+    case FieldType_FieldU8: {
+      value = new Firmoto::FieldU8T(*reinterpret_cast<Firmoto::FieldU8T *>(u.value));
+      break;
+    }
+    case FieldType_FieldU16: {
+      value = new Firmoto::FieldU16T(*reinterpret_cast<Firmoto::FieldU16T *>(u.value));
+      break;
+    }
+    case FieldType_FieldU32: {
+      value = new Firmoto::FieldU32T(*reinterpret_cast<Firmoto::FieldU32T *>(u.value));
+      break;
+    }
+    case FieldType_FieldU64: {
+      value = new Firmoto::FieldU64T(*reinterpret_cast<Firmoto::FieldU64T *>(u.value));
+      break;
+    }
+    case FieldType_FieldFloat: {
+      value = new Firmoto::FieldFloatT(*reinterpret_cast<Firmoto::FieldFloatT *>(u.value));
+      break;
+    }
+    case FieldType_FieldDouble: {
+      value = new Firmoto::FieldDoubleT(*reinterpret_cast<Firmoto::FieldDoubleT *>(u.value));
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+inline void FieldTypeUnion::Reset() {
+  switch (type) {
+    case FieldType_FieldString: {
+      auto ptr = reinterpret_cast<Firmoto::FieldStringT *>(value);
+      delete ptr;
+      break;
+    }
+    case FieldType_FieldBool: {
+      auto ptr = reinterpret_cast<Firmoto::FieldBoolT *>(value);
+      delete ptr;
+      break;
+    }
+    case FieldType_FieldI8: {
+      auto ptr = reinterpret_cast<Firmoto::FieldI8T *>(value);
+      delete ptr;
+      break;
+    }
+    case FieldType_FieldI16: {
+      auto ptr = reinterpret_cast<Firmoto::FieldI16T *>(value);
+      delete ptr;
+      break;
+    }
+    case FieldType_FieldI32: {
+      auto ptr = reinterpret_cast<Firmoto::FieldI32T *>(value);
+      delete ptr;
+      break;
+    }
+    case FieldType_FieldI64: {
+      auto ptr = reinterpret_cast<Firmoto::FieldI64T *>(value);
+      delete ptr;
+      break;
+    }
+    case FieldType_FieldU8: {
+      auto ptr = reinterpret_cast<Firmoto::FieldU8T *>(value);
+      delete ptr;
+      break;
+    }
+    case FieldType_FieldU16: {
+      auto ptr = reinterpret_cast<Firmoto::FieldU16T *>(value);
+      delete ptr;
+      break;
+    }
+    case FieldType_FieldU32: {
+      auto ptr = reinterpret_cast<Firmoto::FieldU32T *>(value);
+      delete ptr;
+      break;
+    }
+    case FieldType_FieldU64: {
+      auto ptr = reinterpret_cast<Firmoto::FieldU64T *>(value);
+      delete ptr;
+      break;
+    }
+    case FieldType_FieldFloat: {
+      auto ptr = reinterpret_cast<Firmoto::FieldFloatT *>(value);
+      delete ptr;
+      break;
+    }
+    case FieldType_FieldDouble: {
+      auto ptr = reinterpret_cast<Firmoto::FieldDoubleT *>(value);
+      delete ptr;
+      break;
+    }
+    default: break;
+  }
+  value = nullptr;
+  type = FieldType_NONE;
 }
 
 inline const Firmoto::Operation *GetOperation(const void *buf) {

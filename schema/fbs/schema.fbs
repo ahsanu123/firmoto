@@ -3,38 +3,86 @@ namespace Firmoto;
 enum OperationType: byte {
   GPIO,
   I2C, 
-  SPI
+  SPI,
+  CAN
 }
 
 enum SubOperationType: byte {
   SPI_WRITE_U8, 
   SPI_READ_U8, 
   SPI_READ_U16, 
-  SPI_READ_N
+  SPI_READ_N,
+
+  I2C_READ_U8,
+  I2C_WRITE_U8,
 }
 
-enum ValueType : byte{
-  U8,
-  U16,
-  U32,
-  U64,
+table FieldString {
+  field: string;
+}
 
-  I8,
-  I16,
-  I32,
-  I64,
+table FieldBool {
+  field: bool;
+}
 
-  F32,
-  F64,
+table FieldI8 {
+  field: byte;
+}
 
-  String,
-  Boolean,
+table FieldI16 {
+  field: short;
+}
+
+table FieldI32 {
+  field: int;
+}
+
+table FieldI64 {
+  field: long;
+}
+
+table FieldU8 {
+  field: ubyte;
+}
+
+table FieldU16 {
+  field: ushort;
+}
+
+table FieldU32 {
+  field: uint;
+}
+
+table FieldU64 {
+  field: ulong;
+}
+
+table FieldFloat {
+  field: float;
+}
+
+table FieldDouble {
+  field: double;
+}
+
+union FieldType {
+  FieldString,
+  FieldBool,
+  FieldI8,
+  FieldI16,
+  FieldI32,
+  FieldI64,
+  FieldU8,
+  FieldU16,
+  FieldU32,
+  FieldU64,
+  FieldFloat,
+  FieldDouble,
 }
 
 table Value {
   name: string;
-  valtype: ValueType;
-  value: string;
+  value: FieldType;
 }
 
 table Operation {
