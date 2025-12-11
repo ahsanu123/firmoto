@@ -1,15 +1,11 @@
-// NOTE:
-// from esp32 bus pirate
-// void configure(unsigned long baud, uint32_t config, uint8_t rx, uint8_t tx, bool inverted);
-// void print(const std::string& msg);
-// void println(const std::string& msg);
-// char read();
-// std::string readLine();
-// bool available() const;
-// void write(char c);
-// void write(const std::string& str);
-// std::string executeByteCode(const std::vector<ByteCode>& bytecodes);
-// void switchBaudrate(unsigned long newBaud);
-// void flush();
-// void clearUartBuffer();
-// void end();
+use alloc::string::String;
+
+use crate::errors::uart_controller_err::UartControllerErr;
+
+pub trait UartControllerTrait {
+    fn read(&mut self) -> Result<char, UartControllerErr>;
+    fn write(&mut self, c: char) -> Result<(), UartControllerErr>;
+
+    fn write_string(&mut self, string: String) -> Result<(), UartControllerErr>;
+    fn read_until_char(&mut self, c: char) -> Result<(), UartControllerErr>;
+}

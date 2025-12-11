@@ -9,4 +9,3 @@ impl From<Vec<ValueT>> for SpiReadU16Req {
         todo!()
     }
 }
-// Vec<u8>: From<Result<SpiWriteU8Res, SpiControllerErr>>
