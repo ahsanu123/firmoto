@@ -1,6 +1,6 @@
 use crate::service_provider::spi_service::STM32_SPI_SERVICE;
 use firmoto::{
-    service_wrappers::SpiServiceWrapperTrait,
+    service_wrappers::spi_service_wrapper::SpiServiceWrapperTrait,
     services::spi_service_traits::{SpiServiceError, SpiServiceTrait as _},
 };
 
