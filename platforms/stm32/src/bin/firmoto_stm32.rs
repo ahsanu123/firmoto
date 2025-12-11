@@ -7,8 +7,7 @@ use firmoto::{
     allocator::init_allocator, controllers::spi_controller::SpiController, dispatcher::Dispatcher,
 };
 use firmoto_stm32::{
-    serial_transport::Stm32SerialTransport,
-    service_wrappers::spi_service_wrapper::SpiServiceWrapper,
+    service_wrappers::spi_service_wrapper::SpiServiceWrapper, transport::Stm32SerialTransport,
 };
 
 #[cortex_m_rt::entry]

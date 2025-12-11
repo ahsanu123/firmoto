@@ -1,4 +1,4 @@
-use firmoto::writer::{SerialTransportErr, SerialTransportTrait};
+use firmoto::{errors::transport::SerialTransportErr, transport::SerialTransportTrait};
 
 pub struct Stm32SerialTransport;
 

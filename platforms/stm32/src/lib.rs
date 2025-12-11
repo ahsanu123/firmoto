@@ -3,9 +3,9 @@
 
 extern crate alloc;
 
-pub mod serial_transport;
 pub mod service_provider;
 pub mod service_wrappers;
+pub mod transport;
 pub mod utils;
 
 use defmt_semihosting as _;
