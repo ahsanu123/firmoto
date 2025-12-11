@@ -7,10 +7,8 @@ use crate::{
     response_mappers::spi_controller_response::{
         SpiReadU8Res, SpiReadU16Res, SpiWriteThenReadRes, SpiWriteU8Res,
     },
-    schema_generated::firmoto::{ReturnValue, ReturnValueArgs, Value, ValueArgs, ValueT},
-    service_wrappers::SpiServiceWrapperTrait,
+    service_wrappers::spi_service_wrapper::SpiServiceWrapperTrait,
 };
-use alloc::vec::Vec;
 use flatbuffers::FlatBufferBuilder;
 
 type CRes<T> = CR<T, SpiControllerErr>;

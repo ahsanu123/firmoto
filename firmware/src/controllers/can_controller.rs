@@ -17,3 +17,11 @@
 // std::string getStatus();
 // bool probe();
 //
+
+use crate::errors::can_controller_err::CanControllerErr;
+
+pub trait CanControllerTrait {
+    fn send_frame(id: u32, data: &[u8]) -> Result<(), CanControllerErr>;
+    fn read_frame() -> Result<(), CanControllerErr>;
+    fn set_bitrate(bit_kbps: u32) -> Result<(), CanControllerErr>;
+}
