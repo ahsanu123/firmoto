@@ -29,3 +29,5 @@ pub mod modbus_controller_err {
 pub mod uart_controller_err {
     pub use super::uart_controller::*;
 }
+
+pub mod flatbuffer_request_parse_err;

@@ -1,0 +1,7 @@
+# test
+t: 
+  cargo test
+
+# cargo expand bin
+eb: 
+  cargo expand --bin vec_t_to_concrete | save src/bin/vec_t_to_concrete.expanded.rs -f
