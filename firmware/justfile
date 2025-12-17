@@ -5,7 +5,8 @@ l:
   cargo run --bin
 
 b: 
-  cargo build
+  RUSTFLAGS="-Awarnings" cargo build
+
 r binName :  
   just b
   qemu-system-arm \

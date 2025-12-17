@@ -20,6 +20,7 @@ embassy-time = "0.5.0"
 embedded-alloc = {version = "0.6.0", features=["llff"]}
 embedded-hal = "1.0.0"
 static_cell = "2.1.1"
+firmoto-macro = { path = "../macro/" }
 
 [dependencies.flatbuffers]
 version = "25.9.23"

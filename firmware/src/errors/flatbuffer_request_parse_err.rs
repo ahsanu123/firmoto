@@ -1,4 +1,7 @@
+use alloc::string::String;
+
 pub enum FBRequestParseErr {
-    FieldNotFound,
-    ValueNotFound,
+    FieldNotFound(String),
+    ValueNotFound(String),
+    StringUnParseable(String),
 }
