@@ -70,8 +70,9 @@ pub fn derive(token: TokenStream) -> TokenStream {
         .collect();
 
     let q_fields = quote! {
+
         impl #struct_name {
-            pub fn from(vec_value_t: Vec<ValueT>) -> Result<Self, FBRequestParseErr>
+            pub fn from_arg(vec_value_t: Vec<ValueT>) -> Result<Self, FBRequestParseErr>
             where
                 Self: Default,
             {

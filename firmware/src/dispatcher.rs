@@ -1,4 +1,5 @@
 use crate::controllers::spi_controller::SpiControllerTrait;
+use crate::request_mappers::spi_controller_request::{SpiReadU8Req, SpiWriteU8Req};
 use crate::schema_generated::firmoto::{Operation, OperationType, SubOperationType, ValueT};
 use crate::transport::SerialTransportTrait;
 use alloc::vec::Vec;
@@ -60,8 +61,28 @@ where
 
     fn handle_spi_op(&mut self, sub_op_ty: SubOperationType, args: Vec<ValueT>) -> Vec<u8> {
         let retval: Vec<u8> = match sub_op_ty {
-            SubOperationType::SPI_WRITE_U8 => self.spi_controller.write_u8(args.into()).into(),
-            SubOperationType::SPI_READ_U8 => self.spi_controller.read_u8(args.into()).into(),
+            SubOperationType::SPI_WRITE_U8 => {
+                let parsed_args = SpiWriteU8Req::from_arg(args);
+
+                match parsed_args {
+                    Ok(arg) => {
+                        let res = self.spi_controller.write_u8(arg);
+                        res.into()
+                    }
+                    Err(err) => err.into(),
+                }
+            }
+            SubOperationType::SPI_READ_U8 => {
+                let parsed_args = SpiReadU8Req::from_arg(args);
+
+                match parsed_args {
+                    Ok(arg) => {
+                        let res = self.spi_controller.read_u8(arg);
+                        res.into()
+                    }
+                    Err(err) => err.into(),
+                }
+            }
             SubOperationType::SPI_READ_U16 => todo!(),
             SubOperationType::SPI_READ_N => todo!(),
             _ => todo!(),
