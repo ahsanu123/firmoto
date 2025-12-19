@@ -7,6 +7,7 @@ pub mod allocator;
 pub mod controllers;
 pub mod dispatcher;
 pub mod errors;
+pub mod mocks;
 pub mod request_mappers;
 pub mod response_mappers;
 pub mod schema_generated;
