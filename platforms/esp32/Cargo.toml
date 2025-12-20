@@ -9,6 +9,7 @@ name = "firmoto-esp32"
 path = "./src/bin/main.rs"
 
 [dependencies]
+firmoto = { path = "../../firmware" }
 esp-hal = { version = "1.0.0", features = ["defmt", "esp32", "unstable"] }
 
 esp-rtos = { version = "0.2.0", features = [

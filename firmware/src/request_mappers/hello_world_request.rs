@@ -1,0 +1,12 @@
+use crate::{
+    errors::flatbuffer_request_parse_err::FBRequestParseErr, schema_generated::firmoto::ValueT,
+};
+use alloc::{string::String, vec::Vec};
+use core::convert::From;
+use firmoto_macro::FromVecTToConcrete;
+
+#[derive(FromVecTToConcrete, Default)]
+pub struct HelloWorldReadReq {
+    pub num_a: u8,
+    pub num_b: u8,
+}
